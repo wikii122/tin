@@ -1,4 +1,5 @@
 \documentclass[10pt,a4paper]{article}
+
 \usepackage[utf8]{inputenc}
 \usepackage[polish]{babel}
 \usepackage[T1]{fontenc}
@@ -19,20 +20,27 @@
 \usepackage{tgpagella}
 \usepackage[scaled]{helvet}
 \usepackage{titlesec}
+
 \renewcommand\thesection{\arabic{section}.}
 \renewcommand\thesubsection{\arabic{section}.\arabic{subsection}.}
 \renewcommand\thesubsubsection{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.}
-\marginsize{1cm}{1cm}{1cm}{1cm}
 \renewcommand{\footrulewidth}{0.4pt}% Default \footrulewidth is 0pt
+
+\marginsize{2cm}{2cm}{2cm}{2cm}
 \setlength{\parindent}{0pt}
+
 \title{Techniki Internetowe\\
        \textbf{Projekt}}
+
 \date{semestr 14L}
+
 \author{Patrycja Dybka\\
 		Bartosz Frączak\\
 		Damian Rakowski\\
 		Wiktor Ślęczka}
+
 \pagestyle{fancy}
+
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
@@ -119,15 +127,20 @@ Usunięcie pliku.
 \end{itemize}
 \item Dowolny z peerów może zainicjować rozgłaszanie zasobów, poprzez pakiet "GiveFilelist", wtedy każdy odbiorca tego pakietu jest zobowiązany odpowiedzieć broadcastem pakietem "IHave", zawierający listę plików, oraz informację o tym, czy jest ich właścicielem. Każdy posiadający kopię powinien przy otrzymaniu isOwner przedłuzyć datę ważności.
 \begin{itemize}\item \{“type”: “GiveFilelist”, “name”: “jakishost”\}
-\item \{“type”: “IHave”, “name”: “jakishost”,“files”: [\{“file”: “pliktestowy”, “md5”: “1de806ceee9f3172d154275a90fb148a”,“isOwner”: true, “expires”: 1398717645\}, \{“name”: “pliknietestowy”, “md5”: “20dc258bb9b0b3ce53a32d1df7b1b50f”, “isOwner”: false, “expires”: 1398717645\}]\}
+\item \{“type”: “IHave”, “name”: “jakishost”,“files”: [\{“file”: “pliktestowy”, 
+\\“md5”: “1de806ceee9f3172d154275a90fb148a”,“isOwner”: true, “expires”: 1398717645\}, 
+\\\{“name”: “pliknietestowy”, “md5”: “20dc258bb9b0b3ce53a32d1df7b1b50f”, “isOwner”: false, 
+\\“expires”: 1398717645\}]\}
 \end{itemize}
 \item Dowolny z peerów może pobrać plik z innego peera. W tym celu wysyła pakiet typu ''GiveMe'' z informacją o tym, jaki plik chce uzyskać oraz portem, na którym nasłuchuje. Hosty posiadające ten plik, zobowiązane są do nawiązania połączenia na ten port przy pomocy TCP/IP. Po połączeniu się, za posiadacz pliku binarnie podaje identyfikator pliku, jego hash i rozmiar, poszukiwacz odpowiada, czy nadal chce ten plik i w jakim stopniu albo zamyka połączenie, a następnie zawartość pliku jest wysyłana przez posiadacza. Ostatnia część procesu może być powtarzana W przypadku, gdy nie było odpowiedzi, poszukiwacz ponawia zapytanie, a w przypadku ponownego błędu informuje użytkownika o błędzie i aktualizuje listę plików/hostów. Data wazności w przypadku oryginałów jest ustawiana na ''0''
 \begin{itemize}
-\item \{“type”: “GiveMe”, “name”: “jakishost”, “file”: “pliktestowy”, “md5”: “20dc258bb9b0b3ce53a32d1df7b1b50f”, “original”: false\}
+\item \{“type”: “GiveMe”, “name”: “jakishost”, “file”: “pliktestowy”, 
+\\“md5”: “20dc258bb9b0b3ce53a32d1df7b1b50f”, “original”: false\}
 \item <TCP/IP>
 \begin{itemize}
 \renewcommand{\labelitemiii}{$\circ$}
-\item Dowolny z peerów może zakomunikować dodanie nowego plikWysylajacy:pliktestowy\textbackslash n20dc258bb9b0b3ce53a32d1df7b1b50f\textbackslash nwielkosc pliku\textbackslash r\textbackslash nexpirydate\textbackslash n
+\item Dowolny z peerów może zakomunikować dodanie nowego pliku
+\\Wysylajacy:pliktestowy\textbackslash n20dc258bb9b0b3ce53a32d1df7b1b50f\textbackslash nwielkosc pliku\textbackslash r\textbackslash nexpirydate\textbackslash n
 \item Odbierajacy: offset\textbackslash nwielkosckawalka\textbackslash n
 \item Wysylajacy:jakiesdanebinarne
 \item Odbierający offset2\textbackslash nwielkosckawalka2\textbackslash n
