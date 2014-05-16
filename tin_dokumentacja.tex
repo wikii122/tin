@@ -77,7 +77,17 @@
 \section{Treść zadania}
 Zadanie polega na napisaniu prostego programu P2P (Peer-to-Peer) umożliwiającego rozproszone przechowywanie zasobów.
 \section{Interpretacja zadania}
-Głównym elementem naszego projektu jest lokalny serwer. Zarządza on w naszym programie zasobami oraz zapewnia komunikację z innymi programami w sieci. Gdy plik zostanie umieszczony w węźle, broadcastuje on te zdarzenie. wtedy każdy odbiorca jest zobowiązany odpowiedzieć na nie, natomiast nadawca pierwszej otrzymanej odpowiedzi stanie się nowym właścicielem nowo dodanego pliku. Plik na węźle, na którym został umieszczony zostaje kopią, natomiast plik zostaje skopiowany do losowego węzła, który staje się jego właścicielem.\\
+Głównym elementem naszego projektu jest działający w tle proces,
+nazywany serwerem\footnote{Dla rozróżnienia z klientem, który jest
+używany do bezpośredniej komunikacji z użytkownikiem}.
+Zarządza on w naszym programie zasobami oraz zapewnia komunikację z innymi
+programami w sieci. Gdy plik zostanie umieszczony w węźle, broadcastuje on
+zdarzenie. Wtedy każdy odbiorca jest zobowiązany odpowiedzieć na nie,
+natomiast nadawca pierwszej otrzymanej odpowiedzi stanie się
+nowym właścicielem nowo dodanego pliku.
+Plik na węźle, na którym został umieszczony zostaje kopią,
+natomiast plik zostaje skopiowany do losowego węzła, który staje się
+jego właścicielem.\\
 \\
 Synchronizacja posiadanych zasobów jest przeprowadzana kompletnie, synchronizowana jest cała lista plików, nie tylko to, co się zmieniło, i zawsze, gdy:
 \begin{itemize}
@@ -107,7 +117,10 @@ Zatrzymanie działania serwera.
 Dodanie pliku do zasobów serwera. Jeśli podana jest nazwa, plik zostanie dodany pod tą nazwą. W przeciwnym wypadku, plik zostanie dodany pod swoją nazwą.
 
 \item get nazwa pliku $[sciezka/do/pliku]$\\
-Pobranie pliku z innych węzłów, jśli plik nie został dodany do lokalnego, oraz skopiowanie go w podane miejsce. Jeśli podana zostanie ścieżka, plik zostanie zapisany na podanej ścieżce. W przeciwnym przypadku, plik zostanie zapisany w aktualnym katalogu, pod nazwą występującą w aplikacji.
+Pobranie pliku z innych węzłów, jeśli plik nie został dodany do lokalnego,
+oraz skopiowanie go w podane miejsce. Jeśli podana zostanie ścieżka,
+plik zostanie zapisany na podanej ścieżce. W przeciwnym przypadku,
+plik zostanie zapisany w aktualnym katalogu, pod nazwą występującą w aplikacji.
 \item download nazwa pliku$[nazwa$ $hosta]$\\
 Pobranie pliku z innych węzłów w celu udostępniania. Nie kopiuje pliku poza wewnętrzne dane programu. Jeśli podana jest nazwa hosta, ściagany plik jest tylko od żadanego węzła.
 
