@@ -132,7 +132,12 @@ Wyświetlenie listy plików w sieci.
 \item remove $nazwa$$pliku$\\
 Usunięcie pliku.
 \end{itemize}
-\section{Protokół bazowany jest na formacie JSON - JavaScript Object Notation.}
+\section{Protokół}
+Protokół bazowany jest na formacie JSON - JavaScript Object Notation.
+Wszystkie podane tutaj komunikaty wysyłane są poprzez UDP. Jedyny moment,
+kiedy używane jest TCP/IP w naszym projekcie to wymiana plików w trybie
+binarnym.
+
 \begin{itemize}
 \item Podczasz uruchomienia programu na jednym z komputerów, rozgłasza on swoją obecność (pakiet: "Hello"), na co pozostałe peery odpowiadają analogicznym zgłoszeniem (tylko w sytuacji, gdy nie wiedziały o tym, który aktualnie się identyfikuje, w celu zapobiegnięcia zapętleniu). Jeżeli w odpowiedzi program dostanie “Hello’ od innego uzytkownika z taka nazwa, wyświetli on komunikat dla użytkownika o niedostępności nazwy.
 \renewcommand{\labelitemii}{$\circ$}
@@ -167,7 +172,10 @@ Usunięcie pliku.
 \item \{“type”: “Objection”, “file”: “nowyplik”, “md5”:”20dc258bb9b0b3ce53a32d1df7b1b50f”\}
 \item \{“type”: “GiveMe”, “file”: “nowyplik”, “md5”: “20dc258bb9b0b3ce53a32d1df7b1b50f”, “original”: true\}
 \end{itemize}
-\item Dowolny z peerów posiadający oryginał może go unieważnić poprzez pakiet typu "Forget" i wiadomością o tym, jaki to zasób. Hosty posiadające kopię oznaczają ten zasób jako nietransferowalny i 
+\item Dowolny z peerów posiadający oryginał może go unieważnić poprzez pakiet typu "Forget" i wiadomością o tym, jaki to zasób. Hosty posiadające kopię oznaczają ten zasób jako nietransferowalny i po jakimś czasie usuwają
+go. Czynność ta jest także dozwolona, gdy nie posiada się oryginału, 
+ale było się świadkiem usunięcia oryginału.
+
 \begin{itemize}
 \item \{“type”: “Forget”, “name”: “jakishost”, “file”: “staryplik”, “md5”:”20dc258bb9b0b3ce53a32d1df7b1b50f”\}
 \end{itemize}
@@ -175,9 +183,13 @@ Usunięcie pliku.
 \section{Poprawność protokołu.}
 \begin{itemize}
 \item Nie jest możliwa sytuacja, gdy dwa węzły będą posiadać tą samą nazwę hosta. Sytuacja, gdy dołącza się taki, który próbuje uzyskać zajętą już nazwę jest opisana w punkcie protokołu, ciekawsza jest sytuacja, gdy dwa naraz taką samą nazwę spróbują zarezerwować. Jednak nie będzie tu problemu przez “symetrię”. Jako, że dwa naraz wyślą pakiety “Hello”, efekt będzie taki sam, jakby któryś z nich był już w sieci, tylko oba będą musiały zmienić nazwę. Typowy, równouprawniony kompromis.
-\item Sytuacja z plikami nie jest aż tak definitywna, gdyż pliki definiowane są w systemie przez ich hash MD5. Takich hashy jest ok. $2^{128}$, więc szansa, że znajdą się dwa takie same, pomylone pliki w sieci jest pomijalnie mała. 
+\item Sytuacja z plikami nie jest do końca pewna, gdyż pliki definiowane są w systemie przez ich hash MD5. Takich hashy jest jednak ok. $2^{128}$, więc szansa, że znajdą się dwa takie same, pomylone pliki w sieci jest pomijalnie mała. 
 \item Sytuacja, gdy ktoś próbuje pobrać plik, którego nikt z aktualnie aktywnych hostów nie posiada jest rozwiązana intuicyjnie - nie zostanie pobrany oraz użytkownik dowie się o błędzie.
-\item Sytuacja, kiedy plik zostanie usunięty pod nieobecność kogoś posiadającego kopię jest rozwiązana w pewny sposób - przy następnym spotkaniu z kimkolwiek, kto kiedykolwiek posiadał ten plik i stracił go z przyczyny wiadomości “Forget” skoryguje go.
+\item Sytuacja, kiedy plik zostanie usunięty pod nieobecność kogoś
+posiadającego kopię jest rozwiązana w następujący sposób - 
+przy następnym spotkaniu z kimkolwiek, kto kiedykolwiek posiadał ten plik 
+i stracił go z przyczyny wiadomości “Forget”  usunie go poprzez
+powiadomienie.
 \item Plik może być pobierany w kawałkach, a nawet posiada możliwość wznowienie pobierania! Wystarczy kiedy indziej pobrać plik, podając odpowiednie offsety i rozmiary kawałków brakujących!
 \item Pliki zostaną usunięte w przypadku unieważnienia, nawet jeżeli utracą kontakt z hostem oryginalnym. Jednak klient będzie pamiętał hashe usuniętych plików i jeżeli okaże się, że pomimo braku kontaktu przez datę ważności plik nie został usunięty, będzie on pobrany przy najbliższej sposobności. Jest to rozwiązanie lepsze w sytuacji, gdy sieć jest duża bądź pliki są popularne (większość jest na dużej ilości hostów) bądź wszystkie hosty są aktywne. Gwarantuje to nie przechowywanie martwych plików więcej niż jest to konieczne płacąc za to możliwością usunięcia aktywnego pliku w skrajnych sytuacjach.
 \end{itemize}
