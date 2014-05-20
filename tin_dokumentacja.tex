@@ -183,7 +183,10 @@ ale było się świadkiem usunięcia oryginału.
 \section{Poprawność protokołu.}
 \begin{itemize}
 \item Nie jest możliwa sytuacja, gdy dwa węzły będą posiadać tą samą nazwę hosta. Sytuacja, gdy dołącza się taki, który próbuje uzyskać zajętą już nazwę jest opisana w punkcie protokołu, ciekawsza jest sytuacja, gdy dwa naraz taką samą nazwę spróbują zarezerwować. Jednak nie będzie tu problemu przez “symetrię”. Jako, że dwa naraz wyślą pakiety “Hello”, efekt będzie taki sam, jakby któryś z nich był już w sieci, tylko oba będą musiały zmienić nazwę. Typowy, równouprawniony kompromis.
-\item Sytuacja z plikami nie jest do końca pewna, gdyż pliki definiowane są w systemie przez ich hash MD5. Takich hashy jest jednak ok. $2^{128}$, więc szansa, że znajdą się dwa takie same, pomylone pliki w sieci jest pomijalnie mała. 
+\item Analogiczna sytuacja z plikami o tych samych nazwach nie jest
+całkowicie niemożliwa, gdyż pliki definiowane są w naszym systemie poprzez
+ich hash MD5. Takich hashy jest jednak ok. $2^{128}$, więc szansa,
+że zdarzy się w sieci kolizja hashy plików jest pomijalnie mała. 
 \item Sytuacja, gdy ktoś próbuje pobrać plik, którego nikt z aktualnie aktywnych hostów nie posiada jest rozwiązana intuicyjnie - nie zostanie pobrany oraz użytkownik dowie się o błędzie.
 \item Sytuacja, kiedy plik zostanie usunięty pod nieobecność kogoś
 posiadającego kopię jest rozwiązana w następujący sposób - 
