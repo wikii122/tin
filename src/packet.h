@@ -1,3 +1,9 @@
+/*
+*	Class representing an abstract class Packet upon which are the other Packet-type classes based.
+*	Author: Damian Rakowski
+*	Date created: 24-05-2014
+*/
+
 #ifndef TIN_PACKET
 #define TIN_PACKET
 
@@ -18,7 +24,7 @@ public:
 	static Packet* getPacket(std::string data);
 	const PacketType getType();
 
-private:
+protected:
 	PacketType type;
 };
 

@@ -1,3 +1,9 @@
+/*
+*	Class representing a Hello-type Packet
+*	Author: Damian Rakowski
+*	Date created: 24-05-2014
+*/
+
 #ifndef TIN_HELLOPACKET
 #define TIN_HELLOPACKET
 
