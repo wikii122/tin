@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 	opt::options_description general("Options for TIN client");
 	general.add_options()
 		("command", opt::value<string>(), "command to execute")
-		("subargs", opt::value<vector<string> >(), "additional arguments");
+		("subargs", opt::value<vector<string>>(), "additional arguments");
 
 	opt::positional_options_description pos;
 	pos.add("command", 1)
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 
 	vector<string> arguments;
 	try {	
-		arguments = args["subargs"].as<vector<string> >();
+		arguments = args["subargs"].as<vector<string>>();
 	} catch (const boost::bad_any_cast& e) {
 		// give empty string vector, already there.
 	}
