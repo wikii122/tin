@@ -15,6 +15,15 @@ using namespace std;
  */
 int communicate::call(string msg)
 {
+	callForResponse(msg);
+	return 0;
+}
+
+/*
+ * This function calls server and returns response.
+ */
+string communicate::callForResponse(string msg)
+{	
 	int socket, state, len, result;
 	struct sockaddr_un address;
 	
@@ -43,14 +52,5 @@ int communicate::call(string msg)
 	// TODO merge call for response here.
 	read(socket, &result, 4);
 
-	return 0;
-}
-
-/*
- * This function calls server and returns response.
- */
-string communicate::callForResponse(string msg)
-{
-	cout << msg << endl;
 	return "";
 }
