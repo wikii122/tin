@@ -38,7 +38,7 @@ string communicate::callForResponse(string msg)
 	memset(&address, 0, sizeof(struct sockaddr_un));
 	address.sun_family = AF_UNIX;
 	strcpy(address.sun_path, client::SOCKET_PATH);
-	state = connect(socket, (struct sockaddr *) &address, sizeof(sockaddr_un));
+	state = connect(socket_fd, (struct sockaddr *) &address, sizeof(struct sockaddr_un));
 	
 	if(state == -1) {
 		cout << "Socket file does not exist...\nIs server running?" << endl;
@@ -47,11 +47,11 @@ string communicate::callForResponse(string msg)
 	
 	len = msg.length();
 
-	write(socket, msg.c_str(), len);
+	write(socket_fd, msg.c_str(), len);
 	// TODO add timeout
 	// TODO use something more meaningful than int.
 	// TODO merge call for response here.
-	read(socket, &result, 4);
+	read(socket_fd, &result, 4);
 
 	return "";
 }
