@@ -8,12 +8,12 @@ using namespace std;
 string absolute(string path);
 string filename(string path);
 
-int server::add(string path) 
+int client::add(string path) 
 {
 	add(path, filename(path));
 	return 0;
 }
-int server::add(string path, string filename)
+int client::add(string path, string filename)
 {
 
 	Json::Value root;
@@ -28,12 +28,12 @@ int server::add(string path, string filename)
 
 	return 0;
 }
-int server::get(string filename)
+int client::get(string filename)
 {
 	get(filename, absolute(filename));
 	return 0;
 }
-int server::get(string filename, string path)
+int client::get(string filename, string path)
 {
 	Json::Value root;
 	Json::StyledWriter writer;
@@ -46,7 +46,7 @@ int server::get(string filename, string path)
 	communicate::call(json);
 	return 0;
 }
-int server::remove(string filename)
+int client::remove(string filename)
 {
 	Json::Value root;
 	Json::StyledWriter writer;

@@ -5,7 +5,7 @@
 #ifndef NET_H_
 #define NET_H_
 
-namespace server {
+namespace client {
 		int download(std::string filename, std::string nodename);
 		int download(std::string filename);
 		int rescan();

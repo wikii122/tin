@@ -3,13 +3,14 @@
 #include "command.h"
 
 using namespace std;
-int server::download(string filename)
+
+int client::download(string filename)
 {
 	download(filename, "");
 	return 0;
 }
 
-int server::download(string filename, string nodename)
+int client::download(string filename, string nodename)
 {
 	Json::Value root;
 	Json::StyledWriter writer;
@@ -24,7 +25,7 @@ int server::download(string filename, string nodename)
 	return 0;
 }
 
-int server::rescan()
+int client::rescan()
 {
 	Json::Value root;
 	Json::StyledWriter writer;
@@ -38,7 +39,7 @@ int server::rescan()
 	return 0;
 }
 
-int server::showlist()
+int client::showlist()
 {
 	Json::Value root;
 	Json::StyledWriter writer;

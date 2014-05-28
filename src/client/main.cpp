@@ -63,39 +63,39 @@ int main(int argc, char** argv)
 		}
 	} else if (command == "add") {
 		if (arguments.size() == 2) {
-			server::add(arguments[0], arguments[1]);
+			client::add(arguments[0], arguments[1]);
 		} else if (arguments.size() == 1) {
-			server::add(arguments[0]);
+			client::add(arguments[0]);
 		} else {
 			// TODO unleash hell
 		}
 	} else if (command == "get") {
 		if (arguments.size() == 2) {
-			server::get(arguments[0], arguments[1]);
+			client::get(arguments[0], arguments[1]);
 		} else if (arguments.size() == 1) {
-			server::get(arguments[0]);
+			client::get(arguments[0]);
 		} else {
 			// TODO unleash hell
 		}
 	} else if (command == "download") {
 		if (arguments.size() == 2) {
-			server::download(arguments[0], arguments[1]);
+			client::download(arguments[0], arguments[1]);
 		} else if (arguments.size() == 1) {
-			server::download(arguments[0]);
+			client::download(arguments[0]);
 		} else {
 			// TODO unleash hell
 		}
 	} else if (command == "rescan") {
 		if (arguments.empty()) {
-			server::rescan();
+			client::rescan();
 		}
 	} else if (command == "show-list") {
 		if (arguments.empty()) {
-			server::showlist();
+			client::showlist();
 		}
 	} else if (command == "remove") {
 		if (arguments.size() == 1) {
-			server::remove(arguments[0]);
+			client::remove(arguments[0]);
 		}
 	} else {
 		cout << "This is a unknown command message" << endl;

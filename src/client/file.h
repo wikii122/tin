@@ -5,7 +5,7 @@
 #ifndef FILE_H_
 #define FILE_H_
 
-namespace server 
+namespace client 
 {
 		int add(std::string path);
 		int add(std::string path, std::string filename);

@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include "command.h"
+#include "client.h"
 	
 using namespace std;
 
@@ -24,11 +25,11 @@ int communicate::call(string msg)
  */
 string communicate::callForResponse(string msg)
 {	
-	int socket, state, len, result;
+	int socket_fd, state, len, result;
 	struct sockaddr_un address;
 	
-	socket = (PF_UNIX, SOCK_STREAM);
-	if (socket == -1) {
+	socket_fd = socket(PF_UNIX, SOCK_STREAM, 0);
+	if (socket_fd == -1) {
 		cout << "Could not create socket" << endl;;
 		throw "Socket";
 	}
@@ -36,7 +37,7 @@ string communicate::callForResponse(string msg)
 	// Zero address structure
 	memset(&address, 0, sizeof(struct sockaddr_un));
 	address.sun_family = AF_UNIX;
-	strcpy(address.sun_path, "./tin_socket");
+	strcpy(address.sun_path, client::SOCKET_PATH);
 	state = connect(socket, (struct sockaddr *) &address, sizeof(sockaddr_un));
 	
 	if(state == -1) {
