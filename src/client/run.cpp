@@ -4,38 +4,42 @@
 
 using namespace std;
 
-void start(const char* name);
-void stop();
+void startServer(const char* name);
+void stopServer();
+
+const char server::server_path[] = "./server"; 
 
 int server::start(string name)
 {
 	cout << "Starting server with name " << name << endl;
 
-	::start(name.c_str());
+	startServer(name.c_str());
 
 	return 0;
 }
 int server::stop()
 {
 	cout << "Stopping server" << endl;
-	::stop();
+	stopServer();
 	return 0;
 }
 int server::restart(string name)
 {
 	cout << "Restarting server with name " << name << endl;
-	::stop();
-	::start(name.c_str());
+
+	stopServer();
+	startServer(name.c_str());
+	
 	return 0;
 }
 
-void start(const char* name) {
+void startServer(const char* name) {
 	// Using fork + exec to avoid program not returning control to console.
 	if(!fork()) {
 		execl(server::server_path, server::server_path, name);
 	}
 }
 
-void stop() {
+void stopServer() {
 
 }

@@ -10,7 +10,7 @@ namespace server {
 	int start(std::string name);
 	int stop();
 	int restart(std::string name);
-	static const char* server_path = "./server";
+	extern const char server_path[];
 }
 
 #endif
