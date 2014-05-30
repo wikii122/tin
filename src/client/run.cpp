@@ -4,10 +4,8 @@
 
 using namespace std;
 
-void startServer(const char* name);
+void startServer(const char name[]);
 void stopServer();
-
-const char server::server_path[] = "./server"; 
 
 int server::start(string name)
 {
@@ -33,7 +31,7 @@ int server::restart(string name)
 	return 0;
 }
 
-void startServer(const char* name) {
+void startServer(const char name[]) {
 	// Using fork + exec to avoid program not returning control to console.
 	if(!fork()) {
 		execl(server::server_path, server::server_path, name);
