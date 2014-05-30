@@ -16,6 +16,7 @@ void daemonize();
 void clean_up();
 
 char lock_file_name[] = "server.lock";
+int lock_file; // Descriptor for lock file.
 
 int main(int argc, char** argv)
 {
@@ -58,7 +59,7 @@ void daemonize()
 	// I believe we are in forked process, working in background...
 	// Now things get interesting... Detaching from terminal.
 	// btw, I'm doing this pure C.
-	int i, lock_file;
+	int i;
 	char pid_val[10];
 
 	setsid(); 
@@ -91,6 +92,7 @@ void daemonize()
 
 void clean_up()
 {
+	close(lock_file);
 	remove(lock_file_name);	
 	remove(client::SOCKET_PATH);
 }
