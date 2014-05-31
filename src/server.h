@@ -3,6 +3,8 @@
 #include <vector>
 #include "handler.h"
 
+static char lock_file_name[] = "server.lock";
+
 class Server
 {
 	static const int no_threads = 10;
