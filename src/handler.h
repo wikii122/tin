@@ -3,6 +3,8 @@
  */
 
 #include <string>
+#ifndef HANDLER_H_
+#define HANDLER_H_
 
 // Feel free to change API
 class Handler
@@ -18,3 +20,5 @@ public:
 protected:
 	int socket_fd;
 };
+
+#endif
