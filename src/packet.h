@@ -12,6 +12,13 @@
 enum class PacketType
 {
 	Hello,
+	GiveFileList,
+	IHave,
+	GiveMe,
+	IGot,
+	Objection,
+	IForgot,
+	Forget,
 };
 
 class Packet
