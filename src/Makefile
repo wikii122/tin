@@ -1,7 +1,8 @@
-# Warning!
-# This makefile is not watching for changes in headers.
-# clean up after changing them or remove dependant .o manually.
-# TODO: fix this.
+# 
+# Makefile for project
+# Generates two executables - tin_client and server
+#
+
 CC_FLAGS = -g -Wall -std=c++11 -c -I/usr/include
 LN_FLAGS = -g -Wall -std=c++11 -L/usr/lib -lboost_program_options -ljsoncpp -lboost_filesystem -lboost_system
 
@@ -11,6 +12,9 @@ CLIENT_OBJ_FILES = $(CLIENT_CPP_FILES:.cpp=.o)
 SERVER_CPP_FILES = $(wildcard *.cpp)
 SERVER_OBJ_FILES = $(SERVER_CPP_FILES:.cpp=.o)
 
+DEPENDENCIES := $(CLIENT_CPP_FILES:.cpp=.d)
+DEPENDENCIES += $(SERVER_CPP_FILES:.cpp=.d)
+
 all: tin_client server ready  
 	@echo "Done"
 server: $(SERVER_OBJ_FILES) 
@@ -18,8 +22,12 @@ server: $(SERVER_OBJ_FILES)
 tin_client: $(CLIENT_OBJ_FILES)	
 	g++ -o $@ $^ $(LN_FLAGS)
 
+
 %.o: %.cpp  
-	g++ $(CC_FLAGS) -o $@ $<
+	g++ $(CC_FLAGS) -o $@ -MMD -MP -MF ${@:.o=.d} $<
+
+
+-include $(DEPENDENCIES)
 
 clean: ready
 	rm -f *.o */*.o
