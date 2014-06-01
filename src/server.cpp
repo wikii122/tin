@@ -13,9 +13,6 @@ running(false)
 Server::~Server()
 {
 	running = false;
-	for (Handler* handler: handlers) {
-		delete handler;
-	}
 }
 
 int Server::set_name(string new_name)
@@ -34,15 +31,20 @@ string Server::get_name()
 void Server::serve()
 {
 	int i = 0;
+	running = true;
 	for (Handler* handler: handlers) {
 		auto fun = [this](Handler* handler) {
 			while (this->running) handler->handle();
 		};
-		threads[i++] = thread(fun, handler);
-		if (i > no_threads) {
+		threads[i] = thread(fun, handler);
+		if (i == no_threads) {
 			throw string("Too many jobs passed to server");
+		} else if (i > 0) {
+			threads[i].detach();
 		}
+		i++;
 	}
+	threads[0].join();
 }
 
 void Server::register_handler(Handler* handler)

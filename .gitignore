@@ -20,6 +20,8 @@
 *.out
 *.app
 tin_client
+server
 
 # Temporary files
 *.swp
+

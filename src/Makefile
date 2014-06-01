@@ -1,3 +1,7 @@
+# Warning!
+# This makefile is not watching for changes in headers.
+# clean up after changing them or remove dependant .o manually.
+# TODO: fix this.
 CC_FLAGS = -g -Wall -std=c++11 -c -I/usr/include
 LN_FLAGS = -g -Wall -std=c++11 -L/usr/lib -lboost_program_options -ljsoncpp -lboost_filesystem -lboost_system
 
@@ -7,15 +11,19 @@ CLIENT_OBJ_FILES = $(CLIENT_CPP_FILES:.cpp=.o)
 SERVER_CPP_FILES = $(wildcard *.cpp)
 SERVER_OBJ_FILES = $(SERVER_CPP_FILES:.cpp=.o)
 
-all: server tin_client 
-server: $(SERVER_OBJ_FILES)
+all: tin_client server ready  
+	@echo "Done"
+server: $(SERVER_OBJ_FILES) 
 	g++ -o $@ $^ $(LN_FLAGS)
-tin_client: $(CLIENT_OBJ_FILES)
+tin_client: $(CLIENT_OBJ_FILES)	
 	g++ -o $@ $^ $(LN_FLAGS)
 
-%.o: %.cpp
+%.o: %.cpp  
 	g++ $(CC_FLAGS) -o $@ $<
 
-clean:
-	rm **/*.o
-	rm tin_client
+clean: ready
+	rm -f *.o */*.o
+	rm -f tin_client server
+
+ready:
+	rm -f tin.socket lock.file

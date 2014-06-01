@@ -10,11 +10,11 @@
 class Handler
 {
 public:
-	Handler() = default;
+	Handler();
 	Handler(const Handler&) = delete;
-	virtual ~Handler() = default;
+	virtual ~Handler();
 
-	virtual int handle();
+	virtual int handle() = 0;
 	virtual auto read() -> std::string = 0;
 	virtual int write(char msg[], int len) = 0;
 protected:

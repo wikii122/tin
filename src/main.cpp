@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
+#include "clienthandler.h"
 #include "server.h"
 #include "client/client.h"
 
@@ -13,6 +14,7 @@ namespace opt = boost::program_options;
 
 using namespace std;
 
+void initialize_server(string name);
 void signal_handler(int);
 void daemonize();
 void clean_up();
@@ -33,10 +35,8 @@ int main(int argc, char** argv)
 		if (!map.count("foreground")) {
 			daemonize();
 		}
-		Server server;	
 		string name = map["name"].as<string>();
-		server.set_name(name);
-		server.serve();
+		initialize_server(name);
 	} else {
 		cout << desc;
 	}
@@ -51,6 +51,18 @@ void signal_handler(int sig)
 			exit(0);
 			break;
 	}
+}
+
+void initialize_server(string name)
+{
+	ClientHandler* client = new ClientHandler();
+	
+	Server server;	
+	server.set_name(name);
+	server.register_handler(client);
+	server.serve();
+
+	delete client;
 }
 
 void daemonize()

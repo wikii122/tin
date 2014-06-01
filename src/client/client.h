@@ -6,7 +6,7 @@
 
 // TODO: use absolute path
 namespace client {
-	const char* SOCKET_PATH = "./tin.socket";
+	static const char SOCKET_PATH[] = "./tin.socket";
 }
 
 #endif
