@@ -1,4 +1,4 @@
-#include "giveFileListPacket.h"
+#include "packet/giveFileListPacket.h"
 #include "json/json.h"
 
 GiveFileListPacket::GiveFileListPacket(void)
@@ -14,7 +14,7 @@ GiveFileListPacket::~GiveFileListPacket(void)
 std::string GiveFileListPacket::getData()
 {
 	if(name == "")
-		throw std::exception("GiveFileListPacket::getData(): No name entry");
+		throw "GiveFileListPacket::getData(): No name entry";
 
 	Json::Value root;
 

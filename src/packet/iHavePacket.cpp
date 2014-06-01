@@ -1,4 +1,4 @@
-#include "iHavePacket.h"
+#include "packet/iHavePacket.h"
 #include "json/json.h"
 
 
@@ -15,7 +15,7 @@ IHavePacket::~IHavePacket(void)
 std::string IHavePacket::getData()
 {
 	if(name == "")
-		throw std::exception("IHavePacket::getData(): No name entry");
+		throw "IHavePacket::getData(): No name entry";
 
 	Json::Value root;
 

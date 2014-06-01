@@ -1,4 +1,4 @@
-#include "helloPacket.h"
+#include "packet/helloPacket.h"
 #include "json/json.h"
 
 
@@ -15,7 +15,7 @@ HelloPacket::~HelloPacket(void)
 std::string HelloPacket::getData()
 {
 	if(name == "")
-		throw std::exception("HelloPacket::getData(): No name entry");
+		throw "HelloPacket::getData(): No name entry";
 
 	Json::Value root;
 

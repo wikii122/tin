@@ -8,6 +8,8 @@
 #define TIN_PACKET
 
 #include <string>
+#include <memory>
+
 
 enum class PacketType
 {
@@ -28,7 +30,7 @@ public:
 	~Packet(void);
 
 	virtual std::string getData() = 0;
-	static Packet* getPacket(std::string data);
+	static std::shared_ptr<Packet> getPacket(std::string data);
 	const PacketType getType();
 
 protected:
