@@ -11,7 +11,7 @@ namespace opt = boost::program_options;
 
 using namespace std;
 
-int main(int argc, char** argv)
+int main(int argc, char** argv) try
 {
 	opt::options_description general("Options for TIN client");
 	general.add_options()
@@ -100,6 +100,10 @@ int main(int argc, char** argv)
 	} else {
 		cout << "This is a unknown command message" << endl;
 	}
+} catch (char err[]) {
+	cout << err << endl;
+} catch (exception err) {
+	cout << err.what() <<endl;
+} catch (...) {
+	cout << "Unknown error encountered." << endl;
 }
-
-

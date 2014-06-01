@@ -1,9 +1,12 @@
-#include <stdio.h>
 #include <fcntl.h>
+#include <fstream>
 #include <signal.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
+#include "clienthandler.h"
 #include "server.h"
 #include "client/client.h"
 
@@ -11,12 +14,10 @@ namespace opt = boost::program_options;
 
 using namespace std;
 
+void initialize_server(string name);
 void signal_handler(int);
 void daemonize();
 void clean_up();
-
-char lock_file_name[] = "server.lock";
-int lock_file; // Descriptor for lock file.
 
 int main(int argc, char** argv)
 {
@@ -34,10 +35,8 @@ int main(int argc, char** argv)
 		if (!map.count("foreground")) {
 			daemonize();
 		}
-		Server server;	
 		string name = map["name"].as<string>();
-		server.set_name(name);
-		server.serve();
+		initialize_server(name);
 	} else {
 		cout << desc;
 	}
@@ -54,31 +53,46 @@ void signal_handler(int sig)
 	}
 }
 
+void initialize_server(string name)
+{
+	ClientHandler* client = new ClientHandler();
+	
+	Server server;	
+	server.set_name(name);
+	server.register_handler(client);
+	server.serve();
+
+	delete client;
+}
+
 void daemonize()
 {
 	// I believe we are in forked process, working in background...
 	// Now things get interesting... Detaching from terminal.
-	// btw, I'm doing this pure C.
 	int i;
-	char pid_val[10];
+	int pid_val = getpid();
+
+	if (boost::filesystem::exists(lock_file_name )) {
+		cout << "Server already running or wasn't properly closed." << endl;
+		cout << "If server is not running, please remove lock file manually" << endl;
+		exit(0);
+	} else {
+		ofstream lock_file;
+		lock_file.open(lock_file_name, ios::out);
+		lock_file << pid_val << flush;
+		lock_file.close();
+	}
 
 	setsid(); 
+
 	// Close are opened resources... It's unspecified whether exec does that.
 	for (i = getdtablesize(); i >= 0; --i) {
 		close(i);
 	}
 	// Redirect stdin, stdout, stderr to /dev/null
-	i=open("/dev/null",O_RDWR);
+	i = open("/dev/null",O_RDWR);
 	dup(i); dup(i);
 	
-	lock_file = open(lock_file_name, O_RDWR|O_CREAT, 0640);
-	
-	if (lock_file < 0) exit(1);
-	else if (lockf(lock_file, F_TLOCK, 0) < 0) exit(0);
-	
-	sprintf(pid_val, "%d\n", getpid());
-	write(lock_file, pid_val, strlen(pid_val)); 
-
 	// Now connect the signals to handler
 	signal(SIGHUP, signal_handler);
 	signal(SIGTERM, signal_handler);
@@ -92,7 +106,6 @@ void daemonize()
 
 void clean_up()
 {
-	close(lock_file);
 	remove(lock_file_name);	
 	remove(client::SOCKET_PATH);
 }

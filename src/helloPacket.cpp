@@ -14,6 +14,9 @@ HelloPacket::~HelloPacket(void)
 
 std::string HelloPacket::getData()
 {
+	if(name == "")
+		throw std::exception("HelloPacket::getData(): No name entry");
+
 	Json::Value root;
 
 	root["type"] = "Hello";

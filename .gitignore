@@ -15,11 +15,16 @@
 *.a
 *.lib
 
+# Dependency files
+*.d
+
 # Executables
 *.exe
 *.out
 *.app
 tin_client
+server
 
 # Temporary files
 *.swp
+

@@ -2,6 +2,10 @@
 #include <thread>
 #include <vector>
 #include "handler.h"
+#ifndef SERVER_H_
+#define SERVER_H_
+
+static char lock_file_name[] = "server.lock";
 
 class Server
 {
@@ -21,3 +25,5 @@ public:
 	void serve();
 	void register_handler(Handler* handler);
 };
+
+#endif
