@@ -4,11 +4,16 @@ LN_FLAGS = -g -Wall -std=c++11 -L/usr/lib -lboost_program_options -ljsoncpp -lbo
 CLIENT_CPP_FILES = $(wildcard client/*.cpp)
 CLIENT_OBJ_FILES = $(CLIENT_CPP_FILES:.cpp=.o)
 
-all: tin_client 
+SERVER_CPP_FILES = $(wildcard *.cpp)
+SERVER_OBJ_FILES = $(SERVER_CPP_FILES:.cpp=.o)
 
+all: server tin_client 
+server: $(SERVER_OBJ_FILES)
+	g++ -o $@ $^ $(LN_FLAGS)
 tin_client: $(CLIENT_OBJ_FILES)
 	g++ -o $@ $^ $(LN_FLAGS)
-client/%.o: client/%.cpp
+
+%.o: %.cpp
 	g++ $(CC_FLAGS) -o $@ $<
 
 clean:
