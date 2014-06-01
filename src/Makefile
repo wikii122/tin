@@ -31,6 +31,7 @@ tin_client: $(CLIENT_OBJ_FILES)
 
 clean: ready
 	rm -f *.o */*.o
+	rm -f *.d */*.d
 	rm -f tin_client server
 
 ready:
