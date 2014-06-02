@@ -16,8 +16,9 @@ class Server
 	std::vector<Handler*> handlers;
 	void start(Handler* handler);
 	std::thread threads[no_threads];
-public:
 	Server();
+public:
+	static Server& get();
 	~Server();
 	
 	int  set_name(std::string new_name);

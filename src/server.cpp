@@ -11,6 +11,12 @@ running(false)
 	
 }
 
+Server& Server::get()
+{
+	static Server instance;
+	return instance;
+}
+
 Server::~Server()
 {
 	running = false;

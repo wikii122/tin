@@ -61,7 +61,7 @@ void initialize_server(string name)
 {
 	ClientHandler* client = new ClientHandler();
 	
-	Server server;	
+	Server& server = Server::get();	
 	server.set_name(name);
 	server.register_handler(client);
 	server.serve();
