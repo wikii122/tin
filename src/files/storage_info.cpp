@@ -5,99 +5,89 @@
 #include "md5.h"
 #include "sdbm.h"
 #include "json/json.h"
+#include "storage_info.h"
 
 using namespace std;
 
-struct File {
 
-    string name;
-    string owner_name;
-    string md5;
+Storage_info::Storage_info(string host_name) : host_name(host_name) {}
 
-};
+bool Storage_info::add_file(const string& name, const string& owner_name) {
 
-class Storage_info {
-public:
-    Storage_info(string host_name) : host_name(host_name) {}
+    unsigned long salt = sdbm(owner_name.c_str());
 
-    bool add_file(const string& name, const string& owner_name) {
+    /* hash jest liczony z nazwy pliku polaczonej sola */
+    stringstream sstr;
+    sstr << name << salt;
+    string md5 = MD5(sstr.str()).hexdigest();
 
-        unsigned long salt = sdbm(owner_name.c_str());
+    File f;
+    f.name = name;
+    f.owner_name = owner_name;
+    f.md5 = md5;
 
-        /* hash jest liczony z nazwy pliku polaczonej sola */
-        stringstream sstr;
-        sstr << name << salt;
-        string md5 = MD5(sstr.str()).hexdigest();
+    files.push_back(f);
 
-        File f;
-        f.name = name;
-        f.owner_name = owner_name;
-        f.md5 = md5;
+    /* nie jest potrzebne sprawdzanie, czy taki plik istnieje? */
+    return true;
+}
 
-        files.push_back(f);
-        return true;
+string Storage_info::list_files_json() {
+    Json::Value root;
+
+    root["type"] = "IHave";
+    root["name"] = host_name;
+    root["files"] = Json::arrayValue;
+
+    for (File f : files) {
+        Json::Value v;
+
+        v["file"] = f.name;
+        v["md5"] = f.md5;
+        v["isOwner"] = (host_name == f.owner_name);
+
+        root["files"].append(v);
     }
 
-    string list_files_json() {
-        Json::Value root;
-        root["type"] = "IHave";
-        root["name"] = host_name;
-        root["files"] = Json::arrayValue;
+    return root.asString();
+}
 
-        for (File f : files) {
-            Json::Value v;
+bool Storage_info::remove(const string& name, string id) {
 
-            v["file"] = f.name;
-            v["md5"] = f.md5;
-            v["isOwner"] = (host_name == f.owner_name);
-
-            root["files"].append(v);
-
-            cout << host_name << ' ' << f.owner_name << endl;
-            cout << root << endl;
+    std::vector<File>::iterator iter = files.begin();
+    while (iter != files.end()) {
+        if (iter->name == name) {
+            iter = files.erase(iter);
+            return true;
+        } else {
+            ++iter;
         }
-
-        return "";
     }
 
-    bool remove(const string& name, string id) {
-        std::vector<File>::iterator iter = files.begin();
-        while (iter != files.end()) {
-            if (iter->name == name) {
-                iter = files.erase(iter);
-                return true;
-            } else {
-                ++iter;
-            }
+    return false;
+}
+
+bool Storage_info::copy_file(const string& name, string owner_name) {
+
+    std::vector<File>::iterator iter = files.begin();
+
+    while (iter != files.end()) {
+        if (iter->name == name) {
+            File temp;
+            temp.name = name;
+            temp.owner_name = owner_name;
+
+            temp = *iter;
+            files.push_back(temp);
+            return true;
+        } else {
+            ++iter;
         }
-
-        return false;
-
     }
 
-    bool copy_file(const string& name, string owner_name) {
-        std::vector<File>::iterator iter = files.begin();
-        while (iter != files.end()) {
-            if (iter->name == name) {
-                File temp;
-                temp.name = name;
-                temp.owner_name = owner_name;
+    return false;
+}
 
-                temp = *iter;
-                files.push_back(temp);
-                return true;
-            } else {
-                ++iter;
-            }
-        }
-        return false;
-
-    }
-
-private:
-    vector<File> files;
-    string host_name;
-};
 
 int main() {
 
