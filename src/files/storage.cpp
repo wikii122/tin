@@ -1,7 +1,8 @@
-#include<vector>
-#include<fstream>
-#include<algorithm>
+#include <vector>
+#include <fstream>
+#include <algorithm>
 #include <iostream>
+#include <boost/filesystem.hpp>
 #include <sstream>
 #include "storage.h"
 
@@ -33,6 +34,39 @@ bool Storage::add_file(const char* data, long size, string name, string owner_na
 
     files.push_back(f);
     return true;
+}
+
+bool Storage::add_file(string src_path, string name)
+{
+	// TODO prepare name
+	auto dir = boost::filesystem::path(path);
+	auto file = boost::filesystem::path(name);
+
+	dir = boost::filesystem::canonical(dir);
+	
+	string dst_path = (dir/file).string<string>();
+	ifstream src(src_path, ios::binary);      
+	ofstream dst(dst_path, ios::binary);       
+
+	dst << src.rdbuf();
+	
+	return true;
+}
+
+bool Storage::copy_file(string name, string dst_path)
+{
+	auto dir = boost::filesystem::path(path);
+	auto file = boost::filesystem::path(name);
+
+	dir = boost::filesystem::canonical(dir);
+	
+	string src_path = (dir/file).string<string>();
+	ifstream src(src_path, ios::binary);      
+	ofstream dst(dst_path, ios::binary);       
+
+	dst << src.rdbuf();
+	
+	return true;
 }
 
 bool Storage::add_file_part(const char * data, long part_size, long offset, string name, string owner_name) {

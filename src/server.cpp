@@ -10,7 +10,7 @@ using namespace std;
 
 Server::Server(): 
 	running(false) {
-	auto rel_path = filesystem::path("./files");
+	auto rel_path = filesystem::path("./file_store");
 	auto abs_path = filesystem::complete(rel_path);
 
 	if (!filesystem::exists(abs_path)) {

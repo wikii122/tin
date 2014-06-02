@@ -18,7 +18,7 @@ SERVER_OBJ_FILES := $(SERVER_CPP_FILES:.cpp=.o)
 DEPENDENCIES := $(CLIENT_CPP_FILES:.cpp=.d)
 DEPENDENCIES += $(SERVER_CPP_FILES:.cpp=.d)
 
-all: tin_client server ready  
+all: tin_client server   
 	@echo "Done"
 server: $(SERVER_OBJ_FILES) 
 	g++ -o $@ $^ $(LN_FLAGS)
@@ -37,3 +37,4 @@ clean: ready
 
 ready:
 	rm -f tin.socket lock.file
+	rm -rf file_store

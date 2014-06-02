@@ -28,7 +28,7 @@ public:
 	bool remove_file(const std::string& name);
 /* zwraca wskaznik na wektor
     * jezeli pliku nie udalo sie odczytac, to jest zwracany pusty wskaznik */
-   	shared_ptr<vector<char>> get_file(string name);
+	std::shared_ptr<std::vector<char>> get_file(std::string name);
 	
 	struct File {
 		std::string name;
