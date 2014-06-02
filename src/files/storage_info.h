@@ -1,28 +1,26 @@
 #ifndef STORAGE_INFO_H
 #define STORAGE_INFO_H
-
 #include <string>
-
-using namespace std;
+#include <vector>
 
 struct File {
-    string name;
-    string owner_name;
-    string md5;
+    std::string name;
+    std::string owner_name;
+    std::string md5;
 };
 
 class Storage_info {
 public:
 
-    Storage_info(string host_name);
-	bool add_file(const string& name, const string& owner_name);
-	bool remove(const string& name, string id);
-	bool copy_file(const string&name, string owner_name);
-    string list_files_json();
+    Storage_info(std::string host_name);
+	bool add_file(const std::string& name, const std::string& owner_name);
+	bool remove(const std::string& name, std::string id);
+	bool copy_file(const std::string&name, std::string owner_name);
+    std::string list_files_json();
 
 private:
-    vector<File> files;
-    string host_name;
+	std::vector<File> files;
+    std::string host_name;
 };
 
 #endif
