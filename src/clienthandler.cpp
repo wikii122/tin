@@ -59,9 +59,11 @@ int ClientHandler::handle()
 {
 	accept();
 	// Now new connection needs to be handled.
-	string msg = read(), response;
+	string msg = read();
+	string response;
 	auto req = static_pointer_cast<LocalPacket>(Packet::getPacket(msg));
 	// TODO do this fancier (function overloading)
+	// TODO response handling...
 	if (req->command == "LocalFileAdd") {
 
 	} else if (req->command == "LocalFileGet") {
@@ -75,7 +77,6 @@ int ClientHandler::handle()
 	} else {
 		throw string("Packet::getPacket(): Unknown command");
 	}
-	// TODO response handling...
 	write(response);
 
 	return 0;
