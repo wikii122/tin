@@ -1,5 +1,5 @@
-#include "packet/helloPacket.h"
-#include "json/json.h"
+#include <jsoncpp/json/json.h>
+#include "helloPacket.h"
 
 
 HelloPacket::HelloPacket(void)

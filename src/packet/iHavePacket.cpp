@@ -1,5 +1,5 @@
-#include "packet/iHavePacket.h"
-#include "json/json.h"
+#include <jsoncpp/json/json.h>
+#include "iHavePacket.h"
 
 
 IHavePacket::IHavePacket(void)

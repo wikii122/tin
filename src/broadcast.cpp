@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <cstring>
 
-#include "helloPacket.h"
+#include "packet/helloPacket.h"
 
 
 #define INT_TO_ADDR(_addr) \
@@ -111,7 +111,7 @@ void sendBroadcast(int port, char* buffer, size_t buflen){
 	  sock_in.sin_port = htons(port); /* port number */
 	  sock_in.sin_family = PF_INET;
 
-	  if(sendto(sock, buffer, buflen, 0, (struct sockaddr *)&sock_in, sinlen)=-1){
+	  if (sendto(sock, buffer, buflen, 0, (struct sockaddr *) &sock_in, sinlen) == -1) {
 		  perror("Sendto");
 	  }
 

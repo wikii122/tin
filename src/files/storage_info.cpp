@@ -2,9 +2,9 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <jsoncpp/json/json.h>
 #include "md5.h"
 #include "sdbm.h"
-#include "json/json.h"
 #include "storage_info.h"
 
 using namespace std;
@@ -88,7 +88,7 @@ bool Storage_info::copy_file(const string& name, string owner_name) {
     return false;
 }
 
-
+/*
 int main() {
 
     //Storage_info storage;
@@ -110,3 +110,4 @@ int main() {
     storage.add_file("filename2", "host_name");
     storage.list_files_json();
 }
+*/

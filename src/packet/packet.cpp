@@ -1,15 +1,15 @@
-#include "packet/packet.h"
+#include "packet.h"
 
-#include "packet/helloPacket.h"
-#include "packet/giveFileListPacket.h"
-#include "packet/iHavePacket.h"
-#include "packet/giveMePacket.h"
-#include "packet/iGotPacket.h"
-#include "packet/objectionPacket.h"
-#include "packet/forgetPacket.h"
-#include "packet/iForgotPacket.h"
+#include "helloPacket.h"
+#include "giveFileListPacket.h"
+#include "iHavePacket.h"
+#include "giveMePacket.h"
+#include "iGotPacket.h"
+#include "objectionPacket.h"
+#include "forgetPacket.h"
+#include "iForgotPacket.h"
 
-#include "json/json.h"
+#include <jsoncpp/json/json.h>
 Packet::Packet(void)
 {
 }
@@ -19,7 +19,7 @@ Packet::~Packet(void)
 {
 }
 
-const PacketType Packet::getType()
+PacketType Packet::getType() const
 {
 	return this->type;
 }
@@ -32,7 +32,7 @@ std::shared_ptr<Packet> Packet::getPacket(std::string data)
 	std::shared_ptr<Packet> packet;
 
 	if(!reader.parse(data, root))
-		throw std::exception("Packet::getPacket: Unparseable data");
+		throw std::string("Packet::getPacket: Unparseable data");
 
 	std::string type = root.get("type", "").asString();
 
@@ -55,7 +55,7 @@ std::shared_ptr<Packet> Packet::getPacket(std::string data)
 		auto iHavePacket = std::make_shared<IHavePacket>();
 		iHavePacket->name = root.get("name", "").asString();
 		
-		for(int i = 0; i < root.get("files", "").size(); ++i)
+		for(unsigned int i = 0; i < root.get("files", "").size(); ++i)
 		{
 			IHavePacketFile file;
 			file.name = root.get("files", "")[i]["name"].asString();
@@ -116,7 +116,7 @@ std::shared_ptr<Packet> Packet::getPacket(std::string data)
 	}
 	else
 	{
-		throw std::exception("Packet::getPacket: No type specified");
+		throw std::string("Packet::getPacket: No type specified");
 	}
 
 	return packet;

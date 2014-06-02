@@ -31,7 +31,7 @@ public:
 
 	virtual std::string getData() = 0;
 	static std::shared_ptr<Packet> getPacket(std::string data);
-	const PacketType getType();
+	PacketType getType() const;
 
 protected:
 	PacketType type;

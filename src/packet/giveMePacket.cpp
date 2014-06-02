@@ -1,5 +1,5 @@
-#include "packet/giveMePacket.h"
-#include "json/json.h"
+#include <jsoncpp/json/json.h>
+#include "giveMePacket.h"
 
 
 GiveMePacket::GiveMePacket(void)
