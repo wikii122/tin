@@ -16,7 +16,7 @@ public:
 
 	virtual int handle() = 0;
 	virtual auto read() -> std::string = 0;
-	virtual int write(char msg[], int len) = 0;
+	virtual int write(std::string) = 0;
 protected:
 	int socket_fd;
 };

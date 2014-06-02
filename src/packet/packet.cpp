@@ -1,3 +1,4 @@
+#include <jsoncpp/json/json.h>
 #include "packet.h"
 
 #include "helloPacket.h"
@@ -8,15 +9,17 @@
 #include "objectionPacket.h"
 #include "forgetPacket.h"
 #include "iForgotPacket.h"
+#include "localPacket.h"
 
-#include <jsoncpp/json/json.h>
 Packet::Packet(void)
 {
+
 }
 
 
 Packet::~Packet(void)
 {
+
 }
 
 PacketType Packet::getType() const
@@ -114,9 +117,15 @@ std::shared_ptr<Packet> Packet::getPacket(std::string data)
 
 		packet = iForgotPacket;
 	}
-	else
-	{
+	else if(type == "") {
 		throw std::string("Packet::getPacket: No type specified");
+	} else {
+		auto localPacket = std::make_shared<LocalPacket>();
+		localPacket->command = type;
+		localPacket->file = root.get("file", "").asString();
+		localPacket->name = root.get("name", "").asString();
+		
+		packet = localPacket;
 	}
 
 	return packet;

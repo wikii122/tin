@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,6 +7,8 @@
 #include <sys/un.h>
 #include "clienthandler.h"
 #include "client/client.h"
+#include "packet/localPacket.h"
+#include "packet/packet.h"
 
 using namespace std;
 
@@ -40,24 +43,40 @@ auto ClientHandler::accept() -> Connection*
 	return connection;
 }
 
-int ClientHandler::write(char msg[], int len)
+int ClientHandler::write(string msg)
 {
-	return connection->write(msg, len);
+	return connection->write(msg.c_str(), msg.length());
 }
 
 string ClientHandler::read()
 {
-	return connection->read();
+	string msg = connection->read();
+	cout << msg << endl;
+	return msg;
 }
 
 int ClientHandler::handle()
 {
 	accept();
 	// Now new connection needs to be handled.
-	string msg = read();
-	// TODO input dispatch...
+	string msg = read(), response;
+	auto req = static_pointer_cast<LocalPacket>(Packet::getPacket(msg));
+	// TODO do this fancier (function overloading)
+	if (req->command == "LocalFileAdd") {
+
+	} else if (req->command == "LocalFileGet") {
+
+	} else if (req->command == "LocalRemove") {
+		
+	} else if (req->command == "LocalDownload") {
+
+	} else if (req->command == "LocalRequest") {
+
+	} else {
+		throw string("Packet::getPacket(): Unknown command");
+	}
 	// TODO response handling...
-	write("SAMPLE", 7);
+	write(response);
 
 	return 0;
 }
@@ -73,7 +92,7 @@ ClientHandler::Connection::~Connection()
 	close(socket_fd);
 }
 
-int ClientHandler::Connection::write(char msg[], int len)
+int ClientHandler::Connection::write(const char msg[], int len)
 {
 	return ::write(socket_fd, msg, len);
 }
@@ -81,7 +100,12 @@ int ClientHandler::Connection::write(char msg[], int len)
 string ClientHandler::Connection::read()
 {
 	// This requires thing to parse JSON input.
-	char buffer[11];
-	::read(socket_fd, buffer, 10);
-	return string(buffer, buffer+10);
+	char sign = 0; // Assigning to get rid of uninitialization warning.
+	char buffer[111];
+	int i = 0;
+	while (sign != '}') {
+		::read(socket_fd, &sign, 1);
+		buffer[i++] = sign;
+	}
+	return string(buffer, buffer+i);
 }

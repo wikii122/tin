@@ -34,6 +34,9 @@ int main(int argc, char** argv)
 	if (map.count("name")) {
 		if (!map.count("foreground")) {
 			daemonize();
+		} else {
+			signal(SIGINT, signal_handler);
+			atexit(clean_up);
 		}
 		string name = map["name"].as<string>();
 		initialize_server(name);
@@ -48,6 +51,7 @@ void signal_handler(int sig)
 		case SIGHUP:
 			break;
 		case SIGTERM:
+		case SIGINT:
 			exit(0);
 			break;
 	}
@@ -96,6 +100,7 @@ void daemonize()
 	// Now connect the signals to handler
 	signal(SIGHUP, signal_handler);
 	signal(SIGTERM, signal_handler);
+	signal(SIGINT, signal_handler);
 	signal(SIGTSTP, SIG_IGN);
 	signal(SIGCHLD, SIG_IGN);
 	signal(SIGTTOU, SIG_IGN);

@@ -19,7 +19,7 @@ public:
 
 	virtual int handle() override; //Blocking!
 	virtual auto read() -> std::string override; // Blocking
-	virtual int write(char msg[], int len) override;
+	virtual int write(std::string) override;
 };
 
 class ClientHandler::Connection
@@ -29,5 +29,5 @@ public:
 	Connection(int fd);
 	~Connection();
 	auto read() -> std::string;
-	int write(char msg[], int len);
+	int write(const char msg[], int len);
 };

@@ -21,6 +21,7 @@ enum class PacketType
 	Objection,
 	IForgot,
 	Forget,
+	Local,
 };
 
 class Packet
