@@ -11,6 +11,7 @@ CLIENT_OBJ_FILES := $(CLIENT_CPP_FILES:.cpp=.o)
 
 SERVER_CPP_FILES := $(wildcard *.cpp)
 SERVER_CPP_FILES += $(wildcard files/*.cpp)
+SERVER_CPP_FILES += $(wildcard packet/*.cpp)
 SERVER_OBJ_FILES := $(SERVER_CPP_FILES:.cpp=.o)
 
 
