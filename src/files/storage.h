@@ -2,6 +2,7 @@
 #define STORAGE_H
 #include <string>
 #include <vector>
+#include <memory>
 
 
 class Storage {
@@ -25,6 +26,9 @@ public:
     bool is_finished(std::string name);
 
 	bool remove_file(const std::string& name);
+/* zwraca wskaznik na wektor
+    * jezeli pliku nie udalo sie odczytac, to jest zwracany pusty wskaznik */
+   	shared_ptr<vector<char>> get_file(string name);
 	
 	struct File {
 		std::string name;

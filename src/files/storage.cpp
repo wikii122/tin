@@ -106,6 +106,30 @@ bool Storage::remove_file(const string& name) {
     return false;
 }
 
+shared_ptr<vector<char>> Storage::get_file(string name) {
+    for (File file : files) {
+        if (file.name == name) {
+            ifstream f((path + "/" + name).c_str());
+
+            f.seekg(0, ios::end);
+            streamsize size = f.tellg();
+            f.seekg(0, ios::beg);
+
+            shared_ptr<vector<char>> buf(new vector<char>);
+            buf->reserve(size);
+            f.read(buf->data(), size);
+
+            if (f.good()) {
+                return buf;
+            } else {
+                shared_ptr<vector<char>>();
+            }
+        }
+    }
+
+    return shared_ptr<vector<char>>();
+}
+
 /* int main() {
 
     Storage storage("/home/patrycja/studia/semestr6/dotin");
