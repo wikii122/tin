@@ -10,7 +10,10 @@
 using namespace std;
 
 
-Storage_info::Storage_info(string host_name) : host_name(host_name) {}
+Storage_info::Storage_info()
+{
+
+}
 
 bool Storage_info::add_file(const string& name, const string& owner_name) {
 
@@ -86,6 +89,11 @@ bool Storage_info::copy_file(const string& name, string owner_name) {
     }
 
     return false;
+}
+
+void Storage_info::set_name(string new_name)
+{
+	host_name = new_name;
 }
 
 /*

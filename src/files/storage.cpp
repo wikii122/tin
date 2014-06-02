@@ -86,7 +86,7 @@ bool Storage::is_finished(string name) {
     return false;
 }
 
-bool Storage::remove_file(const string& name, string id) {
+bool Storage::remove_file(const string& name) {
 
     std::vector<File>::iterator iter = files.begin();
     while (iter != files.end()) {

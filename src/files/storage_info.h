@@ -11,8 +11,8 @@ struct File {
 
 class Storage_info {
 public:
-
-    Storage_info(std::string host_name);
+    Storage_info();
+	void set_name(std::string name);
 	bool add_file(const std::string& name, const std::string& owner_name);
 	bool remove(const std::string& name, std::string id);
 	bool copy_file(const std::string&name, std::string owner_name);

@@ -6,7 +6,10 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include "clienthandler.h"
+#include "server.h"
 #include "client/client.h"
+#include "files/storage.h"
+#include "files/storage_info.h"
 #include "packet/localPacket.h"
 #include "packet/packet.h"
 
@@ -65,15 +68,35 @@ int ClientHandler::handle()
 	// TODO do this fancier (function overloading)
 	// TODO response handling...
 	if (req->command == "LocalFileAdd") {
-
+		string name = req->name;
+		string file = req->file;
+		bool state = Server::get().get_storage().add_file(file, name);
+		if (state) {
+			// TODO write response
+		} else {
+			// TODO write negative response
+		}	
 	} else if (req->command == "LocalFileGet") {
-
+		string name = req->name;
+		string file = req->file;
+		bool state = Server::get().get_storage().copy_file(file, name);
+		if (state) {
+			// TODO write response
+		} else {
+			// TODO write negative response
+		}	
 	} else if (req->command == "LocalRemove") {
-		
+		string name = req->name;
+		bool state = Server::get().get_storage().remove_file(name);
+		if (state) {
+			// TODO write response
+		} else {
+			// TODO write negative response
+		}	
 	} else if (req->command == "LocalDownload") {
 
 	} else if (req->command == "LocalRequest") {
-
+		string response = Server::get().get_storage_info().list_files_json();
 	} else {
 		throw string("Packet::getPacket(): Unknown command");
 	}

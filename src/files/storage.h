@@ -3,12 +3,6 @@
 #include <string>
 #include <vector>
 
-struct File {
-
-	std::string name;
-	std::string owner_name;
-    bool complete;
-};
 
 class Storage {
 
@@ -17,7 +11,11 @@ public:
 
     /* dodaje caly plik */
 	bool add_file(const char*data, long size, std::string name, std::string owner_id);
-
+	// Dodaje cały plik z dysku
+	bool add_file(std::string path, std::string name);
+	// Kopiuje wybrany plik do podanego katalogu
+	bool copy_file(std::string name, std::string path);
+	
     /* dodaje czesc pliku
      * jeżeli zadna czesc nie zostala jeszcze dodana, to plik zostanie utworzony */
     bool add_file_part(const char * data, long part_size, long offset, std::string name, std::string owner_name);
@@ -26,7 +24,13 @@ public:
     bool finish_file(std::string name);
     bool is_finished(std::string name);
 
-	bool remove_file(const std::string& name, std::string id);
+	bool remove_file(const std::string& name);
+	
+	struct File {
+		std::string name;
+		std::string owner_name;
+    	bool complete;
+	};
 
 private:
     std::string path;

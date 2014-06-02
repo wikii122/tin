@@ -52,6 +52,7 @@ void signal_handler(int sig)
 			break;
 		case SIGTERM:
 		case SIGINT:
+			clean_up();
 			exit(0);
 			break;
 	}

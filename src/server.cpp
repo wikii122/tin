@@ -1,14 +1,25 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <boost/filesystem.hpp>
 #include "server.h"
+
+namespace filesystem=boost::filesystem;
 
 using namespace std;
 
 Server::Server(): 
-running(false)
+	running(false) 
 {
-	
+	auto rel_path = filesystem::path("./files");
+	auto abs_path = filesystem::complete(rel_path);
+
+	if (!filesystem::exists(abs_path)) {
+		filesystem::create_directories(abs_path);
+	} 
+
+	storage = new Storage(abs_path.string<string>());
+	storage_info = new Storage_info();
 }
 
 Server& Server::get()
@@ -25,6 +36,7 @@ Server::~Server()
 int Server::set_name(string new_name)
 {
 	name = new_name;	
+	storage_info->set_name(new_name);
 	// TODO register in network if appropiate handler...
 	// TODO check if name is valid
 	return 0;
@@ -67,4 +79,14 @@ void Server::serve()
 void Server::register_handler(Handler* handler)
 {
 	handlers.push_back(handler);
+}
+
+Storage& Server::get_storage()
+{
+	return *storage;
+}
+
+Storage_info& Server::get_storage_info()
+{
+	return *storage_info;
 }
