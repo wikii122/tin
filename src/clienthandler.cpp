@@ -62,7 +62,7 @@ int ClientHandler::handle()
 	accept();
 	// Now new connection needs to be handled.
 	string msg = read();
-	string response;
+	string response = "NULL";
 	auto req = static_pointer_cast<LocalPacket>(Packet::getPacket(msg));
 	// TODO do this fancier (function overloading)
 	// TODO response handling...

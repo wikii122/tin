@@ -20,7 +20,10 @@ void daemonize();
 void clean_up();
 
 int main(int argc, char** argv)
-{
+try {
+	if (argc > 3) {
+		argc = 2;
+	}
 	opt::options_description desc("Server options");
 	desc.add_options()
 		("help", "Print this message")
@@ -43,6 +46,14 @@ int main(int argc, char** argv)
 	} else {
 		cout << desc;
 	}
+} catch (char err[]) {
+	cerr << err << endl;
+} catch (string err) {
+	cerr << err << endl;
+} catch (exception err) {
+	cerr << err.what() << endl;
+} catch (...) {
+	cerr << "Unknown error, terminating. We are sorry." << endl;
 }
 
 void signal_handler(int sig)
