@@ -95,7 +95,7 @@ void daemonize()
 		close(i);
 	}
 	// Redirect stdin, stdout, stderr to /dev/null
-	i = open("/dev/null",O_RDWR);
+	i = open("/dev/null", O_RDWR);
 	dup(i); dup(i);
 	
 	// Now connect the signals to handler

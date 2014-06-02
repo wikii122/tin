@@ -9,8 +9,7 @@ namespace filesystem=boost::filesystem;
 using namespace std;
 
 Server::Server(): 
-	running(false) 
-{
+	running(false) {
 	auto rel_path = filesystem::path("./files");
 	auto abs_path = filesystem::complete(rel_path);
 

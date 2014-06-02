@@ -55,7 +55,7 @@ string Storage_info::list_files_json() {
     return root.asString();
 }
 
-bool Storage_info::remove(const string& name, string id) {
+bool Storage_info::remove(const string& name) {
 
     std::vector<File>::iterator iter = files.begin();
     while (iter != files.end()) {

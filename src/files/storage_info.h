@@ -14,7 +14,7 @@ public:
     Storage_info();
 	void set_name(std::string name);
 	bool add_file(const std::string& name, const std::string& owner_name);
-	bool remove(const std::string& name, std::string id);
+	bool remove(const std::string& name);
 	bool copy_file(const std::string&name, std::string owner_name);
     std::string list_files_json();
 

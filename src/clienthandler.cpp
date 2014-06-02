@@ -16,8 +16,7 @@
 using namespace std;
 
 ClientHandler::ClientHandler(): 
-	Handler()
-{
+	Handler() {
 	struct sockaddr_un address;
 
 	socket_fd = socket(AF_UNIX, SOCK_STREAM, 0);		
@@ -70,8 +69,11 @@ int ClientHandler::handle()
 	if (req->command == "LocalFileAdd") {
 		string name = req->name;
 		string file = req->file;
-		bool state = Server::get().get_storage().add_file(file, name);
+		Server& server = Server::get();
+		bool state = server.get_storage().add_file(file, name);
 		if (state) {
+			// TODO randomize owner
+			server.get_storage_info().add_file(name, server.get_name());
 			// TODO write response
 		} else {
 			// TODO write negative response
@@ -79,7 +81,9 @@ int ClientHandler::handle()
 	} else if (req->command == "LocalFileGet") {
 		string name = req->name;
 		string file = req->file;
-		bool state = Server::get().get_storage().copy_file(file, name);
+		Server& server = Server::get();
+		// TODO if file not downloaded, download.
+		bool state = server.get_storage().copy_file(file, name);
 		if (state) {
 			// TODO write response
 		} else {
@@ -87,8 +91,11 @@ int ClientHandler::handle()
 		}	
 	} else if (req->command == "LocalRemove") {
 		string name = req->name;
-		bool state = Server::get().get_storage().remove_file(name);
+		Server& server = Server::get();
+		// TODO check if exists.
+		bool state = server.get_storage().remove_file(name);
 		if (state) {
+			server.get_storage_info().remove(name);
 			// TODO write response
 		} else {
 			// TODO write negative response
@@ -96,9 +103,10 @@ int ClientHandler::handle()
 	} else if (req->command == "LocalDownload") {
 
 	} else if (req->command == "LocalRequest") {
-		string response = Server::get().get_storage_info().list_files_json();
+		Server& server = Server::get();
+		string response = server.get_storage_info().list_files_json();
 	} else {
-		throw string("Packet::getPacket(): Unknown command");
+		throw string("ClientHandler::handle: Unknown command");
 	}
 	write(response);
 
