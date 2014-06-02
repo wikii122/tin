@@ -30,7 +30,7 @@ public:
 	~Packet(void);
 
 	virtual std::string getData() = 0;
-	static std::shared_ptr<Packet> getPacket(std::string data);
+	static auto getPacket(std::string data) -> std::shared_ptr<Packet>;
 	PacketType getType() const;
 
 protected:
