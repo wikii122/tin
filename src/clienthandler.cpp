@@ -103,8 +103,14 @@ int ClientHandler::handle()
 	} else if (req->command == "LocalDownload") {
 
 	} else if (req->command == "LocalRequest") {
-		Server& server = Server::get();
-		string response = server.get_storage_info().list_files_json();
+		if (req->name == "filelist") {
+			Server& server = Server::get();
+			response = server.get_storage_info().list_files_json();
+		} else if (req->name == "rescan") {
+			// TODO rescan
+		} else {
+			throw "Unknown request";
+		}
 	} else {
 		throw string("ClientHandler::handle: Unknown command");
 	}
@@ -133,7 +139,7 @@ string ClientHandler::Connection::read()
 {
 	// This requires thing to parse JSON input.
 	char sign = 0; // Assigning to get rid of uninitialization warning.
-	char buffer[111];
+	char buffer[1025];
 	int i = 0;
 	while (sign != '}') {
 		::read(socket_fd, &sign, 1);

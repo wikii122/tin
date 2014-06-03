@@ -25,8 +25,9 @@ int communicate::call(string msg)
  */
 string communicate::callForResponse(string msg)
 {	
-	int socket_fd, state, len, result;
+	int socket_fd, state, len;
 	struct sockaddr_un address;
+	char buffer[1025];
 	
 	socket_fd = socket(PF_UNIX, SOCK_STREAM, 0);
 	if (socket_fd == -1) {
@@ -48,10 +49,20 @@ string communicate::callForResponse(string msg)
 	len = msg.length();
 
 	write(socket_fd, msg.c_str(), len);
-	// TODO add timeout
-	// TODO use something more meaningful than int.
-	// TODO merge call for response here.
-	read(socket_fd, &result, 4);
 
-	return "";
+	// TODO add timeout
+	int guard = 0, i = 0;
+	char sign;
+	do {
+		read(socket_fd, &sign, 1);
+		if (sign == '{') guard++;
+		else if (sign == '}') guard--;
+		buffer[i++] = sign;
+	} while (guard and i < 1025);
+
+	buffer[i] = '\0';
+
+	string response(buffer, buffer+i);
+	cout << response << endl;
+	return response;
 }

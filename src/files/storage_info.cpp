@@ -36,7 +36,9 @@ bool Storage_info::add_file(const string& name, const string& owner_name) {
 }
 
 string Storage_info::list_files_json() {
+	string json;
     Json::Value root;
+	Json::StyledWriter writer;
 
     root["type"] = "IHave";
     root["name"] = host_name;
@@ -52,7 +54,9 @@ string Storage_info::list_files_json() {
         root["files"].append(v);
     }
 
-    return root.asString();
+	json = writer.write(root);
+
+    return json;
 }
 
 bool Storage_info::remove(const string& name) {
