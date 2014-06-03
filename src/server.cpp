@@ -54,11 +54,11 @@ void Server::serve()
 		auto fun = [this](Handler* handler) {
 			while (this->running) try {
 				handler->handle();
-			} /*catch (exception err) {
+			} catch (exception err) {
 				cout << err.what() << endl;
 			} catch (char* err) {
 				cout << err << endl;
-			} */catch (string err) {
+			} catch (string err) {
 				cout << err << endl;
 			} /*catch (...) {
 				// pass
