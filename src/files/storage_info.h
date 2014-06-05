@@ -18,7 +18,7 @@ public:
 	void set_name(std::string name);
 	bool add_file(const std::string& name, const std::string& owner_name, long long date, const std::string& md5);
 	bool remove(const std::string& name);
-    IHavePacket list_files_json();
+    IHavePacket list_files_json(bool all);
 
 private:
 	std::vector<File> files;

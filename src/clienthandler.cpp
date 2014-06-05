@@ -122,7 +122,7 @@ int ClientHandler::handle()
 			json_resp["msg"] = "";
 			json_resp["display"] = false;
 			// FIXME This needs to be rewritten
-			response = server.get_storage_info().list_files_json().getData();
+			response = server.get_storage_info().list_files_json(true).getData();
 			reader.parse(response, files);
 			json_resp["files"] = files["files"];
 
