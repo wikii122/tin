@@ -10,8 +10,9 @@ struct File {
 };
 
 class Storage_info {
-public:
     Storage_info();
+public:
+	static Storage_info& get();
 	void set_name(std::string name);
 	bool add_file(const std::string& name, const std::string& owner_name);
 	bool remove(const std::string& name);

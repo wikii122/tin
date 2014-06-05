@@ -18,7 +18,6 @@ Server::Server():
 	} 
 
 	storage = new Storage(abs_path.string<string>());
-	storage_info = new Storage_info();
 }
 
 Server& Server::get()
@@ -30,12 +29,13 @@ Server& Server::get()
 Server::~Server()
 {
 	running = false;
+	delete storage;
 }
 
 int Server::set_name(string new_name)
 {
 	name = new_name;	
-	storage_info->set_name(new_name);
+	Storage_info::get().set_name(new_name);
 	// TODO register in network if appropiate handler...
 	// TODO check if name is valid
 	return 0;
@@ -87,5 +87,5 @@ Storage& Server::get_storage()
 
 Storage_info& Server::get_storage_info()
 {
-	return *storage_info;
+	return Storage_info::get();
 }

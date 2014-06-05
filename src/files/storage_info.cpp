@@ -15,6 +15,12 @@ Storage_info::Storage_info()
 
 }
 
+Storage_info& Storage_info::get()
+{
+	static Storage_info instance;
+	return instance;
+}
+
 bool Storage_info::add_file(const string& name, const string& owner_name) {
 
     unsigned long salt = sdbm(owner_name.c_str());

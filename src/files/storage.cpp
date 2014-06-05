@@ -1,15 +1,69 @@
-#include <vector>
-#include <fstream>
 #include <algorithm>
+#include <fstream>
 #include <iostream>
-#include <boost/filesystem.hpp>
 #include <sstream>
+#include <vector>
+#include <boost/filesystem.hpp>
+#include <jsoncpp/json/json.h>
 #include "storage.h"
 #include "../server.h"
 
 using namespace std;
 
-Storage::Storage(const string& path) : path(path) {}
+Storage::Storage(const string& path): path(path) 
+{
+	auto dir_path = boost::filesystem::path(path);
+	auto storage_path = boost::filesystem::path("files.json");
+	storage_path = boost::filesystem::canonical(dir_path / storage_path);
+	
+	if (boost::filesystem::exists(storage_path)) {
+		ifstream storage_file;
+		Json::Reader reader;	
+		Json::Value file_list;
+
+		storage_file.open(storage_path.c_str());
+		reader.parse(storage_file, file_list);
+		storage_file.close();
+		
+		file_list = file_list["files"];
+		for(Json::Value file: file_list) {
+			File file_desc;
+			file_desc.name = file["name"].asString();
+			cout << file_desc.name;
+			file_desc.owner_name = file["owner"].asString();
+			file_desc.complete = true;
+			files.push_back(file_desc);
+
+			Storage_info::get().add_file(file_desc.name, file_desc.owner_name);
+		}
+	}
+}
+
+Storage::~Storage() {
+	auto dir_path = boost::filesystem::path(path);
+	auto storage_path = boost::filesystem::path("files.json");
+	storage_path = dir_path / storage_path;
+
+	Json::StyledWriter writer;
+	Json::Value file_list;
+
+	file_list["files"] = Json::arrayValue;
+	
+	for (File file: files) {
+		if (file.complete) {
+			Json::Value file_desc;
+			file_desc["name"] = file.name;
+			file_desc["owner"] = file.owner_name;
+			file_list["files"].append(file_desc);
+		}
+	}
+	
+	ofstream storage_file;
+	storage_file.open(storage_path.c_str());
+	string list = writer.write(file_list);	
+	storage_file << list;
+	storage_file.close();
+}
 
 bool Storage::add_file(const char* data, long size, string name, string owner_name) {
 
@@ -55,6 +109,7 @@ bool Storage::add_file(string src_path, string name)
     f.name = name;
 	// TODO change owner node.
     f.owner_name = Server::get().get_name();
+	f.complete = true;
     files.push_back(f);
 	
 	return true;

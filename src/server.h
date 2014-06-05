@@ -18,7 +18,6 @@ class Server
 	std::vector<Handler*> handlers;
 	std::thread threads[no_threads];
 	Storage* storage;
-	Storage_info* storage_info;
 
 	Server();
 	void start(Handler* handler);

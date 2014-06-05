@@ -9,6 +9,7 @@ class Storage {
 
 public:
     Storage(const std::string& path);
+	~Storage();
 
     /* dodaje caly plik */
 	bool add_file(const char*data, long size, std::string name, std::string owner_id);
