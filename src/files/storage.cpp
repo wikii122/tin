@@ -99,7 +99,7 @@ bool Storage::add_file(string src_path, string name)
 
 	dir = boost::filesystem::canonical(dir);
 
-	if (!boost::filesystem::exists(dir)) {
+	if (!boost::filesystem::exists(dir/file)) {
 		return false;
 	}
 	string dst_path = (dir/file).string<string>();
