@@ -20,6 +20,8 @@ Storage::Storage(const string& path): path(path)
 		ifstream storage_file;
 		Json::Reader reader;	
 		Json::Value file_list;
+		string md5;
+		long long expire_date;
 
 		storage_file.open(storage_path.c_str());
 		reader.parse(storage_file, file_list);
@@ -29,12 +31,13 @@ Storage::Storage(const string& path): path(path)
 		for(Json::Value file: file_list) {
 			File file_desc;
 			file_desc.name = file["name"].asString();
-			cout << file_desc.name;
 			file_desc.owner_name = file["owner"].asString();
 			file_desc.complete = true;
 			files.push_back(file_desc);
+			expire_date = file["expire"].asInt64();
+			md5 = file["md5"].asString();
 
-			Storage_info::get().add_file(file_desc.name, file_desc.owner_name);
+			Storage_info::get().add_file(file_desc.name, file_desc.owner_name, expire_date, md5);
 		}
 	}
 }
@@ -55,6 +58,8 @@ Storage::~Storage() {
 			file_desc["name"] = file.name;
 			file_desc["owner"] = file.owner_name;
 			file_list["files"].append(file_desc);
+			file_list["expire"].append(0);
+			file_list["md5"].append("");
 		}
 	}
 	

@@ -74,7 +74,9 @@ int ClientHandler::handle()
 		bool state = server.get_storage().add_file(file, name);
 		if (state) {
 			// TODO randomize owner
-			server.get_storage_info().add_file(name, server.get_name());
+			// TODO expiry
+			// TODO md5 calculation
+			server.get_storage_info().add_file(name, server.get_name(), 0, "");
 			json_resp["msg"] = "OK";
 			json_resp["display"] = false;
 		} else {
@@ -119,7 +121,8 @@ int ClientHandler::handle()
 			Json::Value files;
 			json_resp["msg"] = "";
 			json_resp["display"] = false;
-			response = server.get_storage_info().list_files_json();
+			// FIXME This needs to be rewritten
+			response = server.get_storage_info().list_files_json().getData();
 			reader.parse(response, files);
 			json_resp["files"] = files["files"];
 

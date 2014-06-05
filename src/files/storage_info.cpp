@@ -3,9 +3,12 @@
 #include <vector>
 #include <sstream>
 #include <jsoncpp/json/json.h>
+#include "server.h"
 #include "files/md5.h"
 #include "files/sdbm.h"
+#include "files/storage.h"
 #include "files/storage_info.h"
+#include "packet/iHavePacket.h"
 
 using namespace std;
 
@@ -21,19 +24,12 @@ Storage_info& Storage_info::get()
 	return instance;
 }
 
-bool Storage_info::add_file(const string& name, const string& owner_name) {
-
-    unsigned long salt = sdbm(owner_name.c_str());
-
-    /* hash jest liczony z nazwy pliku polaczonej sola */
-    stringstream sstr;
-    sstr << name << salt;
-    string md5 = MD5(sstr.str()).hexdigest();
-
+bool Storage_info::add_file(const string& name, const string& owner_name, long long date, const string& md5) {
     File f;
     f.name = name;
     f.owner_name = owner_name;
     f.md5 = md5;
+	f.expire_date = date;
 
     files.push_back(f);
 
@@ -41,28 +37,23 @@ bool Storage_info::add_file(const string& name, const string& owner_name) {
     return true;
 }
 
-string Storage_info::list_files_json() {
-	string json;
-    Json::Value root;
-	Json::StyledWriter writer;
+IHavePacket Storage_info::list_files_json() {
+	IHavePacket packet;
+	Storage storage = Server::get().get_storage();
 
-    root["type"] = "IHave";
-    root["name"] = host_name;
-    root["files"] = Json::arrayValue;
+	packet.name = host_name;
+	for (File file: files) {
+		if (storage.on_drive(file.name)) {
+			IHavePacketFile meta;
+			meta.name = file.name;
+			meta.isOwner = (file.owner_name == host_name);
+			meta.expires = file.expire_date;
+			meta.md5 = file.md5;
+			packet.files.push_back(meta);
+		}
+	}
 
-    for (File f : files) {
-        Json::Value v;
-
-        v["file"] = f.name;
-        v["md5"] = f.md5;
-        v["isOwner"] = (host_name == f.owner_name);
-
-        root["files"].append(v);
-    }
-
-	json = writer.write(root);
-
-    return json;
+	return packet;
 }
 
 bool Storage_info::remove(const string& name) {
@@ -71,27 +62,6 @@ bool Storage_info::remove(const string& name) {
     while (iter != files.end()) {
         if (iter->name == name) {
             iter = files.erase(iter);
-            return true;
-        } else {
-            ++iter;
-        }
-    }
-
-    return false;
-}
-
-bool Storage_info::copy_file(const string& name, string owner_name) {
-
-    std::vector<File>::iterator iter = files.begin();
-
-    while (iter != files.end()) {
-        if (iter->name == name) {
-            File temp;
-            temp.name = name;
-            temp.owner_name = owner_name;
-
-            temp = *iter;
-            files.push_back(temp);
             return true;
         } else {
             ++iter;
