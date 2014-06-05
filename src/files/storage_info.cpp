@@ -76,6 +76,16 @@ void Storage_info::set_name(string new_name)
 	host_name = new_name;
 }
 
+File Storage_info::file_info(string name)
+{
+	for (File file:files) {
+		if (file.name == name) {
+			return file;		
+		}
+	}
+	return File{"", "", "", -1}; // Broken file
+}
+
 /*
 int main() {
 

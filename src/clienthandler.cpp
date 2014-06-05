@@ -71,12 +71,12 @@ int ClientHandler::handle()
 		string name = req->name;
 		string file = req->file;
 		Server& server = Server::get();
-		bool state = server.get_storage().add_file(file, name);
-		if (state) {
+		string state = server.get_storage().add_file(file, name);
+		if (state != "") {
 			// TODO randomize owner
 			// TODO expiry
 			// TODO md5 calculation
-			server.get_storage_info().add_file(name, server.get_name(), 0, "");
+			server.get_storage_info().add_file(name, server.get_name(), 0, state);
 			json_resp["msg"] = "OK";
 			json_resp["display"] = false;
 		} else {

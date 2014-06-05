@@ -5,6 +5,7 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <jsoncpp/json/json.h>
+#include "files/md5.h"
 #include "files/storage.h"
 #include "server.h"
 
@@ -58,8 +59,11 @@ Storage::~Storage() {
 			file_desc["name"] = file.name;
 			file_desc["owner"] = file.owner_name;
 			file_list["files"].append(file_desc);
-			file_list["expire"].append(0);
-			file_list["md5"].append("");
+			// Oh yeah, java style
+			// Too tired to fix
+			// FIXME make this readable
+			file_list["expire"].append(Storage_info::get().file_info(file.name).expire_date);
+			file_list["md5"].append(Storage_info::get().file_info(file.name).md5);
 		}
 	}
 	
@@ -70,13 +74,16 @@ Storage::~Storage() {
 	storage_file.close();
 }
 
-bool Storage::add_file(const char* data, long size, string name, string owner_name) {
+string Storage::add_file(const char* data, long size, string name, string owner_name) {
 
     ofstream file;
+	string md5;
+
+	md5 = MD5(string(data, data+size)).hexdigest();
 
     for(long i = 0; i < size; i++) {
         stringstream n;
-        n << path << "/" << name;
+        n << path << "/" << name << "." << md5;
 
         file.open(n.str().c_str());
         file.clear();
@@ -84,7 +91,7 @@ bool Storage::add_file(const char* data, long size, string name, string owner_na
         file.write(data + i, 1);
 
         if(!file.good())
-            return false;
+            return "";
     }
 
     file.close();
@@ -93,26 +100,26 @@ bool Storage::add_file(const char* data, long size, string name, string owner_na
     f.owner_name = owner_name;
 
     files.push_back(f);
-    return true;
+    return md5;
 }
 
-bool Storage::add_file(string src_path, string name)
+string Storage::add_file(string src_path, string name)
 {
-	// TODO prepare name
 	auto dir = boost::filesystem::path(path);
-	auto file = boost::filesystem::path(name);
-
 	dir = boost::filesystem::canonical(dir);
-
-	cout << (dir/file).c_str() << endl;
 	if (!boost::filesystem::exists(boost::filesystem::path(src_path))) {
-		return false;
+		return "";
 	}
-	string dst_path = (dir/file).string<string>();
-	ifstream src(src_path, ios::binary);      
-	ofstream dst(dst_path, ios::binary);       
 
-	dst << src.rdbuf();
+	ifstream src(src_path, ios::binary);      
+	stringstream file_content;
+	file_content << src.rdbuf();
+	string md5 = MD5(file_content.str()).hexdigest();
+	auto file = boost::filesystem::path(name+"."+md5);
+
+	string dst_path = (dir/file).string<string>();
+	ofstream dst(dst_path, ios::binary);       
+	dst << file_content;
 
     File f;
     f.name = name;
@@ -121,13 +128,13 @@ bool Storage::add_file(string src_path, string name)
 	f.complete = true;
     files.push_back(f);
 	
-	return true;
+	return md5;
 }
 
 bool Storage::copy_file(string name, string dst_path)
 {
 	auto dir = boost::filesystem::path(path);
-	auto file = boost::filesystem::path(name);
+	auto file = boost::filesystem::path(name+"."+Storage_info::get().file_info(name).md5);
 
 	dir = boost::filesystem::canonical(dir);
 	
@@ -212,7 +219,7 @@ bool Storage::remove_file(const string& name) {
     while (iter != files.end()) {
         if (iter->name == name) {
             stringstream n;
-            n << path << "/" << name;
+            n << path << "/" << name << "." << Storage_info::get().file_info(name).md5;
             remove(n.str().c_str());
             files.erase(iter);
             return true;

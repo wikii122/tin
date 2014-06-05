@@ -11,10 +11,12 @@ public:
     Storage(const std::string& path);
 	~Storage();
 
-    /* dodaje caly plik */
-	bool add_file(const char*data, long size, std::string name, std::string owner_id);
-	// Dodaje cały plik z dysku
-	bool add_file(std::string path, std::string name);
+    /* 
+	 * Adds entire file to storage.
+	 * Returns stringified md5.
+	 */
+	auto add_file(const char*data, long size, std::string name, std::string owner_id) -> std::string;
+	auto add_file(std::string path, std::string name) -> std::string;
 	// Kopiuje wybrany plik do podanego katalogu
 	bool copy_file(std::string name, std::string path);
 	bool on_drive(std::string name);
