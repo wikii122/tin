@@ -113,7 +113,14 @@ int ClientHandler::handle()
 	} else if (req->command == "LocalRequest") {
 		if (req->name == "filelist") {
 			Server& server = Server::get();
+			Json::Reader reader;
+			Json::Value files;
+			json_resp["msg"] = "";
+			json_resp["display"] = false;
 			response = server.get_storage_info().list_files_json();
+			reader.parse(response, files);
+			json_resp["files"] = files["files"];
+
 		} else if (req->name == "rescan") {
 			// TODO rescan
 		} else {

@@ -42,13 +42,22 @@ int client::rescan()
 int client::showlist()
 {
 	Json::Value root;
+	Json::Value files;
 	Json::StyledWriter writer;
+	Json::Reader reader;
 
 	root["type"] = "LocalRequest";
 	root["name"] = "filelist";
 
 	string json = writer.write(root);
-	communicate::callForResponse(json);	
+	string response = communicate::callForResponse(json);	
+	
+	reader.parse(response, root);
+	files = root["files"];
+	for (Json::Value file: files) {
+		cout << file["file"].asString() << endl;
+	}
+
 
 	return 0;
 }
