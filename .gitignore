@@ -17,6 +17,7 @@
 
 # Dependency files
 *.d
+.ycm*
 
 # Executables
 *.exe

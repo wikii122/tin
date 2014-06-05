@@ -3,9 +3,9 @@
  */
 #include <iostream>
 #include <boost/program_options.hpp>
-#include "file.h"
-#include "net.h"
-#include "run.h"
+#include "client/file.h"
+#include "client/net.h"
+#include "client/run.h"
 
 namespace opt = boost::program_options;
 

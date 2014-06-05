@@ -3,9 +3,9 @@
 #include <vector>
 #include <sstream>
 #include <jsoncpp/json/json.h>
-#include "md5.h"
-#include "sdbm.h"
-#include "storage_info.h"
+#include "files/md5.h"
+#include "files/sdbm.h"
+#include "files/storage_info.h"
 
 using namespace std;
 

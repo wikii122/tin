@@ -1,5 +1,5 @@
 #include <jsoncpp/json/json.h>
-#include "giveFileListPacket.h"
+#include "packet/giveFileListPacket.h"
 
 GiveFileListPacket::GiveFileListPacket(void)
 {

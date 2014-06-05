@@ -1,6 +1,6 @@
 #include <jsoncpp/json/json.h>
-#include "net.h"
-#include "command.h"
+#include "client/net.h"
+#include "client/command.h"
 
 using namespace std;
 

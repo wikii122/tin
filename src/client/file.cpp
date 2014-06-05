@@ -1,7 +1,7 @@
 #include <jsoncpp/json/json.h>
 #include <boost/filesystem.hpp>
-#include "file.h"
-#include "command.h"
+#include "client/file.h"
+#include "client/command.h"
 
 using namespace std;
 

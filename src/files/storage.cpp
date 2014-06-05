@@ -5,8 +5,8 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <jsoncpp/json/json.h>
-#include "storage.h"
-#include "../server.h"
+#include "files/storage.h"
+#include "server.h"
 
 using namespace std;
 

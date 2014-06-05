@@ -6,7 +6,7 @@
 #ifndef TIN_IHAVEPACKET
 #define TIN_IHAVEPACKET
 
-#include "packet.h"
+#include "packet/packet.h"
 #include <vector>
 
 struct IHavePacketFile

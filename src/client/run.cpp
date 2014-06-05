@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <boost/filesystem.hpp>
-#include "run.h"
-#include "../server.h"
+#include "client/run.h"
+#include "server.h"
 
 using namespace std;
 

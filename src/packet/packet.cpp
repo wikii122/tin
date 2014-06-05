@@ -1,15 +1,15 @@
 #include <jsoncpp/json/json.h>
-#include "packet.h"
+#include "packet/packet.h"
 
-#include "helloPacket.h"
-#include "giveFileListPacket.h"
-#include "iHavePacket.h"
-#include "giveMePacket.h"
-#include "iGotPacket.h"
-#include "objectionPacket.h"
-#include "forgetPacket.h"
-#include "iForgotPacket.h"
-#include "localPacket.h"
+#include "packet/helloPacket.h"
+#include "packet/giveFileListPacket.h"
+#include "packet/iHavePacket.h"
+#include "packet/giveMePacket.h"
+#include "packet/iGotPacket.h"
+#include "packet/objectionPacket.h"
+#include "packet/forgetPacket.h"
+#include "packet/iForgotPacket.h"
+#include "packet/localPacket.h"
 
 Packet::Packet(void)
 {

@@ -1,5 +1,5 @@
 #include <jsoncpp/json/json.h>
-#include "localPacket.h"
+#include "packet/localPacket.h"
 
 
 LocalPacket::LocalPacket()

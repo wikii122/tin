@@ -7,7 +7,7 @@
 #ifndef TIN_HELLOPACKET
 #define TIN_HELLOPACKET
 
-#include "packet.h"
+#include "packet/packet.h"
 
 class HelloPacket : public Packet
 {

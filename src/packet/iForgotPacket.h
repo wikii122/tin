@@ -6,7 +6,7 @@
 #ifndef TIN_IFORGOTPACKET
 #define TIN_IFORGOTPACKET
 
-#include "packet.h"
+#include "packet/packet.h"
 #include <vector>
 
 class IForgotPacket :	public Packet

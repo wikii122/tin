@@ -6,7 +6,7 @@
 #ifndef TIN_IGOTPACKET
 #define TIN_IGOTPACKET
 
-#include "packet.h"
+#include "packet/packet.h"
 #include <vector>
 
 class IGotPacket :	public Packet

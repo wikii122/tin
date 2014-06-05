@@ -6,7 +6,7 @@
 #ifndef TIN_GIVEMEPACKET
 #define TIN_GIVEMEPACKET
 
-#include "packet.h"
+#include "packet/packet.h"
 #include <vector>
 
 class GiveMePacket :	public Packet

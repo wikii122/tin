@@ -1,5 +1,5 @@
 #include <jsoncpp/json/json.h>
-#include "iGotPacket.h"
+#include "packet/iGotPacket.h"
 
 
 IGotPacket::IGotPacket(void)

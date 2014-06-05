@@ -6,7 +6,7 @@
 #ifndef TIN_OBJECTIONPACKET
 #define TIN_OBJECTIONPACKET
 
-#include "packet.h"
+#include "packet/packet.h"
 #include <vector>
 
 class ObjectionPacket :	public Packet

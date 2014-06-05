@@ -3,7 +3,7 @@
 # Generates two executables - tin_client and server
 #
 
-CC_FLAGS = -g -Wall -std=c++11 -c -I/usr/include
+CC_FLAGS = -g -Wall -std=c++11 -c -I/usr/include -I.
 LN_FLAGS = -g -Wall -std=c++11 -L/usr/lib -lboost_program_options -ljsoncpp -lboost_filesystem -lboost_system
 
 CLIENT_CPP_FILES := $(wildcard client/*.cpp)

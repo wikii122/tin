@@ -7,7 +7,7 @@
 #ifndef TIN_GIVEFILELISTPACKET
 #define TIN_GIVEFILELISTPACKET
 
-#include "packet.h"
+#include "packet/packet.h"
 class GiveFileListPacket : public Packet
 {
 public:

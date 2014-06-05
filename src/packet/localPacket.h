@@ -6,7 +6,7 @@
 #ifndef TIN_LOCALPACKET
 #define TIN_LOCALPACKET
 
-#include "packet.h"
+#include "packet/packet.h"
 #include <vector>
 
 class LocalPacket: public Packet

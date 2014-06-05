@@ -5,8 +5,8 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include "command.h"
-#include "client.h"
+#include "client/command.h"
+#include "client/client.h"
 	
 using namespace std;
 
