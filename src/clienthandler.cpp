@@ -85,7 +85,9 @@ int ClientHandler::handle()
 		string name = req->name;
 		string file = req->file;
 		Server& server = Server::get();
-		// TODO if file not downloaded, download.
+		if (!server.get_storage().on_drive(name)) {
+			// TODO download file.
+		}
 		bool state = server.get_storage().copy_file(file, name);
 		if (state) {
 			json_resp["msg"] = "OK";

@@ -17,6 +17,7 @@ public:
 	bool add_file(std::string path, std::string name);
 	// Kopiuje wybrany plik do podanego katalogu
 	bool copy_file(std::string name, std::string path);
+	bool on_drive(std::string name);
 	
     /* dodaje czesc pliku
      * jeżeli zadna czesc nie zostala jeszcze dodana, to plik zostanie utworzony */

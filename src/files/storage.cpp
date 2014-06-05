@@ -126,14 +126,7 @@ bool Storage::copy_file(string name, string dst_path)
 
 	dir = boost::filesystem::canonical(dir);
 	
-	bool file_exists = false;
-	for (File file: files) {
-		if (file.name == name) {
-			file_exists = true;
-			break;
-		}
-	}
-	if (!file_exists) {
+	if (!on_drive(name)) {
 		return false;
 	}
 
@@ -144,6 +137,17 @@ bool Storage::copy_file(string name, string dst_path)
 	dst << src.rdbuf();
 	
 	return true;
+}
+
+bool Storage::on_drive(string name) 
+{
+	for (File file: files) {
+		if (file.name == name) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool Storage::add_file_part(const char * data, long part_size, long offset, string name, string owner_name) {
