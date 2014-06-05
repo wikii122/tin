@@ -25,23 +25,30 @@ auto NetworkHandler::read() -> std::string
 
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock == -1)
-		throw std::string("NetworkHandler::createBroadcastSocket: Could not create socket");
+		throw std::string("NetworkHandler::read: Could not create socket");
 
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(31337);
-	addr.sin_addr.s_addr = inet_addr("255.255.255.255");
+	addr.sin_addr.s_addr = inet_addr("192.168.1.255");
 
 	const int isTrue = 1;
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &isTrue, sizeof(isTrue)) == -1)
-		throw std::string("NetworkHandler::createBroadcastSocket: Could not setsockopt(BROADCAST)");
+		throw std::string("NetworkHandler::read: Could not setsockopt(BROADCAST)");
 
 	if (bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1)
-		throw std::string("NetworkHandler::createBroadcastSocket: Could not bind socket");
+		throw std::string("NetworkHandler::read: Could not bind socket");
 
 	char msg[1024];
-	if (sendto(sock, msg, 1024, 0, (sockaddr*) &addr, sizeof addr) == -1)
-		throw std::string("NetworkHandler::createBroadcastSocket: Could not recvfrom");
+
+	sockaddr_in sender;
+	socklen_t sendersize = sizeof sender;
+	memset(&sender, 0, sizeof sender);
+
+	if (recvfrom(sock, msg, 1024, 0, (sockaddr*) &sender, &sendersize) == -1) {
+		printf("Error: %d\n", errno);
+		throw std::string("NetworkHandler::read: Could not recvfrom");
+	}
 
 	printf(msg);
 	fflush(stdout);
@@ -65,7 +72,7 @@ void NetworkHandler::createBroadcastSocket()
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(31337);
-	addr.sin_addr.s_addr = inet_addr("255.255.255.255");
+	addr.sin_addr.s_addr = inet_addr("192.168.1.255");
 
 	const int isTrue = 1;
 	if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &isTrue, sizeof(isTrue)) == -1)
@@ -75,6 +82,8 @@ void NetworkHandler::createBroadcastSocket()
 		throw std::string("NetworkHandler::createBroadcastSocket: Could not bind socket");
 
 	//TODO: REMOVE
-	if (sendto(sock, "COS", 4, 0, (sockaddr*) &addr, sizeof addr) == -1)
+	if (sendto(sock, "COS", 4, 0, (sockaddr*) &addr, sizeof addr) == -1) {
+		printf("Error: %d\n", errno);
 		throw std::string("NetworkHandler::createBroadcastSocket: Could not sendto");
+	}
 }

@@ -8,8 +8,11 @@
 
 class NetworkHandler: public Handler
 {
-	void createBroadcastSocket();
 	void sendBroadcast();
+
+	void createBroadcastSocket();
+
+	int sock;
 public:
 	NetworkHandler();
 	~NetworkHandler();
