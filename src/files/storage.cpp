@@ -14,7 +14,7 @@ Storage::Storage(const string& path): path(path)
 {
 	auto dir_path = boost::filesystem::path(path);
 	auto storage_path = boost::filesystem::path("files.json");
-	storage_path = boost::filesystem::canonical(dir_path / storage_path);
+	storage_path = boost::filesystem::absolute(dir_path / storage_path);
 	
 	if (boost::filesystem::exists(storage_path)) {
 		ifstream storage_file;
@@ -98,7 +98,10 @@ bool Storage::add_file(string src_path, string name)
 	auto file = boost::filesystem::path(name);
 
 	dir = boost::filesystem::canonical(dir);
-	
+
+	if (!boost::filesystem::exists(dir)) {
+		return false;
+	}
 	string dst_path = (dir/file).string<string>();
 	ifstream src(src_path, ios::binary);      
 	ofstream dst(dst_path, ios::binary);       
@@ -122,6 +125,17 @@ bool Storage::copy_file(string name, string dst_path)
 
 	dir = boost::filesystem::canonical(dir);
 	
+	bool file_exists = false;
+	for (File file: files) {
+		if (file.name == name) {
+			file_exists = true;
+			break;
+		}
+	}
+	if (!file_exists) {
+		return false;
+	}
+
 	string src_path = (dir/file).string<string>();
 	ifstream src(src_path, ios::binary);      
 	ofstream dst(dst_path, ios::binary);       

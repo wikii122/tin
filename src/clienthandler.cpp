@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <jsoncpp/json/json.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include "clienthandler.h"
@@ -62,10 +63,10 @@ int ClientHandler::handle()
 	accept();
 	// Now new connection needs to be handled.
 	string msg = read();
-	string response = "NULL";
+	string response; 
+	Json::StyledWriter writer;
+	Json::Value json_resp;
 	auto req = static_pointer_cast<LocalPacket>(Packet::getPacket(msg));
-	// TODO do this fancier (function overloading)
-	// TODO response handling...
 	if (req->command == "LocalFileAdd") {
 		string name = req->name;
 		string file = req->file;
@@ -74,9 +75,11 @@ int ClientHandler::handle()
 		if (state) {
 			// TODO randomize owner
 			server.get_storage_info().add_file(name, server.get_name());
-			// TODO write response
+			json_resp["msg"] = "OK";
+			json_resp["display"] = false;
 		} else {
-			// TODO write negative response
+			json_resp["msg"] = "File could not be added";
+			json_resp["display"] = true;
 		}	
 	} else if (req->command == "LocalFileGet") {
 		string name = req->name;
@@ -85,9 +88,11 @@ int ClientHandler::handle()
 		// TODO if file not downloaded, download.
 		bool state = server.get_storage().copy_file(file, name);
 		if (state) {
-			// TODO write response
+			json_resp["msg"] = "OK";
+			json_resp["display"] = false;
 		} else {
-			// TODO write negative response
+			json_resp["msg"] = "File could not be copied";
+			json_resp["display"] = true;
 		}	
 	} else if (req->command == "LocalRemove") {
 		string name = req->name;
@@ -96,11 +101,14 @@ int ClientHandler::handle()
 		bool state = server.get_storage().remove_file(name);
 		if (state) {
 			server.get_storage_info().remove(name);
-			// TODO write response
+			json_resp["msg"] = "File removed";
+			json_resp["display"] = false;
 		} else {
-			// TODO write negative response
+			json_resp["msg"] = "File not found";
+			json_resp["display"] = true;
 		}	
 	} else if (req->command == "LocalDownload") {
+		// TODO downloading file
 
 	} else if (req->command == "LocalRequest") {
 		if (req->name == "filelist") {
@@ -114,6 +122,8 @@ int ClientHandler::handle()
 	} else {
 		throw string("ClientHandler::handle: Unknown command");
 	}
+
+	response = writer.write(json_resp);
 	write(response);
 
 	return 0;

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <jsoncpp/json/json.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include "client/command.h"
@@ -63,6 +64,11 @@ string communicate::callForResponse(string msg)
 	buffer[i] = '\0';
 
 	string response(buffer, buffer+i);
-	cout << response << endl;
+	Json::Reader reader;
+	Json::Value value;
+	reader.parse(response, value);
+	if (value.get("display", false).asBool()) {
+		cout << value.get("msg", "").asString() << endl;
+	}	
 	return response;
 }

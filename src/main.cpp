@@ -50,11 +50,11 @@ try {
 	cerr << err << endl;
 } catch (string err) {
 	cerr << err << endl;
-} catch (exception err) {
+} /*catch (exception err) {
 	cerr << err.what() << endl;
 } catch (...) {
 	cerr << "Unknown error, terminating. We are sorry." << endl;
-}
+}*/
 
 void signal_handler(int sig)
 {
