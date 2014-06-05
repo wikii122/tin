@@ -5,6 +5,7 @@
 #include <boost/filesystem.hpp>
 #include <sstream>
 #include "storage.h"
+#include "../server.h"
 
 using namespace std;
 
@@ -49,6 +50,12 @@ bool Storage::add_file(string src_path, string name)
 	ofstream dst(dst_path, ios::binary);       
 
 	dst << src.rdbuf();
+
+    File f;
+    f.name = name;
+	// TODO change owner node.
+    f.owner_name = Server::get().get_name();
+    files.push_back(f);
 	
 	return true;
 }
@@ -124,11 +131,9 @@ bool Storage::remove_file(const string& name) {
 
     std::vector<File>::iterator iter = files.begin();
     while (iter != files.end()) {
-
         if (iter->name == name) {
             stringstream n;
             n << path << "/" << name;
-
             remove(n.str().c_str());
             files.erase(iter);
             return true;

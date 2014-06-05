@@ -27,4 +27,4 @@ server
 
 # Temporary files
 *.swp
-
+file_store/
