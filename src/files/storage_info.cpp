@@ -24,12 +24,13 @@ Storage_info& Storage_info::get()
 	return instance;
 }
 
-bool Storage_info::add_file(const string& name, const string& owner_name, long long date, const string& md5) {
+bool Storage_info::add_file(const string& name, const string& owner_name, long long date, const string& md5, bool local) {
     File f;
     f.name = name;
     f.owner_name = owner_name;
     f.md5 = md5;
 	f.expire_date = date;
+	f.local = local;
 
     files.push_back(f);
 
@@ -76,14 +77,16 @@ void Storage_info::set_name(string new_name)
 	host_name = new_name;
 }
 
-File Storage_info::file_info(string name)
+vector<File> Storage_info::file_info(string name)
 {
+	vector<File> result;
 	for (File file:files) {
 		if (file.name == name) {
-			return file;		
+			result.push_back(file);		
 		}
 	}
-	return File{"", "", "", -1}; // Broken file
+
+	return result;
 }
 
 /*

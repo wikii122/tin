@@ -76,7 +76,6 @@ int ClientHandler::handle()
 			// TODO randomize owner
 			// TODO expiry
 			// TODO md5 calculation
-			server.get_storage_info().add_file(name, server.get_name(), 0, state);
 			json_resp["msg"] = "OK";
 			json_resp["display"] = false;
 		} else {

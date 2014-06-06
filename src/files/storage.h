@@ -15,7 +15,7 @@ public:
 	 * Adds entire file to storage.
 	 * Returns stringified md5.
 	 */
-	auto add_file(const char*data, long size, std::string name, std::string owner_id) -> std::string;
+	auto add_file(const char*data, long size, std::string name, std::string owner_id, long long expire_date) -> std::string;
 	auto add_file(std::string path, std::string name) -> std::string;
 	// Kopiuje wybrany plik do podanego katalogu
 	bool copy_file(std::string name, std::string path);
@@ -34,15 +34,8 @@ public:
     * jezeli pliku nie udalo sie odczytac, to jest zwracany pusty wskaznik */
 	std::shared_ptr<std::vector<char>> get_file(std::string name);
 	
-	struct File {
-		std::string name;
-		std::string owner_name;
-    	bool complete;
-	};
-
 private:
     std::string path;
-	std::vector<File> files;
 };
 
 #endif

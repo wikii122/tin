@@ -7,6 +7,7 @@
 #include <jsoncpp/json/json.h>
 #include "files/md5.h"
 #include "files/storage.h"
+#include "files/storage_info.h"
 #include "server.h"
 
 using namespace std;
@@ -21,8 +22,6 @@ Storage::Storage(const string& path): path(path)
 		ifstream storage_file;
 		Json::Reader reader;	
 		Json::Value file_list;
-		string md5;
-		long long expire_date;
 
 		storage_file.open(storage_path.c_str());
 		reader.parse(storage_file, file_list);
@@ -33,12 +32,10 @@ Storage::Storage(const string& path): path(path)
 			File file_desc;
 			file_desc.name = file["name"].asString();
 			file_desc.owner_name = file["owner"].asString();
-			file_desc.complete = true;
-			files.push_back(file_desc);
-			expire_date = file["expire"].asInt64();
-			md5 = file["md5"].asString();
-
-			Storage_info::get().add_file(file_desc.name, file_desc.owner_name, expire_date, md5);
+			file_desc.local = true;
+			file_desc.expire_date = file["expire"].asInt64();
+			file_desc.md5 = file["md5"].asString();
+			Storage_info::get().files.push_back(file_desc);
 		}
 	}
 }
@@ -53,17 +50,15 @@ Storage::~Storage() {
 
 	file_list["files"] = Json::arrayValue;
 	
-	for (File file: files) {
-		if (file.complete) {
+	for (File file: Storage_info::get().files) {
+		if (file.local) {
 			Json::Value file_desc;
+			auto list = Storage_info::get().file_info(file.name);
 			file_desc["name"] = file.name;
 			file_desc["owner"] = file.owner_name;
+			file_desc["expire"] = file.expire_date;
+			file_desc["md5"] = file.md5;
 			file_list["files"].append(file_desc);
-			// Oh yeah, java style
-			// Too tired to fix
-			// FIXME make this readable
-			file_list["expire"].append(Storage_info::get().file_info(file.name).expire_date);
-			file_list["md5"].append(Storage_info::get().file_info(file.name).md5);
 		}
 	}
 	
@@ -74,7 +69,7 @@ Storage::~Storage() {
 	storage_file.close();
 }
 
-string Storage::add_file(const char* data, long size, string name, string owner_name) {
+string Storage::add_file(const char* data, long size, string name, string owner, long long expire_date=0) {
 
     ofstream file;
 	string md5;
@@ -93,13 +88,10 @@ string Storage::add_file(const char* data, long size, string name, string owner_
         if(!file.good())
             return "";
     }
-
+	
     file.close();
-    File f;
-    f.name = name;
-    f.owner_name = owner_name;
+	Storage_info::get().add_file(name, owner, expire_date, md5);
 
-    files.push_back(f);
     return md5;
 }
 
@@ -125,16 +117,19 @@ string Storage::add_file(string src_path, string name)
     f.name = name;
 	// TODO change owner node.
     f.owner_name = Server::get().get_name();
-	f.complete = true;
-    files.push_back(f);
+	f.expire_date = 0;
+	f.md5 = md5;
+	f.local = true;
+	Storage_info::get().files.push_back(f);
 	
 	return md5;
 }
 
 bool Storage::copy_file(string name, string dst_path)
 {
+	auto file_list = Storage_info::get().file_info(name);
 	auto dir = boost::filesystem::path(path);
-	auto file = boost::filesystem::path(name+"."+Storage_info::get().file_info(name).md5);
+	auto file = boost::filesystem::path(name+"."+file_list[file_list.size()-1].md5);
 
 	dir = boost::filesystem::canonical(dir);
 	
@@ -153,7 +148,7 @@ bool Storage::copy_file(string name, string dst_path)
 
 bool Storage::on_drive(string name) 
 {
-	for (File file: files) {
+	for (File file: Storage_info::get().files) {
 		if (file.name == name) {
 			return true;
 		}
@@ -163,10 +158,10 @@ bool Storage::on_drive(string name)
 }
 
 bool Storage::add_file_part(const char * data, long part_size, long offset, string name, string owner_name) {
-    for (File file : files) {
-        if (file.name == name and file.complete == true) {
+    for (File file : Storage_info::get().files) {
+        if (file.name == name and file.local == true) {
             return false;
-        } else if (file.name == name and file.complete == false) {
+        } else if (file.name == name and file.local == false) {
             ofstream f((path + "/" + name).c_str(), ios_base::in | ios_base::binary);
             f.seekp(offset);
             f.write(data, part_size);
@@ -185,17 +180,17 @@ bool Storage::add_file_part(const char * data, long part_size, long offset, stri
     File meta;
     meta.name = name;
     meta.owner_name = owner_name;
-    meta.complete = false;
+    meta.local = false;
 
-    files.push_back(meta);
+	Storage_info::get().files.push_back(meta);
 
     return f.good();
 }
 
 bool Storage::finish_file(string name) {
-    for (File & file : files) {
-        if (file.name == name and file.complete == false) {
-            file.complete = true;
+    for (File & file : Storage_info::get().files) {
+        if (file.name == name and file.local == false) {
+            file.local = true;
             return true;
         }
     }
@@ -204,9 +199,9 @@ bool Storage::finish_file(string name) {
 }
 
 bool Storage::is_finished(string name) {
-    for (File file : files) {
+    for (File file : Storage_info::get().files) {
         if (file.name == name) {
-            return file.complete;
+            return file.local;
         }
     }
 
@@ -214,14 +209,14 @@ bool Storage::is_finished(string name) {
 }
 
 bool Storage::remove_file(const string& name) {
-
-    std::vector<File>::iterator iter = files.begin();
-    while (iter != files.end()) {
+	auto list = Storage_info::get().files;
+    std::vector<File>::iterator iter = list.begin();
+    while (iter != Storage_info::get().files.end()) {
         if (iter->name == name) {
             stringstream n;
-            n << path << "/" << name << "." << Storage_info::get().file_info(name).md5;
+            n << path << "/" << name << "." << list[list.size()-1].md5;
             remove(n.str().c_str());
-            files.erase(iter);
+            list.erase(iter);
             return true;
         } else {
             ++iter;
@@ -232,7 +227,7 @@ bool Storage::remove_file(const string& name) {
 }
 
 shared_ptr<vector<char>> Storage::get_file(string name) {
-    for (File file : files) {
+    for (File file : Storage_info::get().files) {
         if (file.name == name) {
             ifstream f((path + "/" + name).c_str());
 
