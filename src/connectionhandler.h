@@ -23,10 +23,9 @@
 
 class ConnectionHandler: public Handler
 {
+public:
 	ConnectionHandler();
 	~ConnectionHandler();
-public:
-	static ConnectionHandler* getInstance();
 
 	virtual int handle() override; //Blocking!
 	virtual auto read() -> std::string override; // Blocking

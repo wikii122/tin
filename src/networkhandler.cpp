@@ -13,12 +13,6 @@
 
 #include "packet/packet.h"
 
-NetworkHandler* NetworkHandler::getInstance()
-{
-	static NetworkHandler* instance = new NetworkHandler();
-	return instance;
-}
-
 NetworkHandler::NetworkHandler()
 {
 	createBroadcastSocket();
