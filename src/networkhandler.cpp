@@ -5,8 +5,12 @@
 #include <arpa/inet.h> 
 #include <string.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <ifaddrs.h>
 
-#include "packet/giveMePacket.h"
+#include "packet/packet.h"
 
 NetworkHandler::NetworkHandler()
 {
@@ -19,10 +23,56 @@ NetworkHandler::~NetworkHandler()
 
 int NetworkHandler::handle()
 {
+	queueMutex.lock();
+		while(!queue.empty()) {
+			std::shared_ptr<Packet> msg = queue.front();
+			queueMutex.unlock();
+			write(msg->getData());
+			queueMutex.lock();
+			queue.pop();
+		}
+	queueMutex.unlock();
+
+	buffer += read();
+	std::string packetString;
+
+	while(buffer.size() != 0) {
+		int brackets = 0; //for packet string analysis
+		bool isPacket = false;
+		unsigned int i;
+		for (i = 0; (i < buffer.length()) && (!isPacket || brackets != 0); i++) {
+			packetString += buffer[i];
+
+			if (buffer[i] == '{') {
+				isPacket = true;
+				brackets++;
+			}
+			else if (buffer[i] == '}') {
+				brackets--;
+			}
+			if (!isPacket) {
+				buffer.erase(0, i+1);
+				i = 0;
+			}
+		}
+
+		if(!isPacket || brackets != 0) {
+			break;
+		}
+
+		buffer.erase(0, i);
+
+		std::shared_ptr<Packet> packet = Packet::getPacket(packetString);
+
+		printf("%s\n", packet->getData().c_str());
+
+		packetString.clear();
+	}
+
 	return 0;
 }
 
-void NetworkHandler::addToQueue(std::string msg)
+void NetworkHandler::addToQueue(std::shared_ptr<Packet> msg)
 {
 	queueMutex.lock();
 	queue.push(msg);
@@ -44,12 +94,23 @@ auto NetworkHandler::read() -> std::string
 		throw std::string("NetworkHandler::read: Could not recvfrom");
 	}
 
-	return std::string(msg);
+	bool ret = false;
+	if(size >= 0) {
+		ret = true;
+		for(auto a = ownAddr.begin(); a != ownAddr.end(); ++a)
+			if (a->sin_addr.s_addr == sender.sin_addr.s_addr)
+				ret = false;
+	}
+
+	if (ret)
+		return std::string(msg, size);
+	else
+		return "";
 }
 
-int NetworkHandler::write(std::string)
+int NetworkHandler::write(std::string msg)
 {
-	if (sendto(sock, "COS", 4, 0, (sockaddr*) &addr, sizeof addr) == -1) {
+	if (sendto(sock, msg.c_str(), msg.length() + 1, 0, (sockaddr*) &addr, sizeof addr) == -1) {
 		printf("Error: %d\n", errno);
 		throw std::string("NetworkHandler::write: Could not sendto");
 	}
@@ -80,4 +141,14 @@ void NetworkHandler::createBroadcastSocket()
 
 	if (bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1)
 		throw std::string("NetworkHandler::createBroadcastSocket: Could not bind socket");
+
+	ifaddrs* addrs;
+	getifaddrs(&addrs);
+	
+	while (addrs != NULL) {
+		ownAddr.push_back(*((sockaddr_in*)addrs->ifa_addr));
+		addrs = addrs->ifa_next;
+	}
+
+	freeifaddrs(addrs);
 }

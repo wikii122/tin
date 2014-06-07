@@ -3,6 +3,7 @@
  */
 
 #include "handler.h"
+#include "packet/packet.h"
 
 #include <string>
 #include <sys/socket.h>
@@ -25,14 +26,18 @@ class NetworkHandler: public Handler
 
 	sockaddr_in sender;
 	socklen_t sendersize;
+
+	std::vector<sockaddr_in> ownAddr;
+
+	std::string buffer;
 public:
 	NetworkHandler();
 	~NetworkHandler();
 
-	void addToQueue(std::string msg);
+	void addToQueue(std::shared_ptr<Packet> msg);
 
 	virtual int handle() override; //Blocking!
 
 	std::mutex queueMutex;
-	std::queue<std::string> queue;
+	std::queue<std::shared_ptr<Packet>> queue;
 };
