@@ -64,11 +64,17 @@ int NetworkHandler::handle()
 
 		std::shared_ptr<Packet> packet = Packet::getPacket(packetString);
 
-		printf("%s\n", packet->getData().c_str());
-
 		packetString.clear();
-	}
 
+		switch(packet->getType())
+		{
+		case PacketType::GiveFileList:
+			handlePacket(std::static_pointer_cast<GiveFileListPacket>(packet));
+			break;
+		default:
+			break;
+		}
+	}
 	return 0;
 }
 
@@ -151,4 +157,8 @@ void NetworkHandler::createBroadcastSocket()
 	}
 
 	freeifaddrs(addrs);
+}
+
+void NetworkHandler::handlePacket(std::shared_ptr<GiveFileListPacket> packet)
+{
 }

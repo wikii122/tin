@@ -4,6 +4,7 @@
 
 #include "handler.h"
 #include "packet/packet.h"
+#include "packet/giveFileListPacket.h"
 
 #include <string>
 #include <sys/socket.h>
@@ -37,6 +38,8 @@ public:
 	void addToQueue(std::shared_ptr<Packet> msg);
 
 	virtual int handle() override; //Blocking!
+
+	void handlePacket(std::shared_ptr<GiveFileListPacket> packet);
 
 	std::mutex queueMutex;
 	std::queue<std::shared_ptr<Packet>> queue;
