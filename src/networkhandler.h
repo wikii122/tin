@@ -7,6 +7,12 @@
 #include "handler.h"
 #include "packet/packet.h"
 #include "packet/giveFileListPacket.h"
+#include "packet/iHavePacket.h"
+#include "packet/giveMePacket.h"
+#include "packet/iGotPacket.h"
+#include "packet/objectionPacket.h"
+#include "packet/forgetPacket.h"
+#include "packet/iForgotPacket.h"
 
 #include <string>
 #include <sys/socket.h>
@@ -20,6 +26,9 @@ class NetworkHandler: public Handler
 	void sendBroadcast();
 
 	void createBroadcastSocket();
+
+	bool isObjected(std::string name, std::string md5);
+	void clearObjected(std::string name, std::string md5);
 
 	int sock;
 	sockaddr_in addr;
@@ -43,6 +52,14 @@ public:
 	int respond(std::string msg);
 
 	void handlePacket(std::shared_ptr<GiveFileListPacket> packet);
+	void handlePacket(std::shared_ptr<IHavePacket> packet);
+	void handlePacket(std::shared_ptr<GiveMePacket> packet);
+	void handlePacket(std::shared_ptr<IGotPacket> packet);
+	void handlePacket(std::shared_ptr<ObjectionPacket> packet);
+	void handlePacket(std::shared_ptr<IForgotPacket> packet);
+	void handlePacket(std::shared_ptr<ForgetPacket> packet);
+
+	std::vector<std::pair<std::string, std::string>> objected;
 
 	std::mutex queueMutex;
 	std::queue<std::shared_ptr<Packet>> queue;

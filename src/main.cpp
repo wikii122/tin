@@ -23,7 +23,7 @@ void clean_up();
 
 int main(int argc, char** argv)
 try {
-	/*NetworkHandler h;
+	NetworkHandler h;
 	if(argc > 3) {
 		while(true) h.handle();
 	}
@@ -32,7 +32,7 @@ try {
 		p->name = "costam";
 		h.addToQueue(p);
 		while(true) h.handle();
-	}*/
+	}
 	if (argc > 3) {
 		argc = 2;
 	}

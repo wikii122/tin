@@ -72,6 +72,24 @@ int NetworkHandler::handle()
 		case PacketType::GiveFileList:
 			handlePacket(std::static_pointer_cast<GiveFileListPacket>(packet));
 			break;
+		case PacketType::IHave:
+			handlePacket(std::static_pointer_cast<IHavePacket>(packet));
+			break;
+		case PacketType::GiveMe:
+			handlePacket(std::static_pointer_cast<GiveMePacket>(packet));
+			break;
+		case PacketType::IGot:
+			handlePacket(std::static_pointer_cast<IGotPacket>(packet));
+			break;
+		case PacketType::Objection:
+			handlePacket(std::static_pointer_cast<ObjectionPacket>(packet));
+			break;
+		case PacketType::IForgot:
+			handlePacket(std::static_pointer_cast<IForgotPacket>(packet));
+			break;
+		case PacketType::Forget:
+			handlePacket(std::static_pointer_cast<ForgetPacket>(packet));
+			break;
 		default:
 			break;
 		}
@@ -170,6 +188,50 @@ void NetworkHandler::createBroadcastSocket()
 	freeifaddrs(addrs);
 }
 
+bool NetworkHandler::isObjected(std::string name, std::string md5)
+{
+	for(auto i : objected)
+		if(i.first == name && i.second == md5)
+			return true;
+
+	return false;
+}
+
+void NetworkHandler::clearObjected(std::string name, std::string md5)
+{
+	auto i = 0;
+	for(auto it : objected)
+	{
+		if(it.first != name || it.second != md5)
+			objected[i++] = it;
+	}
+	objected.resize(i);
+}
+
 void NetworkHandler::handlePacket(std::shared_ptr<GiveFileListPacket> packet)
+{
+}
+
+void NetworkHandler::handlePacket(std::shared_ptr<IHavePacket> packet)
+{
+}
+
+void NetworkHandler::handlePacket(std::shared_ptr<GiveMePacket> packet)
+{
+}
+
+void NetworkHandler::handlePacket(std::shared_ptr<IGotPacket> packet)
+{
+}
+
+void NetworkHandler::handlePacket(std::shared_ptr<ObjectionPacket> packet)
+{
+}
+
+void NetworkHandler::handlePacket(std::shared_ptr<IForgotPacket> packet)
+{
+}
+
+void NetworkHandler::handlePacket(std::shared_ptr<ForgetPacket> packet)
 {
 }
