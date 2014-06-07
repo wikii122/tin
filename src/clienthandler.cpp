@@ -125,7 +125,7 @@ int ClientHandler::handle()
 		if (state) {
 			json_resp["msg"] = "File removed";
 			json_resp["display"] = false;
-			if (list[0].owner_name == server.get_name()) {
+			if (list[0].isOwner) {
 				auto packet = make_shared<ForgetPacket>();
 				packet->filename = name;
 				packet->md5 = list[0].md5;

@@ -31,7 +31,7 @@ Storage::Storage(const string& path): path(path)
 		for(Json::Value file: file_list) {
 			File file_desc;
 			file_desc.name = file["name"].asString();
-			file_desc.owner_name = file["owner"].asString();
+			file_desc.isOwner = file["owner"].asBool();
 			file_desc.local = true;
 			file_desc.expire_date = file["expire"].asInt64();
 			file_desc.md5 = file["md5"].asString();
@@ -55,7 +55,7 @@ Storage::~Storage() {
 			Json::Value file_desc;
 			auto list = Storage_info::get().file_info(file.name);
 			file_desc["name"] = file.name;
-			file_desc["owner"] = file.owner_name;
+			file_desc["owner"] = file.isOwner;
 			file_desc["expire"] = file.expire_date;
 			file_desc["md5"] = file.md5;
 			file_list["files"].append(file_desc);
@@ -69,7 +69,7 @@ Storage::~Storage() {
 	storage_file.close();
 }
 
-string Storage::add_file(const char* data, long size, string name, string owner, long long expire_date=0) {
+string Storage::add_file(const char* data, long size, string name, long long expire_date) {
 
     ofstream file;
 	string md5;
@@ -90,12 +90,16 @@ string Storage::add_file(const char* data, long size, string name, string owner,
     }
 	
     file.close();
-	Storage_info::get().add_file(name, owner, expire_date, md5);
+	if (expire_date == 0) {
+		Storage_info::get().add_file(name, true, expire_date, md5);
+	} else {
+		Storage_info::get().add_file(name, false, expire_date, md5);
+	}
 
     return md5;
 }
 
-string Storage::add_file(string src_path, string name)
+string Storage::add_file(string src_path, string name, bool local)
 {
 	auto dir = boost::filesystem::path(path);
 	dir = boost::filesystem::canonical(dir);
@@ -116,7 +120,7 @@ string Storage::add_file(string src_path, string name)
     File f;
     f.name = name;
 	// TODO change owner node.
-    f.owner_name = Server::get().get_name();
+    f.isOwner = local;
 	f.expire_date = 0;
 	f.md5 = md5;
 	f.local = true;
@@ -157,7 +161,7 @@ bool Storage::on_drive(string name)
 	return false;
 }
 
-bool Storage::add_file_part(const char * data, long part_size, long offset, string name, string owner_name) {
+bool Storage::add_file_part(const char * data, long part_size, long offset, string name) {
     for (File file : Storage_info::get().files) {
         if (file.name == name and file.local == true) {
             return false;
@@ -179,7 +183,7 @@ bool Storage::add_file_part(const char * data, long part_size, long offset, stri
 
     File meta;
     meta.name = name;
-    meta.owner_name = owner_name;
+    meta.isOwner = false;
     meta.local = false;
 
 	Storage_info::get().files.push_back(meta);
