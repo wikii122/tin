@@ -124,6 +124,15 @@ int NetworkHandler::write(std::string msg)
 	return 0;
 }
 
+int NetworkHandler::respond(std::string msg)
+{
+	if (sendto(sock, msg.c_str(), msg.length() + 1, 0, (sockaddr*) &sender, sizeof sender) == -1) {
+		printf("Error: %d\n", errno);
+		throw std::string("NetworkHandler::respond: Could not sendto");
+	}
+	return 0;
+}
+
 void NetworkHandler::createBroadcastSocket()
 {
 	sock = socket(AF_INET, SOCK_DGRAM, 0);

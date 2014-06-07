@@ -21,9 +21,6 @@ class NetworkHandler: public Handler
 
 	void createBroadcastSocket();
 
-	virtual auto read() -> std::string override; // Blocking
-	virtual int write(std::string) override;
-
 	int sock;
 	sockaddr_in addr;
 
@@ -40,6 +37,10 @@ public:
 	void addToQueue(std::shared_ptr<Packet> msg);
 
 	virtual int handle() override; //Blocking!
+	virtual auto read() -> std::string override; // Blocking
+	virtual int write(std::string) override;
+
+	int respond(std::string msg);
 
 	void handlePacket(std::shared_ptr<GiveFileListPacket> packet);
 
