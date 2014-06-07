@@ -2,7 +2,9 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include "server.h"
 #include "files/fileparts.h"
+#include "files/storage.h"
 
 using namespace std;
 
@@ -32,11 +34,10 @@ int FilePartManager::add_part(string name, string md5, char* buffer, long size, 
 	return 0;
 }
 
-bool FilePartManager::finalize(string name, string md5, string owner_name, long full_size)
+bool FilePartManager::finalize(string name, string md5, long full_size)
 {
 	FilePart& part = find(name, md5);
 	if (part.isFinished(full_size)) {
-		// TODO add file to storage
 		part.close();
 		for (auto it=parts.begin(); it!=parts.end(); it++) {
 			if ((*it)->is(name, md5)) {
@@ -98,4 +99,5 @@ void FilePartManager::FilePart::add_part(char* buffer, long part_size, long offs
 void FilePartManager::FilePart::close()
 {
 	file.close();
+	Server::get().get_storage().add_file("file_store/"+md5, name, false);	
 }

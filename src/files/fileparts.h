@@ -13,7 +13,7 @@ public:
 	~FilePartManager();
 	static FilePartManager& get();
 	int add_part(std::string name, std::string md5, char* buffer,  long size, long offset);
-	bool finalize(std::string name, std::string md5, std::string owner_name, long full_size);
+	bool finalize(std::string name, std::string md5, long full_size);
 private:
 	class FilePart {
 		long size;
