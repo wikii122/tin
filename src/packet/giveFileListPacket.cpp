@@ -1,5 +1,6 @@
 #include <jsoncpp/json/json.h>
 #include "packet/giveFileListPacket.h"
+#include "server.h"
 
 GiveFileListPacket::GiveFileListPacket(void)
 {
@@ -14,7 +15,7 @@ GiveFileListPacket::~GiveFileListPacket(void)
 std::string GiveFileListPacket::getData()
 {
 	if(name == "")
-		throw "GiveFileListPacket::getData(): No name entry";
+		name = Sever::get().get_name();
 
 	Json::Value root;
 

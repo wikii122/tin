@@ -1,5 +1,6 @@
 #include <jsoncpp/json/json.h>
 #include "packet/forgetPacket.h"
+#include "server.h"
 
 
 ForgetPacket::ForgetPacket(void)
@@ -15,7 +16,7 @@ ForgetPacket::~ForgetPacket(void)
 std::string ForgetPacket::getData()
 {
 	if(name == "")
-		throw "ForgetPacket::getData(): No name entry";
+		name = Sever::get().get_name();
 	if(filename == "")
 		throw "ForgetPacket::getData(): No filename entry";
 

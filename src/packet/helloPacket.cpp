@@ -1,5 +1,6 @@
 #include <jsoncpp/json/json.h>
 #include "packet/helloPacket.h"
+#include "server.h"
 
 
 HelloPacket::HelloPacket(void)
@@ -15,7 +16,7 @@ HelloPacket::~HelloPacket(void)
 std::string HelloPacket::getData()
 {
 	if(name == "")
-		throw "HelloPacket::getData(): No name entry";
+		name = Sever::get().get_name();
 
 	Json::Value root;
 

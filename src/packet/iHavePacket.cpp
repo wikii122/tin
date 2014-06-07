@@ -1,5 +1,6 @@
 #include <jsoncpp/json/json.h>
 #include "packet/iHavePacket.h"
+#include "server.h"
 
 
 IHavePacket::IHavePacket(void)
@@ -15,8 +16,7 @@ IHavePacket::~IHavePacket(void)
 std::string IHavePacket::getData()
 {
 	if(name == "")
-		throw "IHavePacket::getData(): No name entry";
-
+		name = Sever::get().get_name();
 	Json::Value root;
 
 	root["type"] = "IHave";
@@ -30,6 +30,7 @@ std::string IHavePacket::getData()
 		f["md5"] = file.md5;
 		f["expires"] = file.expires;
 		f["isOwner"] = file.isOwner;
+		
 
 		field.append(f);
 	}

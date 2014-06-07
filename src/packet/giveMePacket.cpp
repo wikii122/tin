@@ -1,5 +1,6 @@
 #include <jsoncpp/json/json.h>
 #include "packet/giveMePacket.h"
+#include "server.h"
 
 
 GiveMePacket::GiveMePacket(void)
@@ -15,7 +16,7 @@ GiveMePacket::~GiveMePacket(void)
 std::string GiveMePacket::getData()
 {
 	if(name == "")
-		throw "GiveMePacket::getData(): No name entry";
+		name = Sever::get().get_name();
 	if(filename == "")
 		throw "GiveMePacket::getData(): No filename entry";
 

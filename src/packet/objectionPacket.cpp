@@ -1,5 +1,6 @@
 #include <jsoncpp/json/json.h>
 #include "packet/objectionPacket.h"
+#include "server.h"
 
 
 ObjectionPacket::ObjectionPacket(void)
@@ -15,7 +16,7 @@ ObjectionPacket::~ObjectionPacket(void)
 std::string ObjectionPacket::getData()
 {
 	if(name == "")
-		throw "ObjectionPacket::getData(): No name entry";
+		name = Sever::get().get_name();
 	if(filename == "")
 		throw "ObjectionPacket::getData(): No filename entry";
 

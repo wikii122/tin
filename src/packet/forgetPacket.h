@@ -9,6 +9,7 @@
 #include "packet/packet.h"
 #include <vector>
 
+
 class ForgetPacket :	public Packet
 {
 public:
