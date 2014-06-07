@@ -17,9 +17,11 @@ Server::Server():
 
 	client_handler = new ClientHandler();
 	network_handler = new NetworkHandler();
+	connection_handler = new ConnectionHandler();
 
 	handlers.push_back(client_handler);
 	handlers.push_back(network_handler);
+	handlers.push_back(connection_handler);
 
 	if (!filesystem::exists(abs_path)) {
 		filesystem::create_directories(abs_path);
@@ -40,6 +42,7 @@ Server::~Server()
 	delete storage;
 	delete client_handler;
 	delete network_handler;
+	delete connection_handler;
 }
 
 int Server::set_name(string new_name)
