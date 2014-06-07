@@ -13,6 +13,12 @@
 
 #include "packet/packet.h"
 
+ConnectionHandler* ConnectionHandler::getInstance()
+{
+	static ConnectionHandler* instance = new ConnectionHandler();
+	return instance;
+}
+
 ConnectionHandler::ConnectionHandler()
 {
 }

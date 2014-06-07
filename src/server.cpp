@@ -16,7 +16,7 @@ Server::Server():
 	auto abs_path = filesystem::complete(rel_path);
 
 	client_handler = new ClientHandler();
-	network_handler = new NetworkHandler();
+	network_handler = NetworkHandler::getInstance();
 
 	handlers.push_back(client_handler);
 	handlers.push_back(network_handler);
@@ -39,7 +39,6 @@ Server::~Server()
 	running = false;
 	delete storage;
 	delete client_handler;
-	delete network_handler;
 }
 
 int Server::set_name(string new_name)

@@ -42,9 +42,11 @@ class NetworkHandler: public Handler
 	std::vector<sockaddr_in> ownAddr;
 
 	std::string buffer;
-public:
+
 	NetworkHandler();
 	~NetworkHandler();
+public:
+	static NetworkHandler* getInstance();
 
 	void addToQueue(std::shared_ptr<Packet> msg);
 
