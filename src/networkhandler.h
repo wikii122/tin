@@ -30,6 +30,9 @@ class NetworkHandler: public Handler
 	bool isObjected(std::string name, std::string md5);
 	void clearObjected(std::string name, std::string md5);
 
+	std::vector<std::pair<std::string, std::string>> getFiles();
+	void clearFiles();
+
 	int sock;
 	sockaddr_in addr;
 
@@ -60,6 +63,7 @@ public:
 	void handlePacket(std::shared_ptr<ForgetPacket> packet);
 
 	std::vector<std::pair<std::string, std::string>> objected;
+	std::vector<std::pair<std::string, std::string>> reportedFiles;
 
 	std::mutex queueMutex;
 	std::queue<std::shared_ptr<Packet>> queue;

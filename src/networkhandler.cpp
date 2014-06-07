@@ -208,12 +208,26 @@ void NetworkHandler::clearObjected(std::string name, std::string md5)
 	objected.resize(i);
 }
 
+std::vector<std::pair<std::string, std::string>> NetworkHandler::getFiles()
+{
+	return reportedFiles;
+}
+
+void NetworkHandler::clearFiles()
+{
+	reportedFiles.clear();
+}
+
 void NetworkHandler::handlePacket(std::shared_ptr<GiveFileListPacket> packet)
 {
 }
 
 void NetworkHandler::handlePacket(std::shared_ptr<IHavePacket> packet)
 {
+	for(auto x : packet->files)
+	{
+		reportedFiles.push_back(std::make_pair(x.name, x.md5));
+	}
 }
 
 void NetworkHandler::handlePacket(std::shared_ptr<GiveMePacket> packet)
@@ -226,6 +240,7 @@ void NetworkHandler::handlePacket(std::shared_ptr<IGotPacket> packet)
 
 void NetworkHandler::handlePacket(std::shared_ptr<ObjectionPacket> packet)
 {
+	objected.push_back(std::make_pair(packet->filename, packet->md5));
 }
 
 void NetworkHandler::handlePacket(std::shared_ptr<IForgotPacket> packet)
