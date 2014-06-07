@@ -73,13 +73,11 @@ int ClientHandler::handle()
 	auto req = static_pointer_cast<LocalPacket>(Packet::getPacket(msg));
 	Server& server = Server::get();
 	if (req->command == "LocalFileAdd") {
-		string name = req->name;
-		string file = req->file;
-		string state = server.get_storage().add_file(file, name);
+		string state = server.get_storage().add_file(req->file, req->name);
 		if (state != "") {
 			// TODO expiry (should be zero or date? It's not owner after all)
-			shared_ptr<IGotPacket> packet;
-			packet->filename = name;
+			auto packet = make_shared<IGotPacket>();
+			packet->filename = req->name;
 			packet->md5 = state;
 			server.network().addToQueue(packet);
 				
@@ -94,7 +92,7 @@ int ClientHandler::handle()
 		string file = req->file;
 		if (!server.get_storage().on_drive(name)) {
 			// TODO check if file exists at all.
-			shared_ptr<GiveMePacket> packet;
+			auto packet = make_shared<GiveMePacket>();
 			packet->filename = req->name;
 			auto list = server.get_storage_info().file_info(req->name);
 			if (list.size() == 1) {
@@ -128,7 +126,7 @@ int ClientHandler::handle()
 			json_resp["msg"] = "File removed";
 			json_resp["display"] = false;
 			if (list[0].owner_name == server.get_name()) {
-				shared_ptr<ForgetPacket> packet;
+				auto packet = make_shared<ForgetPacket>();
 				packet->name = name;
 				packet->md5 = list[0].md5;
 				server.network().addToQueue(packet);
@@ -139,7 +137,7 @@ int ClientHandler::handle()
 		}
 	} else if (req->command == "LocalDownload") {
 		// TODO check if file exists at all.
-		shared_ptr<GiveMePacket> packet;
+		auto packet = make_shared<GiveMePacket>();
 		packet->filename = req->name;
 		auto list = server.get_storage_info().file_info(req->name);
 		if (list.size() == 1) {
@@ -164,7 +162,7 @@ int ClientHandler::handle()
 			reader.parse(response, files);
 			json_resp["files"] = files["files"];
 		} else if (req->name == "rescan") {
-			shared_ptr<GiveFileListPacket> packet;
+			auto packet = make_shared<GiveFileListPacket>();
 			server.network().addToQueue(packet);	
 			json_resp["msg"] = "Refresh pending";
 			json_resp["display"] = true;
