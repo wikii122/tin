@@ -16,7 +16,7 @@ GiveMePacket::~GiveMePacket(void)
 std::string GiveMePacket::getData()
 {
 	if(name == "")
-		name = Sever::get().get_name();
+		name = Server::get().get_name();
 	if(filename == "")
 		throw "GiveMePacket::getData(): No filename entry";
 

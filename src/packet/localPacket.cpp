@@ -16,7 +16,7 @@ LocalPacket::~LocalPacket()
 auto LocalPacket::getData() -> std::string
 {
 	if (name == "")
-		name = Sever::get().get_name();
+		name = Server::get().get_name();
 	if (file == "")
 		throw "LocalPacket::getData(): No filename entry";
 	if (command == "")

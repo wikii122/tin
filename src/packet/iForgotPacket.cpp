@@ -16,7 +16,7 @@ IForgotPacket::~IForgotPacket(void)
 std::string IForgotPacket::getData()
 {
 	if(name == "")
-		name = Sever::get().get_name();
+		name = Server::get().get_name();
 	if(filename == "")
 		throw "IForgotPacket::getData(): No filename entry";
 
