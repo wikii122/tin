@@ -127,7 +127,7 @@ int ClientHandler::handle()
 			json_resp["display"] = false;
 			if (list[0].owner_name == server.get_name()) {
 				auto packet = make_shared<ForgetPacket>();
-				packet->name = name;
+				packet->filename = name;
 				packet->md5 = list[0].md5;
 				server.network().addToQueue(packet);
 			}

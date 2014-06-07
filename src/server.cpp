@@ -66,10 +66,16 @@ void Server::serve()
 				handler->handle();
 			} catch (exception err) {
 				cout << err.what() << endl;
+				terminate();
 			} catch (char* err) {
 				cout << err << endl;
+				terminate();
+			} catch (const char* err) {
+				cout << err << endl;
+				terminate();
 			} catch (string err) {
 				cout << err << endl;
+				terminate();
 			} /*catch (...) {
 				// pass
 			}*/

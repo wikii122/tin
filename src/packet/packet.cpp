@@ -11,11 +11,10 @@
 #include "packet/iForgotPacket.h"
 #include "packet/localPacket.h"
 
-Packet::Packet(void)
+Packet::Packet(void) 
 {
 
 }
-
 
 Packet::~Packet(void)
 {

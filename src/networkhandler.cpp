@@ -142,7 +142,7 @@ void NetworkHandler::createBroadcastSocket()
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(31337);
-	addr.sin_addr.s_addr = inet_addr("192.168.1.255");
+	addr.sin_addr.s_addr = inet_addr("192.168.0.255");
 
 	const int isTrue = 1;
 	timeval timeout;

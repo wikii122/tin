@@ -2,7 +2,7 @@
 #include "packet/iGotPacket.h"
 #include "server.h"
 
-IGotPacket::IGotPacket(void)
+IGotPacket::IGotPacket(void): name("NULL")
 {
 	type = PacketType::IHave;
 }
@@ -15,7 +15,7 @@ IGotPacket::~IGotPacket(void)
 std::string IGotPacket::getData()
 {
 	if(name == "")
-		name = Sever::get().get_name();
+		name = Server::get().get_name();
 	if(filename == "")
 		throw "IGotPacket::getData(): No filename entry";
 

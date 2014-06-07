@@ -16,7 +16,7 @@ ObjectionPacket::~ObjectionPacket(void)
 std::string ObjectionPacket::getData()
 {
 	if(name == "")
-		name = Sever::get().get_name();
+		name = Server::get().get_name();
 	if(filename == "")
 		throw "ObjectionPacket::getData(): No filename entry";
 
