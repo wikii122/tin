@@ -23,16 +23,9 @@ void clean_up();
 
 int main(int argc, char** argv)
 try {
-	/*NetworkHandler h;
-	if(argc > 3) {
-		while(true) h.handle();
-	}
-	else {
-		auto p = std::make_shared<HelloPacket>();
-		p->name = "costam";
-		h.addToQueue(p);
-		while(true) h.handle();
-	}*/
+	ConnectionHandler h;
+	while(true) h.handle();
+	
 	if (argc > 3) {
 		argc = 2;
 	}

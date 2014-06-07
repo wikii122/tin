@@ -1,5 +1,5 @@
 /*
- * Module responsible for handling networking
+ * Module responsible for handling TCP networking
  */
 
 #ifndef CONNECTION_HANDLER_
@@ -10,10 +10,7 @@
 #include "packet/iHavePacket.h"
 #include "packet/giveMePacket.h"
 #include "packet/iGotPacket.h"
-#include "packet/objectionPacket.h"
-#include "packet/forgetPacket.h"
-#include "packet/iForgotPacket.h"
-
+#include "connection.h"
 #include <string>
 #include <sys/socket.h>
 #include <netinet/in.h>  
@@ -23,6 +20,14 @@
 
 class ConnectionHandler: public Handler
 {
+	int listener;
+
+	std::vector<Connection> connections;
+
+	fd_set master;
+	int maxsock;
+
+	void createListenerSocket();
 public:
 	ConnectionHandler();
 	~ConnectionHandler();
