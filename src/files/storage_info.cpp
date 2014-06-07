@@ -40,7 +40,7 @@ bool Storage_info::add_file(const string& name, const string& owner_name, long l
 
 IHavePacket Storage_info::list_files_json(bool all) {
 	IHavePacket packet;
-	Storage storage = Server::get().get_storage();
+	Storage& storage = Server::get().get_storage();
 
 	packet.name = host_name;
 	for (File file: files) {

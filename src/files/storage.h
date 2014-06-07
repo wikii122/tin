@@ -9,6 +9,7 @@ class Storage {
 
 public:
     Storage(const std::string& path);
+    Storage(const Storage&) = delete;
 	~Storage();
 
     /* 

@@ -2,6 +2,8 @@
  * Module responsible for handling networking
  */
 
+#ifndef NETWORK_HANDLER_
+#define NETWORK_HANDLER_
 #include "handler.h"
 #include "packet/packet.h"
 #include "packet/giveFileListPacket.h"
@@ -44,3 +46,4 @@ public:
 	std::mutex queueMutex;
 	std::queue<std::shared_ptr<Packet>> queue;
 };
+#endif

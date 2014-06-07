@@ -4,6 +4,8 @@
  * keeps it open for life of the process.
  */
 
+#ifndef CLIENT_HANDLER_H_
+#define CLIENT_HANDLER_H_
 #include <string>
 #include <sys/socket.h>
 #include "handler.h"
@@ -31,3 +33,5 @@ public:
 	auto read() -> std::string;
 	int write(const char msg[], int len);
 };
+
+#endif

@@ -1,7 +1,9 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include "clienthandler.h"
 #include "handler.h"
+#include "networkhandler.h"
 #include "files/storage.h"
 #include "files/storage_info.h"
 #ifndef SERVER_H_
@@ -18,17 +20,21 @@ class Server
 	std::vector<Handler*> handlers;
 	std::thread threads[no_threads];
 	Storage* storage;
+	NetworkHandler* network_handler;
+	ClientHandler* client_handler;
 
 	Server();
 	void start(Handler* handler);
 public:
 	static Server& get();
+	Server(const Server&) = delete;
 	~Server();
 	
 	int  set_name(std::string new_name);
 	auto get_name() -> std::string;
 	void serve();
-	void register_handler(Handler* handler);
+	ClientHandler& client();
+	NetworkHandler& network();
 	Storage& get_storage();
 	Storage_info& get_storage_info();
 };

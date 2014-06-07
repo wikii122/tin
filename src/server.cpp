@@ -2,6 +2,8 @@
 #include <string>
 #include <thread>
 #include <boost/filesystem.hpp>
+#include "clienthandler.h"
+#include "networkhandler.h"
 #include "server.h"
 
 namespace filesystem=boost::filesystem;
@@ -12,6 +14,12 @@ Server::Server():
 	running(false) {
 	auto rel_path = filesystem::path("file_store");
 	auto abs_path = filesystem::complete(rel_path);
+
+	client_handler = new ClientHandler();
+	network_handler = new NetworkHandler();
+
+	handlers.push_back(client_handler);
+	handlers.push_back(network_handler);
 
 	if (!filesystem::exists(abs_path)) {
 		filesystem::create_directories(abs_path);
@@ -30,6 +38,8 @@ Server::~Server()
 {
 	running = false;
 	delete storage;
+	delete client_handler;
+	delete network_handler;
 }
 
 int Server::set_name(string new_name)
@@ -75,11 +85,6 @@ void Server::serve()
 	threads[0].join();
 }
 
-void Server::register_handler(Handler* handler)
-{
-	handlers.push_back(handler);
-}
-
 Storage& Server::get_storage()
 {
 	return *storage;
@@ -88,4 +93,14 @@ Storage& Server::get_storage()
 Storage_info& Server::get_storage_info()
 {
 	return Storage_info::get();
+}
+
+ClientHandler& Server::client()
+{
+	return *client_handler;
+}
+
+NetworkHandler& Server::network()
+{
+	return *network_handler;
 }

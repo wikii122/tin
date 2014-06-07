@@ -16,6 +16,7 @@ struct File {
 class Storage_info {
 	friend class Storage;
     Storage_info();
+    Storage_info(const Storage_info&) = delete;
 public:
 	static Storage_info& get();
 	void set_name(std::string name);
