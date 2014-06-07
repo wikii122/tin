@@ -1,6 +1,7 @@
 #include "networkhandler.h"
 
 #include <sys/socket.h>
+#include <iostream>
 #include <netinet/in.h>  
 #include <arpa/inet.h> 
 #include <string.h>
@@ -145,8 +146,9 @@ void NetworkHandler::createBroadcastSocket()
 	if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) == -1)
 		throw std::string("NetworkHandler::createBroadcastSocket: Could not setsockopt(SRCVTIMEO)");
 
-	if (bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1)
+	if (bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1) {
 		throw std::string("NetworkHandler::createBroadcastSocket: Could not bind socket");
+	}
 
 	ifaddrs* addrs;
 	getifaddrs(&addrs);

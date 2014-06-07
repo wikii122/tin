@@ -11,6 +11,10 @@
 #include "client/client.h"
 #include "files/storage.h"
 #include "files/storage_info.h"
+#include "packet/forgetPacket.h"
+#include "packet/giveFileListPacket.h"
+#include "packet/giveMePacket.h"
+#include "packet/iGotPacket.h"
 #include "packet/localPacket.h"
 #include "packet/packet.h"
 
@@ -67,15 +71,18 @@ int ClientHandler::handle()
 	Json::StyledWriter writer;
 	Json::Value json_resp;
 	auto req = static_pointer_cast<LocalPacket>(Packet::getPacket(msg));
+	Server& server = Server::get();
 	if (req->command == "LocalFileAdd") {
 		string name = req->name;
 		string file = req->file;
-		Server& server = Server::get();
 		string state = server.get_storage().add_file(file, name);
 		if (state != "") {
-			// TODO randomize owner
-			// TODO expiry
-			// TODO md5 calculation
+			// TODO expiry (should be zero or date? It's not owner after all)
+			shared_ptr<IGotPacket> packet;
+			packet->filename = name;
+			packet->md5 = state;
+			server.network().addToQueue(packet);
+				
 			json_resp["msg"] = "OK";
 			json_resp["display"] = false;
 		} else {
@@ -85,9 +92,24 @@ int ClientHandler::handle()
 	} else if (req->command == "LocalFileGet") {
 		string name = req->name;
 		string file = req->file;
-		Server& server = Server::get();
 		if (!server.get_storage().on_drive(name)) {
-			// TODO download file.
+			// TODO check if file exists at all.
+			shared_ptr<GiveMePacket> packet;
+			packet->filename = req->name;
+			auto list = server.get_storage_info().file_info(req->name);
+			if (list.size() == 1) {
+				packet->md5 = list[0].md5;
+				packet->original = false;
+				server.network().addToQueue(packet);
+			} else {
+				// TODO handle this.
+				json_resp["msg"] = "Too many files in database, not yet supported";
+				json_resp["display"] = true;
+				response = writer.write(json_resp);
+				write(response);
+
+				return 0;
+			}
 		}
 		bool state = server.get_storage().copy_file(file, name);
 		if (state) {
@@ -99,23 +121,40 @@ int ClientHandler::handle()
 		}	
 	} else if (req->command == "LocalRemove") {
 		string name = req->name;
-		Server& server = Server::get();
+		auto list = server.get_storage_info().file_info(name);
 		// TODO check if exists.
 		bool state = server.get_storage().remove_file(name);
 		if (state) {
-			server.get_storage_info().remove(name);
 			json_resp["msg"] = "File removed";
 			json_resp["display"] = false;
+			if (list[0].owner_name == server.get_name()) {
+				shared_ptr<ForgetPacket> packet;
+				packet->name = name;
+				packet->md5 = list[0].md5;
+				server.network().addToQueue(packet);
+			}
 		} else {
-			json_resp["msg"] = "File not found";
+			json_resp["msg"] = "Failed to remove file";
 			json_resp["display"] = true;
-		}	
+		}
 	} else if (req->command == "LocalDownload") {
-		// TODO downloading file
-
+		// TODO check if file exists at all.
+		shared_ptr<GiveMePacket> packet;
+		packet->filename = req->name;
+		auto list = server.get_storage_info().file_info(req->name);
+		if (list.size() == 1) {
+			json_resp["msg"] = "Download pending";
+			json_resp["display"] = true;
+			packet->md5 = list[0].md5;
+			packet->original = false;
+			server.network().addToQueue(packet);
+		} else {
+			// TODO handle this.
+			json_resp["msg"] = "Too many files in database, not yet supported";
+			json_resp["display"] = true;
+		}
 	} else if (req->command == "LocalRequest") {
 		if (req->name == "filelist") {
-			Server& server = Server::get();
 			Json::Reader reader;
 			Json::Value files;
 			json_resp["msg"] = "";
@@ -124,11 +163,14 @@ int ClientHandler::handle()
 			response = server.get_storage_info().list_files_json(true).getData();
 			reader.parse(response, files);
 			json_resp["files"] = files["files"];
-
 		} else if (req->name == "rescan") {
-			// TODO rescan
+			shared_ptr<GiveFileListPacket> packet;
+			server.network().addToQueue(packet);	
+			json_resp["msg"] = "Refresh pending";
+			json_resp["display"] = true;
 		} else {
-			throw "Unknown request";
+			json_resp["msg"] = "Unknown command";
+			json_resp["display"] = true;
 		}
 	} else {
 		throw string("ClientHandler::handle: Unknown command");

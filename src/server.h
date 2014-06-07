@@ -9,7 +9,7 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-static char lock_file_name[] = "server.lock";
+static const char lock_file_name[] = "server.lock";
 
 class Server
 {
