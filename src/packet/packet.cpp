@@ -60,7 +60,7 @@ std::shared_ptr<Packet> Packet::getPacket(std::string data)
 		for(unsigned int i = 0; i < root.get("files", "").size(); ++i)
 		{
 			IHavePacketFile file;
-			file.name = root.get("files", "")[i]["name"].asString();
+			file.name = root.get("files", "")[i]["file"].asString();
 			file.md5 = root.get("files", "")[i]["md5"].asString();
 			file.expires = root.get("files", "")[i]["expires"].asInt64();
 			file.isOwner = root.get("files", "")[i]["isOwner"].asBool();

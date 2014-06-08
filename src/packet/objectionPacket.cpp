@@ -5,7 +5,7 @@
 
 ObjectionPacket::ObjectionPacket(void)
 {
-	type = PacketType::IHave;
+	type = PacketType::Objection;
 }
 
 
