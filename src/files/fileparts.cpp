@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <mutex>
 #include <string>
@@ -54,6 +55,14 @@ bool FilePartManager::finalize(string name, string md5, long full_size)
 	return false;
 }
 
+long FilePartManager::find_gap(string name, string md5)
+{
+	FilePart& part = find(name, md5);
+	long offset = part.first_gap();
+	return offset;
+}
+
+
 auto FilePartManager::find(string name, string md5) -> FilePart&
 {
 	for (FilePart* part: parts) {
@@ -93,6 +102,8 @@ void FilePartManager::FilePart::add_part(char* buffer, long part_size, long offs
 	file.seekp(offset);	
 	file.write(buffer, part_size);
 	size += part_size;
+	part_sizes.push_back(make_pair(offset, part_size));
+	sort(part_sizes.begin(), part_sizes.end());
 	mutex.unlock();
 }
 
@@ -100,4 +111,18 @@ void FilePartManager::FilePart::close()
 {
 	file.close();
 	Server::get().get_storage().add_file("file_store/"+md5, name, false);	
+}
+
+long FilePartManager::FilePart::first_gap()
+{
+	long size = 0;
+	for (pair<long, long> csize: part_sizes) {
+		if (csize.first <= size) {
+			long diff = csize.second - (size - csize.first);
+			size += diff>0? diff:0;
+		} else {
+			return size;
+		}
+	}
+	return size;
 }
