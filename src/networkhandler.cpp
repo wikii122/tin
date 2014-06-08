@@ -270,7 +270,14 @@ void NetworkHandler::handlePacket(std::shared_ptr<IGotPacket> packet)
 void NetworkHandler::handlePacket(std::shared_ptr<ObjectionPacket> packet)
 {
 	// Assuming file is not on drive yet
-	Storage_info::get().remove(packet->name, packet->md5);
+	//Storage_info::get().remove(packet->name, packet->md5);
+	auto list = Storage_info::get().file_info(packet->name);
+	for (File f: list) {
+		if (f.md5 == packet->md5) {
+			Storage_info::get().add_file(f.name, false, f.expire_date, f.md5, f.local);
+			break;
+		}
+	}
 	//objected.push_back(std::make_pair(packet->filename, packet->md5));
 }
 
