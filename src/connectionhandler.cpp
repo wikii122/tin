@@ -28,8 +28,11 @@ int ConnectionHandler::handle()
 {
 	while(true) {
 		fd_set read;
+		fd_set write;
 		memcpy(&read, &master, sizeof(master));
-		select(maxsock+1, &read, NULL, NULL, NULL);
+		memcpy(&write, &master, sizeof(master));
+		select(maxsock+1, &read, &write, NULL, NULL);
+
 
 		if(FD_ISSET(listener, &read)) {
 			sockaddr_in addr;
@@ -40,11 +43,29 @@ int ConnectionHandler::handle()
 			conn.incoming = true;
 			conn.socket = sock;
 
+			if(sock > maxsock)
+				maxsock = sock;
+
 			connections.push_back(conn);
+		}
+
+		for(auto conn : connections) {
+			if (conn.incoming) {
+				if(FD_ISSET(conn.socket, &write) && (conn.state == ConnectionState::PartInfo))
+					conn.handle();
+				if(FD_ISSET(conn.socket, &read) && (conn.state == ConnectionState::Intro || conn.state == ConnectionState::Data))
+					conn.handle();
+			}
+			else {
+				if(FD_ISSET(conn.socket, &read) && (conn.state == ConnectionState::PartInfo))
+					conn.handle();
+				if(FD_ISSET(conn.socket, &write) && (conn.state == ConnectionState::Intro || conn.state == ConnectionState::Data))
+					conn.handle();
+			}
 		}
 	}
 }
-
+ 
 auto ConnectionHandler::read() -> std::string
 {
 	return "";
