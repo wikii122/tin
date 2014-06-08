@@ -150,10 +150,11 @@ bool Storage::copy_file(string name, string dst_path)
 	return true;
 }
 
-bool Storage::on_drive(string name) 
+bool Storage::on_drive(string name, string md5) 
 {
+	bool ignore = (md5 == "");
 	for (File file: Storage_info::get().files) {
-		if (file.name == name) {
+		if (file.name == name and (file.md5 == md5 or ignore)) {
 			return true;
 		}
 	}

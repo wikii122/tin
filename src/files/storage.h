@@ -28,7 +28,7 @@ public:
 	auto add_file(std::string path, std::string name, bool local=true) -> std::string;
 	// Kopiuje wybrany plik do podanego katalogu
 	bool copy_file(std::string name, std::string path);
-	bool on_drive(std::string name);
+	bool on_drive(std::string name, std::string md5="");
 	
     /* dodaje czesc pliku
      * jeżeli zadna czesc nie zostala jeszcze dodana, to plik zostanie utworzony */
