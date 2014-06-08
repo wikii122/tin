@@ -38,7 +38,7 @@ public:
     bool finish_file(std::string name);
     bool is_finished(std::string name);
 
-	bool remove_file(const std::string& name);
+	bool remove_file(const std::string& name, const std::string& md5);
 	/* 
 	 * zwraca plikostrukturę LoadedFile
      * jezeli pliku nie udalo sie odczytac, to jest zwracany pusty wskaznik 

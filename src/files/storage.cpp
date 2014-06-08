@@ -213,11 +213,11 @@ bool Storage::is_finished(string name) {
     return false;
 }
 
-bool Storage::remove_file(const string& name) {
+bool Storage::remove_file(const string& name, const string& md5) {
 	auto list = Storage_info::get().files;
     std::vector<File>::iterator iter = list.begin();
     while (iter != Storage_info::get().files.end()) {
-        if (iter->name == name) {
+        if (iter->name == name and iter->md5 == md5) {
             stringstream n;
             n << path << "/" << name << "." << list[list.size()-1].md5;
             remove(n.str().c_str());

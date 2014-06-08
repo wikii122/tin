@@ -253,6 +253,6 @@ void NetworkHandler::handlePacket(std::shared_ptr<IForgotPacket> packet)
 void NetworkHandler::handlePacket(std::shared_ptr<ForgetPacket> packet)
 {
 	
-	Server::get().get_storage().remove_file(packet->filename);
+	Server::get().get_storage().remove_file(packet->filename, packet->md5);
 	
 }
