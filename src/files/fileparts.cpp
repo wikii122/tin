@@ -44,7 +44,7 @@ bool FilePartManager::finalize(string name, string md5, long long full_size)
 			if ((*it)->is(name, md5)) {
 				if ((*it)->isFinished(full_size)) {
 					delete *it;
-					parts.erase(it);
+					it = parts.erase(it);
 				} else { 
 					break;
 				}
