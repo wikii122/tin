@@ -29,3 +29,8 @@ server
 # Temporary files
 *.swp
 file_store/
+
+# Doxygen
+Doxyfile
+doc/html
+doc/latex
