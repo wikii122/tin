@@ -69,14 +69,14 @@ Storage::~Storage() {
 	storage_file.close();
 }
 
-string Storage::add_file(const char* data, long size, string name, long long expire_date) {
+string Storage::add_file(const char* data, long long size, string name, long long expire_date) {
 
     ofstream file;
 	string md5;
 
 	md5 = MD5(string(data, data+size)).hexdigest();
 
-    for(long i = 0; i < size; i++) {
+    for(long long i = 0; i < size; i++) {
         stringstream n;
         n << path << "/" << name << "." << md5;
 
@@ -162,7 +162,7 @@ bool Storage::on_drive(string name, string md5)
 	return false;
 }
 
-bool Storage::add_file_part(const char * data, long part_size, long offset, string name) {
+bool Storage::add_file_part(const char * data, long long part_size, long long offset, string name) {
     for (File file : Storage_info::get().files) {
         if (file.name == name and file.local == true) {
             return false;
