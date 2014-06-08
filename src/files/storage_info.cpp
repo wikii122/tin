@@ -25,16 +25,22 @@ Storage_info& Storage_info::get()
 }
 
 bool Storage_info::add_file(const string& name, bool owner_name, long long date, const string& md5, bool local) {
+	for (File file: files) {
+		if (file.name == name and file.md5 == md5) {
+			file.isOwner = owner_name;
+			file.expire_date = date;
+			file.local = local;
+			return true;
+		}
+	}
     File f;
     f.name = name;
     f.isOwner = owner_name;
     f.md5 = md5;
 	f.expire_date = date;
 	f.local = local;
-
     files.push_back(f);
 
-    /* nie jest potrzebne sprawdzanie, czy taki plik istnieje? */
     return true;
 }
 
