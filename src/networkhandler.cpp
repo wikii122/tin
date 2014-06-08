@@ -264,8 +264,6 @@ void NetworkHandler::handlePacket(std::shared_ptr<IGotPacket> packet)
 			return;
 		}
 	}
-	// TODO expire date
-	Storage_info::get().add_file(packet->name, false, 0, packet->md5, false); 
 
 }
 
