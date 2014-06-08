@@ -116,13 +116,20 @@ int ClientHandler::handle()
 		}	
 	} else if (req->command == "LocalRemove") {
 		string name = req->name;
+		string md5 = "";
+		bool owner;
 		auto list = server.get_storage_info().file_info(name);
-		string md5 = list[0].md5;
+		for(File file: list) {
+			if (file.local) {
+				md5 = file.md5;
+				owner = file.isOwner;
+			}
+		}
 		bool state = server.get_storage().remove_file(name, md5);
-		if (state) {
+		if (md5 != "" and state) {
 			json_resp["msg"] = "File removed";
 			json_resp["display"] = false;
-			if (list[0].isOwner) {
+			if (owner) {
 				auto packet = make_shared<ForgetPacket>();
 				packet->filename = name;
 				packet->md5 = md5;
