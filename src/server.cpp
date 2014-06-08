@@ -39,10 +39,10 @@ Server& Server::get()
 Server::~Server()
 {
 	running = false;
-	delete storage;
 	delete client_handler;
 	delete network_handler;
 	delete connection_handler;
+	delete storage;
 }
 
 int Server::set_name(string new_name)
