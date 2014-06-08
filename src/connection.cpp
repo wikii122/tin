@@ -5,12 +5,14 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <cstring>
+#include <iostream>
 
 
 Connection::Connection()
 {
 	buffer = new char[1024];
 	state = ConnectionState::Intro;
+	transferred = 0;
 }
 
 void Connection::handle()
@@ -55,8 +57,10 @@ void Connection::handleIncoming()
 				md5 += buffer[i];
 			}
 			i++;
-			size = *((long long*)buffer+i);
-			expiry = *((long long*)buffer+1+sizeof(long long)+i);
+			size = *((long long*)(buffer+i));
+			expiry = *((long long*)(buffer+1+sizeof(long long)+i));
+
+			std::cout << "Receiving: " << name << std::endl << "MD5: " << md5 << std::endl << "Size: " << size << std::endl << "Expiry:" << expiry << std::endl;
 
 			Storage& storage = Server::get().get_storage();
 			std::shared_ptr<LoadedFile> file = storage.get_file(name, md5);
@@ -91,15 +95,17 @@ void Connection::handleIncoming()
 			throw std::string("ConnectionHandler::handleIncoming: Could not recv");
 		transferred += delta;
 
+		std::cout << "Downloaded " << 100*transferred/partSize << "% of a part, " << 100*transferred/size << "% of the file" << std::endl;
+
 		if(transferred >= size)
 		{
 			FilePartManager::get().add_part(name, md5, buffer, 10240, offset);
 			if (FilePartManager::get().find_gap(name, md5) >= size)
 				FilePartManager::get().finalize(name, md5, size);
-		}
 
-		transferred = 0;
-		state = ConnectionState::PartInfo;
+			transferred = 0;
+			state = ConnectionState::PartInfo;
+		}
 
 		break;
 	}
@@ -123,6 +129,8 @@ void Connection::handleOutgoing()
 		send(socket, (void*)&expiry, 8, 0);
 		send(socket, "\n", 1, 0);
 
+		std::cout << "POSZLO INTRO" << std::endl;
+
 		transferred = 0;
 		state = ConnectionState::PartInfo;
 
@@ -142,8 +150,10 @@ void Connection::handleOutgoing()
 				complete++;
 
 		if(complete >= 2) {
-			offset = *((long long*)buffer);
-			partSize = *((long long*)buffer+1+sizeof(long long));
+			offset = *((long long*)(buffer));
+			partSize = *((long long*)(buffer+1+sizeof(long long)));
+
+			std::cout << "Sending: " << name << std::endl << "Offset: " << offset << std::endl << "partSize: " << partSize << std::endl;
 
 			Storage& storage = Server::get().get_storage();
 			std::shared_ptr<LoadedFile> file = storage.get_file(name, md5);
@@ -159,6 +169,8 @@ void Connection::handleOutgoing()
 			throw std::string("ConnectionHandler::handleOutgoing: Could not send");
 
 		transferred += toUpload;
+
+		std::cout << "Uploaded " << 100*transferred/partSize << "% of a part, " << 100*transferred/size << "% of the file" << std::endl;
 
 		if(transferred >= partSize)
 			state = ConnectionState::PartInfo;

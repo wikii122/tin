@@ -96,7 +96,7 @@ int ClientHandler::handle()
 	} else if (req->command == "LocalFileGet") {
 		string name = req->name;
 		string file = req->file;
-		auto list = server.get_storage_info().file_info(req->name);
+		auto list = server.get_storage_info().file_info(req->file);
 		if (list.size() == 0) {
 			json_resp["msg"] = "File not in network";
 			json_resp["display"] = true;
@@ -106,22 +106,26 @@ int ClientHandler::handle()
 		}
 		string md5 = list[list.size()-1].md5;
 		if (!server.get_storage().on_drive(name, md5)) {
-			auto packet = make_shared<GiveMePacket>();
+			json_resp["msg"] = "File not downloaded";
+			json_resp["display"] = true;
+			/*auto packet = make_shared<GiveMePacket>();
 			packet->filename = req->name;
 			packet->md5 = list[list.size()-1].md5;
 			packet->original = false;
-			server.network().addToQueue(packet);
+			server.network().addToQueue(packet);*/
 		}
-		bool state = server.get_storage().copy_file(file, name);
-		if (state) {
-			json_resp["msg"] = "OK";
-			json_resp["display"] = false;
-		} else {
-			json_resp["msg"] = "File could not be copied";
-			json_resp["display"] = true;
-		}	
+		else {
+			bool state = server.get_storage().copy_file(file, name);
+			if (state) {
+				json_resp["msg"] = "OK";
+				json_resp["display"] = false;
+			} else {
+				json_resp["msg"] = "File could not be copied";
+				json_resp["display"] = true;
+			}	
+		}
 	} else if (req->command == "LocalRemove") {
-		string name = req->name;
+		string name = req->file;
 		string md5 = "";
 		bool owner;
 		auto list = server.get_storage_info().file_info(name);
@@ -147,8 +151,8 @@ int ClientHandler::handle()
 		}
 	} else if (req->command == "LocalDownload") {
 		auto packet = make_shared<GiveMePacket>();
-		packet->filename = req->name;
-		auto list = server.get_storage_info().file_info(req->name);
+		//std::cout << "TATATATATATATA:" << req->file << std::endl;
+		auto list = server.get_storage_info().file_info(req->file);
 		if (list.size() == 0) {
 			json_resp["msg"] = "File not in network";
 			json_resp["display"] = true;
@@ -159,6 +163,7 @@ int ClientHandler::handle()
 		json_resp["msg"] = "Download pending";
 		json_resp["display"] = true;
 		packet->md5 = list[list.size()-1].md5;
+		packet->filename = req->file;
 		packet->original = false;
 		server.network().addToQueue(packet);
 	} else if (req->command == "LocalRequest") {

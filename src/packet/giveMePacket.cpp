@@ -5,7 +5,7 @@
 
 GiveMePacket::GiveMePacket(void)
 {
-	type = PacketType::IHave;
+	type = PacketType::GiveMe;
 }
 
 

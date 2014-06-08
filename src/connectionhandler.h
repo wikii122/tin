@@ -37,5 +37,7 @@ public:
 	virtual int handle() override; //Blocking!
 	virtual auto read() -> std::string override; // Blocking
 	virtual int write(std::string) override;
+
+	std::mutex mutex;
 };
 #endif

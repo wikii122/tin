@@ -26,27 +26,19 @@ ConnectionHandler::~ConnectionHandler()
 
 int ConnectionHandler::handle()
 {
-	for(auto a : connections) {
-		if(!a.socket) {
-
-			a.socket = socket(AF_INET, SOCK_STREAM, 0);
-
-			if(a.socket == -1)
-				throw std::string("ConnectionHandler::handle: Could not create socket");
-
-			if (bind(a.socket, (sockaddr*)&a.addr, sizeof(a.addr)) == -1)
-				throw std::string("ConnectionHandler::handle: Could not bind socket");
-		}
-	}
-
 	fd_set read;
 	fd_set write;
 	memcpy(&read, &master, sizeof(master));
 	memcpy(&write, &master, sizeof(master));
-	select(maxsock+1, &read, &write, NULL, NULL);
 
+	timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 0;
+
+	select(maxsock+1, &read, &write, NULL, &timeout);
 
 	if(FD_ISSET(listener, &read)) {
+		std::cout << "MAMCOS" << std::endl;
 		sockaddr_in addr;
 		unsigned int addrLen = sizeof(addr);
 		int sock = accept(listener, (sockaddr*)&addr, &addrLen);
@@ -58,10 +50,15 @@ int ConnectionHandler::handle()
 		if(sock > maxsock)
 			maxsock = sock;
 
-		connections.push_back(conn);
+		FD_SET(conn.socket, &master);
+
+		mutex.lock();
+			connections.push_back(conn);
+		mutex.unlock();
 	}
 
-	for(auto conn : connections) {
+	mutex.lock();
+	for(auto& conn : connections) {
 		if (conn.incoming) {
 			if(FD_ISSET(conn.socket, &write) && (conn.state == ConnectionState::PartInfo))
 				conn.handle();
@@ -74,7 +71,21 @@ int ConnectionHandler::handle()
 			if(FD_ISSET(conn.socket, &write) && (conn.state == ConnectionState::Intro || conn.state == ConnectionState::Data))
 				conn.handle();
 		}
+		if (conn.socket == -1) {
+			if (-1 == (conn.socket = socket(AF_INET, SOCK_STREAM, 0))) {
+				std::cout << "ERRNO " << errno << std::endl;
+				throw std::string("ConnectionHandler::handle: Could not create socket");
+			}
+			if (-1 == connect(conn.socket, (sockaddr*)&(conn.addr), sizeof conn.addr))
+				throw std::string("ConnectionHandler::handle: Could not connect");
+
+			if(conn.socket > maxsock)
+				maxsock = conn.socket;
+
+			FD_SET(conn.socket, &master);
+		}
 	}
+	mutex.unlock();
 
 	return 0;
 }
@@ -82,12 +93,17 @@ int ConnectionHandler::handle()
 void ConnectionHandler::upload(std::string name, std::string md5, long long expire, long long size, sockaddr_in addr)
 {
 	Connection conn;
+	conn.socket = -1;
+	conn.incoming = false;
 	conn.name = name;
 	conn.md5 = md5;
 	conn.expiry = expire;
 	conn.size = size;
 	conn.addr = addr;
-	connections.push_back(conn);
+
+	mutex.lock();
+		connections.push_back(conn);
+	mutex.unlock();
 }
  
 auto ConnectionHandler::read() -> std::string
