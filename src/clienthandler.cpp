@@ -173,6 +173,7 @@ int ClientHandler::handle()
 			json_resp["files"] = files["files"];
 		} else if (req->name == "rescan") {
 			auto packet = make_shared<GiveFileListPacket>();
+			Storage_info::get().clear();
 			server.network().addToQueue(packet);	
 			json_resp["msg"] = "Refresh pending";
 			json_resp["display"] = true;

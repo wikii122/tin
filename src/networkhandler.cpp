@@ -237,7 +237,8 @@ void NetworkHandler::handlePacket(std::shared_ptr<IHavePacket> packet)
 {
 	for(auto x : packet->files)
 	{
-		reportedFiles.push_back(std::make_pair(x.name, x.md5));
+		Storage_info::get().add_file(x.name, false, x.expires, x.md5, false); 
+		//reportedFiles.push_back(std::make_pair(x.name, x.md5));
 	}
 }
 
@@ -260,13 +261,19 @@ void NetworkHandler::handlePacket(std::shared_ptr<IGotPacket> packet)
 			response.filename = packet->filename;
 			response.md5 = packet->md5;
 			respond(response.getData());
+			return;
 		}
 	}
+	// TODO expire date
+	Storage_info::get().add_file(packet->name, false, 0, packet->md5, false); 
+
 }
 
 void NetworkHandler::handlePacket(std::shared_ptr<ObjectionPacket> packet)
 {
-	objected.push_back(std::make_pair(packet->filename, packet->md5));
+	// Assuming file is not on drive yet
+	Storage_info::get().remove(packet->name, packet->md5);
+	//objected.push_back(std::make_pair(packet->filename, packet->md5));
 }
 
 void NetworkHandler::handlePacket(std::shared_ptr<IForgotPacket> packet)

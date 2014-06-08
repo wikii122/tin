@@ -89,6 +89,14 @@ vector<File> Storage_info::file_info(string name)
 	return result;
 }
 
+void Storage_info::clear()
+{
+	for (auto it=files.begin(); it!=files.end(); it++) {
+		if (!it->local) {
+			files.erase(it);
+		}
+	}
+}
 
 /*
 int main() {

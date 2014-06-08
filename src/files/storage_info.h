@@ -24,6 +24,7 @@ public:
 	bool remove(const std::string& name, const std::string& md5);
 	auto file_info(std::string name) -> std::vector<File>;
     IHavePacket list_files_json(bool all);
+	void clear();
 
 private:
 	std::vector<File> files;
