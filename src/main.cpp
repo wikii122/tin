@@ -23,8 +23,8 @@ void clean_up();
 
 int main(int argc, char** argv)
 try {
-	ConnectionHandler h;
-	while(true) h.handle();
+	//ConnectionHandler h;
+	//while(true) h.handle();
 	
 	if (argc > 3) {
 		argc = 2;

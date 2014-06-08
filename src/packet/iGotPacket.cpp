@@ -4,7 +4,7 @@
 
 IGotPacket::IGotPacket(void): name("NULL")
 {
-	type = PacketType::IHave;
+	type = PacketType::IGot;
 }
 
 

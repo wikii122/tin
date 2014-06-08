@@ -129,8 +129,10 @@ auto NetworkHandler::read() -> std::string
 				ret = false;
 	}
 
-	if (ret)
+	if (ret) {
+		std:: cout << "Received:" << std::endl << std::string(msg, size) << std::endl;
 		return std::string(msg, size);
+	}
 	else
 		return "";
 }
@@ -141,6 +143,7 @@ int NetworkHandler::write(std::string msg)
 		printf("Error: %d\n", errno);
 		throw std::string("NetworkHandler::write: Could not sendto");
 	}
+	std:: cout << "Broadcasted:" << std::endl << msg << std::endl;
 	return 0;
 }
 
@@ -150,6 +153,7 @@ int NetworkHandler::respond(std::string msg)
 		printf("Error: %d\n", errno);
 		throw std::string("NetworkHandler::respond: Could not sendto");
 	}
+	std:: cout << "Directly sent:" << std::endl << msg << std::endl;
 	return 0;
 }
 
@@ -162,7 +166,8 @@ void NetworkHandler::createBroadcastSocket()
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(31337);
-	addr.sin_addr.s_addr = inet_addr("192.168.0.255");
+
+	addr.sin_addr.s_addr = INADDR_ANY;
 
 	const int isTrue = 1;
 	timeval timeout;
@@ -178,6 +183,8 @@ void NetworkHandler::createBroadcastSocket()
 	if (bind(sock, (sockaddr*)&addr, sizeof(addr)) == -1) {
 		throw std::string("NetworkHandler::createBroadcastSocket: Could not bind socket");
 	}
+
+	addr.sin_addr.s_addr = inet_addr("192.168.1.255");
 
 	ifaddrs* addrs;
 	getifaddrs(&addrs);

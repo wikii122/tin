@@ -24,13 +24,19 @@ ClientHandler::ClientHandler():
 	Handler() {
 	struct sockaddr_un address;
 
-	socket_fd = socket(AF_UNIX, SOCK_STREAM, 0);		
+	socket_fd = socket(AF_UNIX, SOCK_STREAM, 0);
+	if(socket_fd == -1)
+		throw std::string("ClientHandler::ClientHandler: Could not create socket");
 
 	// Zero address struct, fill it with address.
 	memset(&address, 0, sizeof(struct sockaddr_un));
 	address.sun_family = AF_UNIX;	
 	strcpy(address.sun_path, client::SOCKET_PATH);
-	bind(socket_fd, (struct sockaddr*) &address, sizeof(address));
+	printf("%s\n", address.sun_path);
+	if (bind(socket_fd, (struct sockaddr*) &address, sizeof(address)) == -1) {
+		printf("ERRNO: %i\n", errno);
+		throw std::string("ClientHandler::ClientHandler: Could not bind socket");
+	}
 	listen(socket_fd, 5);
 }
 
