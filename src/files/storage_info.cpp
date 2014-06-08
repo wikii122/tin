@@ -57,11 +57,11 @@ IHavePacket Storage_info::list_files_json(bool all) {
 	return packet;
 }
 
-bool Storage_info::remove(const string& name) {
+bool Storage_info::remove(const string& name, const string& md5) {
 
     std::vector<File>::iterator iter = files.begin();
     while (iter != files.end()) {
-        if (iter->name == name) {
+        if (iter->name == name and iter->md5 == md5) {
             iter = files.erase(iter);
             return true;
         } else {

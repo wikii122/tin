@@ -221,7 +221,11 @@ bool Storage::remove_file(const string& name, const string& md5) {
             stringstream n;
             n << path << "/" << name << "." << list[list.size()-1].md5;
             remove(n.str().c_str());
-            list.erase(iter);
+			if (iter->isOwner) {
+				list.erase(iter);
+			} else {
+            	iter->local = false;
+			}
             return true;
         } else {
             ++iter;
