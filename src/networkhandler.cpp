@@ -10,6 +10,7 @@
 #include <netdb.h>
 #include <sys/types.h>
 #include <ifaddrs.h>
+#include <server.h>
 
 #include "packet/packet.h"
 
@@ -220,6 +221,8 @@ void NetworkHandler::clearFiles()
 
 void NetworkHandler::handlePacket(std::shared_ptr<GiveFileListPacket> packet)
 {
+	 IHavePacket i_have_packet = Storage_info::get().list_files_json(false);
+   		 respond(i_have_packet.getData());
 }
 
 void NetworkHandler::handlePacket(std::shared_ptr<IHavePacket> packet)
@@ -249,4 +252,7 @@ void NetworkHandler::handlePacket(std::shared_ptr<IForgotPacket> packet)
 
 void NetworkHandler::handlePacket(std::shared_ptr<ForgetPacket> packet)
 {
+	
+	Server::get().get_storage().remove_file(packet->filename);
+	
 }
