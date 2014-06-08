@@ -27,7 +27,7 @@ FilePartManager& FilePartManager::get()
 	return instance;
 }
 
-int FilePartManager::add_part(string name, string md5, char* buffer, long size, long offset)
+int FilePartManager::add_part(string name, string md5, char* buffer, long long size, long long offset)
 {
 	FilePart& part = find(name, md5);
 	part.add_part(buffer, size, offset);
@@ -35,7 +35,7 @@ int FilePartManager::add_part(string name, string md5, char* buffer, long size, 
 	return 0;
 }
 
-bool FilePartManager::finalize(string name, string md5, long full_size)
+bool FilePartManager::finalize(string name, string md5, long long full_size)
 {
 	FilePart& part = find(name, md5);
 	if (part.isFinished(full_size)) {
@@ -55,14 +55,14 @@ bool FilePartManager::finalize(string name, string md5, long full_size)
 	return false;
 }
 
-long FilePartManager::find_gap(string name, string md5)
+long long FilePartManager::find_gap(string name, string md5)
 {
 	FilePart& part = find(name, md5);
-	long offset = part.first_gap();
+	long long offset = part.first_gap();
 	return offset;
 }
 
-void FilePartManager::reserve(string name, string md5, long size, long offset)
+void FilePartManager::reserve(string name, string md5, long long size, long long offset)
 {
 	
 	FilePart& part = find(name, md5);
@@ -98,12 +98,12 @@ bool FilePartManager::FilePart::is(string iname, string imd5)
 	return iname == name and imd5 == md5;	
 }
 
-bool FilePartManager::FilePart::isFinished(long isize)
+bool FilePartManager::FilePart::isFinished(long long isize)
 {
 	return size == 	isize;
 }
 
-void FilePartManager::FilePart::add_part(char* buffer, long part_size, long offset)
+void FilePartManager::FilePart::add_part(char* buffer, long long part_size, long long offset)
 {
 	mutex.lock();
 	file.seekp(offset);	
@@ -118,12 +118,12 @@ void FilePartManager::FilePart::close()
 	Server::get().get_storage().add_file("file_store/"+md5, name, false);	
 }
 
-long FilePartManager::FilePart::first_gap()
+long long FilePartManager::FilePart::first_gap()
 {
-	long size = 0;
-	for (pair<long, long> csize: part_sizes) {
+	long long size = 0;
+	for (pair<long long, long long> csize: part_sizes) {
 		if (csize.first <= size) {
-			long diff = csize.second - (size - csize.first);
+			long long diff = csize.second - (size - csize.first);
 			size += diff>0? diff:0;
 		} else {
 			return size;
@@ -132,7 +132,7 @@ long FilePartManager::FilePart::first_gap()
 	return size;
 }
 
-void FilePartManager::FilePart::reserve(long size, long offset)
+void FilePartManager::FilePart::reserve(long long size, long long offset)
 {
 	reserving.lock();
 	part_sizes.push_back(make_pair(offset, size));

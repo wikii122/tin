@@ -12,15 +12,15 @@ public:
 	FilePartManager(const FilePartManager&)=delete;
 	~FilePartManager();
 	static FilePartManager& get();
-	int add_part(std::string name, std::string md5, char* buffer,  long size, long offset);
-	bool finalize(std::string name, std::string md5, long full_size);
-	long find_gap(std::string name, std::string md5);
-	void reserve(std::string name, std::string md5, long size, long offset);
+	int add_part(std::string name, std::string md5, char* buffer,  long long size, long long offset);
+	bool finalize(std::string name, std::string md5, long long full_size);
+	long long find_gap(std::string name, std::string md5);
+	void reserve(std::string name, std::string md5, long long size, long long offset);
 private:
 	class FilePart {
 		friend class FilePartManager;
-		long size;
-		std::vector<std::pair<long, long>> part_sizes;
+		long long size;
+		std::vector<std::pair<long long, long long>> part_sizes;
 		std::mutex mutex;
 		std::mutex reserving;
 		std::ofstream file;
@@ -33,10 +33,10 @@ private:
 		FilePart(const FilePart&)=delete;
 		~FilePart();
 		bool is(std::string name, std::string md5);
-		void add_part(char* buffer, long size, long offset);
-		bool isFinished(long size);
-		long first_gap();
-		void reserve(long size, long offset);
+		void add_part(char* buffer, long long size, long long offset);
+		bool isFinished(long long size);
+		long long first_gap();
+		void reserve(long long size, long long offset);
 	};
 };
 
