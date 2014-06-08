@@ -29,7 +29,7 @@ bool Storage_info::add_file(const string& name, bool owner_name, long long date,
 		if (file.name == name and file.md5 == md5) {
 			file.isOwner = owner_name;
 			file.expire_date = date;
-			file.local = local;
+			file.local = local? local:file.local;
 			return true;
 		}
 	}
