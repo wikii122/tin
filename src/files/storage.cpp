@@ -230,28 +230,36 @@ bool Storage::remove_file(const string& name) {
     return false;
 }
 
-shared_ptr<vector<char>> Storage::get_file(string name) {
+auto Storage::get_file(string name, string md5) -> shared_ptr<LoadedFile> {
+	auto result = make_shared<LoadedFile>();
     for (File file : Storage_info::get().files) {
-        if (file.name == name) {
-            ifstream f((path + "/" + name).c_str());
+        if (file.name == name and file.md5 == md5) {
+            ifstream f;
+			f.open((path+"/"+name+"."+md5));
 
             f.seekg(0, ios::end);
             streamsize size = f.tellg();
             f.seekg(0, ios::beg);
+			result->size = size;
+			result->meta = file;
+			result->data = new char[size];
 
-            shared_ptr<vector<char>> buf(new vector<char>);
-            buf->reserve(size);
-            f.read(buf->data(), size);
+            f.read(result->data, size);
+		}
+	}
+	return result;
+}
 
-            if (f.good()) {
-                return buf;
-            } else {
-                shared_ptr<vector<char>>();
-            }
-        }
-    }
+LoadedFile::LoadedFile(): size(0), data(nullptr)
+{
+	meta = File();
+}
 
-    return shared_ptr<vector<char>>();
+LoadedFile::~LoadedFile()
+{
+	if (data != nullptr) {
+		delete[] data;
+	}
 }
 
 /* int main() {

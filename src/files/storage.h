@@ -3,7 +3,15 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <files/storage_info.h>
 
+struct LoadedFile {
+	LoadedFile();
+	~LoadedFile();
+	long size;
+	char* data;
+	File meta;	
+};
 
 class Storage {
 
@@ -31,10 +39,11 @@ public:
     bool is_finished(std::string name);
 
 	bool remove_file(const std::string& name);
-/* zwraca wskaznik na wektor
-    * jezeli pliku nie udalo sie odczytac, to jest zwracany pusty wskaznik */
-	std::shared_ptr<std::vector<char>> get_file(std::string name);
-	
+	/* 
+	 * zwraca plikostrukturę LoadedFile
+     * jezeli pliku nie udalo sie odczytac, to jest zwracany pusty wskaznik 
+	 */
+	auto get_file(std::string name, std::string md5) -> std::shared_ptr<LoadedFile>;
 private:
     std::string path;
 };
