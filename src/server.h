@@ -4,6 +4,7 @@
 #include "clienthandler.h"
 #include "handler.h"
 #include "networkhandler.h"
+#include "connectionhandler.h"
 #include "files/storage.h"
 #include "files/storage_info.h"
 #ifndef SERVER_H_
@@ -22,6 +23,7 @@ class Server
 	Storage* storage;
 	NetworkHandler* network_handler;
 	ClientHandler* client_handler;
+	ConnectionHandler* connection_handler;
 
 	Server();
 	void start(Handler* handler);
@@ -35,6 +37,7 @@ public:
 	void serve();
 	ClientHandler& client();
 	NetworkHandler& network();
+	ConnectionHandler& connection();
 	Storage& get_storage();
 	Storage_info& get_storage_info();
 };

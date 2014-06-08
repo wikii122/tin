@@ -90,24 +90,21 @@ int ClientHandler::handle()
 	} else if (req->command == "LocalFileGet") {
 		string name = req->name;
 		string file = req->file;
-		if (!server.get_storage().on_drive(name)) {
-			// TODO check if file exists at all.
+		auto list = server.get_storage_info().file_info(req->name);
+		if (list.size() == 0) {
+			json_resp["msg"] = "File not in network";
+			json_resp["display"] = true;
+			response = writer.write(json_resp);
+			write(response);
+			return 0;
+		}
+		string md5 = list[list.size()-1].md5;
+		if (!server.get_storage().on_drive(name, md5)) {
 			auto packet = make_shared<GiveMePacket>();
 			packet->filename = req->name;
-			auto list = server.get_storage_info().file_info(req->name);
-			if (list.size() == 1) {
-				packet->md5 = list[0].md5;
-				packet->original = false;
-				server.network().addToQueue(packet);
-			} else {
-				// TODO handle this.
-				json_resp["msg"] = "Too many files in database, not yet supported";
-				json_resp["display"] = true;
-				response = writer.write(json_resp);
-				write(response);
-
-				return 0;
-			}
+			packet->md5 = list[list.size()-1].md5;
+			packet->original = false;
+			server.network().addToQueue(packet);
 		}
 		bool state = server.get_storage().copy_file(file, name);
 		if (state) {
@@ -120,14 +117,13 @@ int ClientHandler::handle()
 	} else if (req->command == "LocalRemove") {
 		string name = req->name;
 		auto list = server.get_storage_info().file_info(name);
-		// TODO check if exists.
 		bool state = server.get_storage().remove_file(name);
 		if (state) {
 			json_resp["msg"] = "File removed";
 			json_resp["display"] = false;
-			if (list[0].owner_name == server.get_name()) {
+			if (list[0].isOwner) {
 				auto packet = make_shared<ForgetPacket>();
-				packet->name = name;
+				packet->filename = name;
 				packet->md5 = list[0].md5;
 				server.network().addToQueue(packet);
 			}
@@ -136,21 +132,21 @@ int ClientHandler::handle()
 			json_resp["display"] = true;
 		}
 	} else if (req->command == "LocalDownload") {
-		// TODO check if file exists at all.
 		auto packet = make_shared<GiveMePacket>();
 		packet->filename = req->name;
 		auto list = server.get_storage_info().file_info(req->name);
-		if (list.size() == 1) {
-			json_resp["msg"] = "Download pending";
+		if (list.size() == 0) {
+			json_resp["msg"] = "File not in network";
 			json_resp["display"] = true;
-			packet->md5 = list[0].md5;
-			packet->original = false;
-			server.network().addToQueue(packet);
-		} else {
-			// TODO handle this.
-			json_resp["msg"] = "Too many files in database, not yet supported";
-			json_resp["display"] = true;
+			response = writer.write(json_resp);
+			write(response);
+			return 0;
 		}
+		json_resp["msg"] = "Download pending";
+		json_resp["display"] = true;
+		packet->md5 = list[list.size()-1].md5;
+		packet->original = false;
+		server.network().addToQueue(packet);
 	} else if (req->command == "LocalRequest") {
 		if (req->name == "filelist") {
 			Json::Reader reader;

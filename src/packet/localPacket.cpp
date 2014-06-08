@@ -1,4 +1,5 @@
 #include <jsoncpp/json/json.h>
+#include <iostream>
 #include "packet/localPacket.h"
 #include "server.h"
 
@@ -19,8 +20,6 @@ auto LocalPacket::getData() -> std::string
 		name = Server::get().get_name();
 	if (file == "")
 		throw "LocalPacket::getData(): No filename entry";
-	if (command == "")
-		throw "LocalPacket::getData(): No command name";
 
 	Json::Value root;
 

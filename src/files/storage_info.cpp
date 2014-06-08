@@ -24,10 +24,10 @@ Storage_info& Storage_info::get()
 	return instance;
 }
 
-bool Storage_info::add_file(const string& name, const string& owner_name, long long date, const string& md5, bool local) {
+bool Storage_info::add_file(const string& name, bool owner_name, long long date, const string& md5, bool local) {
     File f;
     f.name = name;
-    f.owner_name = owner_name;
+    f.isOwner = owner_name;
     f.md5 = md5;
 	f.expire_date = date;
 	f.local = local;
@@ -47,7 +47,7 @@ IHavePacket Storage_info::list_files_json(bool all) {
 		if (storage.on_drive(file.name) or all) {
 			IHavePacketFile meta;
 			meta.name = file.name;
-			meta.isOwner = (file.owner_name == host_name);
+			meta.isOwner = file.isOwner;
 			meta.expires = file.expire_date;
 			meta.md5 = file.md5;
 			packet.files.push_back(meta);

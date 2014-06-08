@@ -2,7 +2,7 @@
 #include "packet/iGotPacket.h"
 #include "server.h"
 
-IGotPacket::IGotPacket(void)
+IGotPacket::IGotPacket(void): name("NULL")
 {
 	type = PacketType::IHave;
 }
