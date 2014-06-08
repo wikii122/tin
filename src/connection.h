@@ -19,7 +19,10 @@ public:
 
 	void handle();
 
-	std::string buffer;
+	char* buffer;
+
+	char* fileData;
+	int transferred;
 
 	std::string name;
 	std::string md5;
