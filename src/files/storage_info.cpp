@@ -25,11 +25,13 @@ Storage_info& Storage_info::get()
 }
 
 bool Storage_info::add_file(const string& name, bool owner_name, long long date, const string& md5, bool local) {
+	mutex.lock();
 	for (File file: files) {
 		if (file.name == name and file.md5 == md5) {
 			file.isOwner = owner_name;
 			file.expire_date = date;
 			file.local = local? local:file.local;
+			mutex.unlock();
 			return true;
 		}
 	}
@@ -40,15 +42,15 @@ bool Storage_info::add_file(const string& name, bool owner_name, long long date,
 	f.expire_date = date;
 	f.local = local;
     files.push_back(f);
-
+	mutex.unlock();
     return true;
 }
 
 IHavePacket Storage_info::list_files_json(bool all) {
 	IHavePacket packet;
 	Storage& storage = Server::get().get_storage();
-
 	packet.name = host_name;
+	mutex.lock();
 	for (File file: files) {
 		if (storage.on_drive(file.name) or all) {
 			IHavePacketFile meta;
@@ -59,22 +61,24 @@ IHavePacket Storage_info::list_files_json(bool all) {
 			packet.files.push_back(meta);
 		}
 	}
-
+	mutex.unlock();
 	return packet;
 }
 
 bool Storage_info::remove(const string& name, const string& md5) {
 
+	mutex.lock();
     std::vector<File>::iterator iter = files.begin();
     while (iter != files.end()) {
         if (iter->name == name and iter->md5 == md5) {
             iter = files.erase(iter);
+			mutex.unlock();
             return true;
         } else {
             ++iter;
         }
     }
-
+	mutex.unlock();
     return false;
 }
 
@@ -86,22 +90,25 @@ void Storage_info::set_name(string new_name)
 vector<File> Storage_info::file_info(string name)
 {
 	vector<File> result;
+	mutex.lock();
 	for (File file:files) {
 		if (file.name == name) {
 			result.push_back(file);		
 		}
 	}
-
+	mutex.unlock();
 	return result;
 }
 
 void Storage_info::clear()
 {
+	mutex.lock();
 	for (auto it=files.begin(); it!=files.end(); it++) {
 		if (!it->local) {
 			files.erase(it);
 		}
 	}
+	mutex.unlock();
 }
 
 /*

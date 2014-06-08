@@ -1,5 +1,6 @@
 #ifndef STORAGE_INFO_H
 #define STORAGE_INFO_H
+#include <mutex>
 #include <string>
 #include <vector>
 #include "files/storage.h"
@@ -29,6 +30,7 @@ public:
 private:
 	std::vector<File> files;
     std::string host_name;
+	std::mutex mutex;
 };
 
 #endif

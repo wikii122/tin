@@ -35,7 +35,9 @@ Storage::Storage(const string& path): path(path)
 			file_desc.local = true;
 			file_desc.expire_date = file["expire"].asInt64();
 			file_desc.md5 = file["md5"].asString();
+			Storage_info::get().mutex.lock();
 			Storage_info::get().files.push_back(file_desc);
+			Storage_info::get().mutex.unlock();
 		}
 	}
 }
@@ -50,6 +52,7 @@ Storage::~Storage() {
 
 	file_list["files"] = Json::arrayValue;
 	
+	Storage_info::get().mutex.lock();
 	for (File file: Storage_info::get().files) {
 		if (file.local) {
 			Json::Value file_desc;
@@ -61,6 +64,7 @@ Storage::~Storage() {
 			file_list["files"].append(file_desc);
 		}
 	}
+	Storage_info::get().mutex.unlock();
 	
 	ofstream storage_file;
 	storage_file.open(storage_path.c_str());
@@ -124,7 +128,10 @@ string Storage::add_file(string src_path, string name, bool local)
 	f.expire_date = 0;
 	f.md5 = md5;
 	f.local = true;
+
+	Storage_info::get().mutex.lock();
 	Storage_info::get().files.push_back(f);
+	Storage_info::get().mutex.unlock();
 	
 	return md5;
 }
@@ -153,12 +160,15 @@ bool Storage::copy_file(string name, string dst_path)
 bool Storage::on_drive(string name, string md5) 
 {
 	bool ignore = (md5 == "");
+	Storage_info::get().mutex.lock();
 	for (File file: Storage_info::get().files) {
 		if (file.name == name and (file.md5 == md5 or ignore)) {
+			Storage_info::get().mutex.unlock();
 			return true;
 		}
 	}
 
+	Storage_info::get().mutex.unlock();
 	return false;
 }
 
