@@ -8,7 +8,7 @@
 struct LoadedFile {
 	LoadedFile();
 	~LoadedFile();
-	long size;
+	long long size;
 	char* data;
 	File meta;	
 };
@@ -24,7 +24,7 @@ public:
 	 * Adds entire file to storage.
 	 * Returns stringified md5.
 	 */
-	auto add_file(const char*data, long size, std::string name, long long expire_date=0) -> std::string;
+	auto add_file(const char*data, long long size, std::string name, long long expire_date=0) -> std::string;
 	auto add_file(std::string path, std::string name, bool local=true) -> std::string;
 	// Kopiuje wybrany plik do podanego katalogu
 	bool copy_file(std::string name, std::string path);
@@ -32,7 +32,7 @@ public:
 	
     /* dodaje czesc pliku
      * jeżeli zadna czesc nie zostala jeszcze dodana, to plik zostanie utworzony */
-    bool add_file_part(const char * data, long part_size, long offset, std::string name);
+    bool add_file_part(const char * data, long long part_size, long long offset, std::string name);
 
     /* po dodaniu wszystkich czesci mozna zakonczyc plik */
     bool finish_file(std::string name);
