@@ -160,15 +160,12 @@ bool Storage::copy_file(string name, string dst_path)
 bool Storage::on_drive(string name, string md5) 
 {
 	bool ignore = (md5 == "");
-	Storage_info::get().mutex.lock();
 	for (File file: Storage_info::get().files) {
 		if (file.name == name and (file.md5 == md5 or ignore)) {
-			Storage_info::get().mutex.unlock();
 			return true;
 		}
 	}
 
-	Storage_info::get().mutex.unlock();
 	return false;
 }
 
