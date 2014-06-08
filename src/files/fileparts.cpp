@@ -62,6 +62,13 @@ long FilePartManager::find_gap(string name, string md5)
 	return offset;
 }
 
+void FilePartManager::reserve(string name, string md5, long size, long offset)
+{
+	
+	FilePart& part = find(name, md5);
+	part.reserve(size, offset);
+}
+
 
 auto FilePartManager::find(string name, string md5) -> FilePart&
 {
@@ -102,8 +109,6 @@ void FilePartManager::FilePart::add_part(char* buffer, long part_size, long offs
 	file.seekp(offset);	
 	file.write(buffer, part_size);
 	size += part_size;
-	part_sizes.push_back(make_pair(offset, part_size));
-	sort(part_sizes.begin(), part_sizes.end());
 	mutex.unlock();
 }
 
@@ -125,4 +130,12 @@ long FilePartManager::FilePart::first_gap()
 		}
 	}
 	return size;
+}
+
+void FilePartManager::FilePart::reserve(long size, long offset)
+{
+	reserving.lock();
+	part_sizes.push_back(make_pair(offset, size));
+	sort(part_sizes.begin(), part_sizes.end());
+	reserving.unlock();
 }
