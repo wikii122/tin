@@ -103,11 +103,14 @@ vector<File> Storage_info::file_info(string name)
 void Storage_info::clear()
 {
 	mutex.lock();
-	for (auto it=files.begin(); it!=files.end(); it++) {
-		if (!it->local) {
-			files.erase(it);
+	int i = 0;
+	for(auto it: files)
+	{
+		if(it.local) {
+			files[i++] = it;
 		}
 	}
+	files.resize(i);
 	mutex.unlock();
 }
 
