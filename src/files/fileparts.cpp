@@ -42,12 +42,9 @@ bool FilePartManager::finalize(string name, string md5, long long full_size)
 		part.close();
 		for (auto it=parts.begin(); it!=parts.end(); it++) {
 			if ((*it)->is(name, md5)) {
-				if ((*it)->isFinished(full_size)) {
-					delete *it;
-					it = parts.erase(it);
-				} else { 
-					break;
-				}
+				delete *it;
+				it = parts.erase(it);
+				break;
 			}
 		}
 	}
