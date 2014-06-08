@@ -2,6 +2,8 @@
 #define CONNECTION_
 
 #include <string>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 enum ConnectionState
 {
@@ -16,6 +18,8 @@ class Connection
 	void handleOutgoing();
 public:
 	Connection();
+
+	sockaddr_in addr;
 
 	void handle();
 

@@ -13,6 +13,7 @@
 #include <server.h>
 
 #include "packet/packet.h"
+#include "files/storage_info.h"
 
 NetworkHandler::NetworkHandler()
 {
@@ -222,7 +223,7 @@ void NetworkHandler::clearFiles()
 void NetworkHandler::handlePacket(std::shared_ptr<GiveFileListPacket> packet)
 {
 	 IHavePacket i_have_packet = Storage_info::get().list_files_json(false);
-   		 respond(i_have_packet.getData());
+	 respond(i_have_packet.getData());
 }
 
 void NetworkHandler::handlePacket(std::shared_ptr<IHavePacket> packet)
@@ -235,10 +236,25 @@ void NetworkHandler::handlePacket(std::shared_ptr<IHavePacket> packet)
 
 void NetworkHandler::handlePacket(std::shared_ptr<GiveMePacket> packet)
 {
+	std::vector<File> files = Storage_info::get().file_info(packet->filename);
+	for (auto file : files)
+		if (file.md5 == packet->md5) {
+			std::shared_ptr<LoadedFile> lfile = Server::get().get_storage().get_file(packet->filename, packet->md5);
+			Server::get().connection().upload(file.name, file.md5, file.expire_date, lfile->size, sender);
+		}
 }
 
 void NetworkHandler::handlePacket(std::shared_ptr<IGotPacket> packet)
 {
+	std::vector<File> files = Storage_info::get().file_info(packet->filename);
+	for (auto file : files) {
+		if (file.md5 == packet->md5) {
+			ObjectionPacket response;
+			response.filename = packet->filename;
+			response.md5 = packet->md5;
+			respond(response.getData());
+		}
+	}
 }
 
 void NetworkHandler::handlePacket(std::shared_ptr<ObjectionPacket> packet)

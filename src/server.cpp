@@ -113,3 +113,8 @@ NetworkHandler& Server::network()
 {
 	return *network_handler;
 }
+
+ConnectionHandler& Server::connection()
+{
+	return *connection_handler;
+}

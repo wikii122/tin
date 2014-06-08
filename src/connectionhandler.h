@@ -32,6 +32,8 @@ public:
 	ConnectionHandler();
 	~ConnectionHandler();
 
+	void upload(std::string name, std::string md5, long long expiry, long long size, sockaddr_in addr);
+
 	virtual int handle() override; //Blocking!
 	virtual auto read() -> std::string override; // Blocking
 	virtual int write(std::string) override;
