@@ -245,6 +245,7 @@ auto Storage::get_file(string name, string md5) -> shared_ptr<LoadedFile> {
 			result->data = new char[size];
 
             f.read(result->data, size);
+			break;
 		}
 	}
 	return result;
