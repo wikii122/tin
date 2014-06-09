@@ -250,13 +250,14 @@ auto Storage::get_file(string name, string md5) -> shared_ptr<LoadedFile> {
 			f.open((path+"/"+name+"."+md5));
 
             f.seekg(0, ios::end);
-            streamsize size = f.tellg();
+            streamsize size_e = f.tellg();
             f.seekg(0, ios::beg);
-			result->size = size;
+			streamsize size_b = f.tellg();
+			result->size = size_e - size_b;
 			result->meta = file;
-			result->data = new char[size];
+			result->data = new char[size_e - size_b];
 
-            f.read(result->data, size);
+            f.read(result->data, size_e - size_b);
 			break;
 		}
 	}
