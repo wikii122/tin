@@ -43,7 +43,7 @@ bool Storage_info::add_file(const string& name, bool owner_name, long long date,
 			file.expire_date = date;
 			file.local = local? local:file.local;
 			mutex.unlock();
-			return true;
+			return false;
 		}
 	}
     File f;

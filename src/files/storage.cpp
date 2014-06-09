@@ -121,6 +121,12 @@ string Storage::add_file(string src_path, string name, bool local)
 	file_content << src.rdbuf();
 	string md5 = MD5(file_content.str()).hexdigest();
 	auto file = boost::filesystem::path(name+"."+md5);
+	auto list = Storage_info::get().file_info(name);
+	for (auto file: list) {
+		if (md5 == file.md5) {
+			return md5;
+		}
+	}
 
 	string dst_path = (dir/file).string<string>();
 	ofstream dst(dst_path, ios::binary);       
