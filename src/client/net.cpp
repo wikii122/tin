@@ -4,12 +4,19 @@
 
 using namespace std;
 
+/*!
+ * Przekazuje do serwera polecenie pobrania żądanego pliku.
+ * \param filename Nazwa pliku do pobrania.
+ */
 int client::download(string filename)
 {
 	download(filename, "");
 	return 0;
 }
 
+/*
+ *
+ */
 int client::download(string filename, string nodename)
 {
 	Json::Value root;
@@ -25,6 +32,10 @@ int client::download(string filename, string nodename)
 	return 0;
 }
 
+/*!
+ * Wysyła polecenie ponownego ściągnięcia listy
+ * plików z sieci do serwera.
+ */
 int client::rescan()
 {
 	Json::Value root;
@@ -39,6 +50,9 @@ int client::rescan()
 	return 0;
 }
 
+/*!
+ * Pokazuje listę plików na serwerze.
+ */
 int client::showlist()
 {
 	Json::Value root;

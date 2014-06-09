@@ -11,6 +11,12 @@ namespace opt = boost::program_options;
 
 using namespace std;
 
+/*!
+ * \brief Główna funkcja programu klienckiego
+ *
+ * Służy do parsowania parametrów oraz przekazywania 
+ * poleceń do serwera.
+ */
 int main(int argc, char** argv) try
 {
 	opt::options_description general("Options for TIN client");

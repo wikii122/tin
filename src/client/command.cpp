@@ -11,9 +11,11 @@
 	
 using namespace std;
 
-/*
- * This function calls server and ignores input,
- * unless an error happens
+/*!
+ * Funkcja ta wysyła wiadomość do serwera i ignoruje wynik, chyba
+ * że zostanie napotkany błąd.
+ * 
+ * \param msg Wiadomość do wysłania.
  */
 int communicate::call(string msg)
 {
@@ -21,8 +23,12 @@ int communicate::call(string msg)
 	return 0;
 }
 
-/*
- * This function calls server and returns response.
+/*!
+ * Funkcja ta wysyła wiadomość do serwera i ignoruje wynik, chyba
+ * że zostanie napotkany błąd.
+ * 
+ * \param msg Wiadomość do wysłania.
+ * \return Odpowiedź od serwera.
  */
 string communicate::callForResponse(string msg)
 {	

@@ -41,6 +41,8 @@ public:
 };
 
 /*!
+ * \brief Reprentacja pojedyńczego połączenia
+ *
  * Instacja zawiera jedno zawarte z klientem połączenie.
  */
 class ClientHandler::Connection

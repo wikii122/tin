@@ -10,8 +10,10 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
+//! Adres mutexu używanego do blokowania powstawania innych serwerów.
 static const char lock_file_name[] = "server.lock";
 
+//! Singleton będący instancją serwera.
 class Server
 {
 	static const int no_threads = 10;
@@ -26,19 +28,31 @@ class Server
 	ConnectionHandler* connection_handler;
 
 	Server();
+	//! Funkcja używana do uruchomienia obsługi Handlera
 	void start(Handler* handler);
 public:
+	//! Zwraca instancję Server
 	static Server& get();
+	//! Kopiowanie niedozwolone
 	Server(const Server&) = delete;
+	//! Destruktor dla klasy Server
 	~Server();
 	
+	//! Setter dla nazwy serwera
 	int  set_name(std::string new_name);
+	//! Getter dla nazwy serwera
 	auto get_name() -> std::string;
+	//! Polecenie inicjujące działanie serwera.
 	void serve();
+	//! Getter dla ClientHandler
 	ClientHandler& client();
+	//! Getter dla NetworkHandler
 	NetworkHandler& network();
+	//! Getter dla ConnectionHandler
 	ConnectionHandler& connection();
+	//! Getter dla Storage
 	Storage& get_storage();
+	//! Getter dla Storage_info
 	Storage_info& get_storage_info();
 };
 
