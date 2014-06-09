@@ -87,7 +87,6 @@ void Storage::store_data() {
 * Funkcja dodający plik na dysk.
 */
 string Storage::add_file(const char* data, long long size, string name, long long expire_date) {
-
     ofstream file;
 	string md5;
 
@@ -109,12 +108,11 @@ string Storage::add_file(const char* data, long long size, string name, long lon
     file.close();
 	if (expire_date == 0) {
 		Storage_info::get().add_file(name, true, expire_date, md5);
-		store_data();
 	} else {
 		Storage_info::get().add_file(name, false, expire_date, md5);
-		store_data();
 	}
 
+	store_data();
     return md5;
 }
 
@@ -238,7 +236,7 @@ bool Storage::add_file_part(const char * data, long long part_size, long long of
 * Funkcja zamykająca plik, który był dodawany w częściach.
 */
 bool Storage::finish_file(string name) {
-    for (File & file : Storage_info::get().files) {
+    for (File& file : Storage_info::get().files) {
         if (file.name == name and file.local == false) {
             file.local = true;
             return true;
