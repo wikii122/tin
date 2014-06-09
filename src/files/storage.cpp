@@ -119,7 +119,8 @@ string Storage::add_file(string src_path, string name, bool local)
 
 	string dst_path = (dir/file).string<string>();
 	ofstream dst(dst_path, ios::binary);       
-	dst << file_content;
+	src.seekg(ios::beg);
+	dst << src.rdbuf();
 
     File f;
     f.name = name;
