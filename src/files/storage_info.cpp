@@ -24,6 +24,17 @@ Storage_info& Storage_info::get()
 	return instance;
 }
 
+void Storage_info::set_ownership(const string& name, const string& md5, bool newstate)
+{
+	mutex.lock();
+	for (File file: files) {
+		if (file.name == name and file.md5 == md5) {
+			file.isOwner = newstate;
+		}
+	}
+	mutex.unlock();
+}
+
 bool Storage_info::add_file(const string& name, bool owner_name, long long date, const string& md5, bool local) {
 	mutex.lock();
 	for (File file: files) {
