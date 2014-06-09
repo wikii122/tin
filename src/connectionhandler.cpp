@@ -1,4 +1,4 @@
-#include "connectionhandler.h"
+﻿#include "connectionhandler.h"
 
 #include <sys/socket.h>
 #include <iostream>
@@ -13,6 +13,7 @@
 
 #include "packet/packet.h"
 
+//! Konstruktor
 ConnectionHandler::ConnectionHandler()
 {
 	FD_ZERO(&master);
@@ -20,10 +21,14 @@ ConnectionHandler::ConnectionHandler()
 	FD_SET(listener, &master);
 }
 
+//! Destruktor
 ConnectionHandler::~ConnectionHandler()
 {
 }
 
+/*!
+ * Metoda, która obsługuje istniejące połączenia TCP oraz akceptuje nowe. Powinna być często wywoływana
+ */
 int ConnectionHandler::handle()
 {
 	fd_set read;
@@ -94,6 +99,15 @@ int ConnectionHandler::handle()
 	return 0;
 }
 
+/*!
+ * Żądanie wysłania pliku pod wskazany adres przy następnej sposobności. Plik zostanie wysłany przy następnym handle()
+ * \param name Nazwa pliku
+ * \param md5 MD5 pliku
+ * \param expire Data ważności pliku
+ * \param size Wielkość pliku
+ * \param addr Adres celu
+ * \param original Czy jest to transfer wraz z transferem własności pliku
+ */
 void ConnectionHandler::upload(std::string name, std::string md5, long long expire, long long size, sockaddr_in addr, bool original)
 {
 	Connection conn;
@@ -111,16 +125,25 @@ void ConnectionHandler::upload(std::string name, std::string md5, long long expi
 	mutex.unlock();
 }
  
+/*!
+ * Metoda niezaimplementowana
+ */
 auto ConnectionHandler::read() -> std::string
 {
 	return "";
 }
 
+/*!
+ * Metoda niezaimplementowana
+ */
 int ConnectionHandler::write(std::string msg)
 {
 	return 0;
 }
 
+/*!
+ * Metoda tworzące gniazdo TCP nasłuchujące na wszystkich interfejsach, porcie 31337
+ */
 void ConnectionHandler::createListenerSocket()
 {
 	sockaddr_in addr;
