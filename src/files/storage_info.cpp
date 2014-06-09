@@ -28,6 +28,11 @@ Storage_info& Storage_info::get()
 
 /**
 * Funkcja określająca właściciela pliku.
+*
+* @param name nazwa pliku
+* @param md5 skrót md5 pliku
+* @param newstate true oznacza, że obecny węzeł będzie oznaczony jako właściciel;
+* false oznacza przeciwieństwo
 */
 void Storage_info::set_ownership(const string& name, const string& md5, bool newstate)
 {
@@ -43,6 +48,13 @@ void Storage_info::set_ownership(const string& name, const string& md5, bool new
 
 /**
 * Funkcja dodająca plik do listy plików.
+*
+* @param name nazwa pliku
+* @param owner_name posiadacz pliku
+* @param date data ważności
+* @param md5 skrót md5 pliku
+* @param local true oznacza, że plik jest dośtępny lokalnie
+* @return false oznacza, że taki plik już istaniał
 */
 bool Storage_info::add_file(const string& name, bool owner_name, long long date, const string& md5, bool local) {
 	mutex.lock();
@@ -68,8 +80,9 @@ bool Storage_info::add_file(const string& name, bool owner_name, long long date,
 
 /**
 * Funkcja zwracająca pakiet z listą plików.
-* Jeżeli all jest true to zwraca listę wszystkich plików,
-* a jeśli false to tylko tych które są w tym węźle.
+* @param all true powoduje, że w pakiecie będzie lista wszystkich plików,
+* false oznacza, że będą tylko pliki lokalne
+* @return pakiet IHave zawierający listę plików
 */
 IHavePacket Storage_info::list_files_json(bool all) {
 	IHavePacket packet;
@@ -92,6 +105,10 @@ IHavePacket Storage_info::list_files_json(bool all) {
 
 /**
 * Funkcja usuwająca plik z listy plików.
+*
+* @param name nazwa pliku do usunięcie
+* @param skrót md5 pliku do usunięcia
+* @return true jeżeli udało się usunąć plik, false w przeciwym wypadku
 */
 bool Storage_info::remove(const string& name, const string& md5) {
 
@@ -120,6 +137,8 @@ void Storage_info::set_name(string new_name)
 
 /**
 * Funkcja pobierająca pliki o podanej nazwie.
+* @param name nazwa plików, o których informacje mają być pobrane
+* @return wektor struktur opisujących takie pliki
 */
 vector<File> Storage_info::file_info(string name)
 {

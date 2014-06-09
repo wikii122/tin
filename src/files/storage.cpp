@@ -15,6 +15,8 @@ using namespace std;
 /**
 * Konstruktor. Jeżeli podana ścieżka istnieje to
 * wczytywane są informacje o plikach w niej istniejących.
+*
+* @param path ścieżka do folderu, gdzie pliki będą zapisywane
 */
 Storage::Storage(const string& path): path(path) 
 {
@@ -51,7 +53,8 @@ Storage::~Storage() {
 }
 
 /**
-* Funkcja która zapisuje dane o plikach na dysku w pliku.
+* Funkcja która zapisuje dane o plikach na dysku w pliku files.json.
+* Ten plik powstanie w folderze, który został podany w kontruktorze.
 */
 void Storage::store_data() {
 	ofstream storage_file;
@@ -84,7 +87,15 @@ void Storage::store_data() {
 }
 
 /**
-* Funkcja dodający plik na dysk.
+* Funkcja dodający plik na dysk. W odróżnieniu od drugiej funkcji o tej samej nazwie,
+* ta funkcja przyjmuje wskaźnik na znak jako źródło danych.
+* 
+* @param data wskaźnik na dane do zapisu
+* @param size rozmiar danych do zapisu
+* @param name nazwa pliku do zapisu
+* @param expire_date data ważności pliku
+*
+* @return skrót md5 dodawanego pliku
 */
 string Storage::add_file(const char* data, long long size, string name, long long expire_date) {
     ofstream file;
@@ -117,7 +128,15 @@ string Storage::add_file(const char* data, long long size, string name, long lon
 }
 
 /**
-* Funkcja dodojąca plik z dysku do kolekcji.
+* Funkcja dodojąca plik z dysku do kolekcji. W odróżnieniu od drugiej funkcji o tej nazwie,
+* ta funkcja przyjmuje ścieżkę do pliku znajdującego się już na dysku, kopiuje go i dodaje
+* do kolekcji.
+* 
+* @param src_path ścieżka do pliku, gdzie on obecnie się znajduje
+* @param name nazwa pliku, pod którą będzie on dostępny
+* @param local wskazduje, czy (wbrew swojej nazwie) węzeł jest właścicielem pliku
+*
+* @return skrót dodawanego pliku
 */
 string Storage::add_file(string src_path, string name, bool local)
 {
@@ -162,6 +181,12 @@ string Storage::add_file(string src_path, string name, bool local)
 
 /**
 * Funkcja kopiująca plik z kolekcji na dysk.
+*
+* @param name nazwa pliku do skopiowania
+* @param dst_path ścieżka docelowa dla tego pliku
+*
+* @return false jeżeli taki plik nie jest dostępny i nie udało się go skopiować,
+* true jeżeli operacja się udała
 */
 bool Storage::copy_file(string name, string dst_path)
 {
@@ -186,6 +211,11 @@ bool Storage::copy_file(string name, string dst_path)
 
 /**
 * Funkcja sprawdzająca czy taki plik istnieje.
+*
+* @param name nazwa pliku do sprawdzenia
+* @param md5 skrót sprawdzanego pliku; jeżeli jest pustym stringiem, to jest ignorowany
+*
+* @return true jeżeli plik o podanej nazwie istnieje na dysku, false w przeciwnym wypadku
 */
 bool Storage::on_drive(string name, string md5) 
 {
@@ -200,7 +230,16 @@ bool Storage::on_drive(string name, string md5)
 }
 
 /**
-* Funkcja dodająca część pliku.
+* Funkcja dodająca część pliku. Przy dodawaniu każdej części rozmiar pliku jest
+* zwiększany (o ile to potrzebne), a obszar pomiędzy obecnym końcem pliku a początkiem
+* dodawanych danych jest wypełniany zerami.
+*
+* @param data dane części pliku do zapisu
+* @param part_size rozmiar dodawanej części pliku
+* @param offset miejsce, od którego ma być dodawana obecna część
+* @param name nazwa pliku, do którego dodawana jest część
+*
+* @return true jeżeli udało się dodać część pliku, false w przeciwnym wypadku
 */
 bool Storage::add_file_part(const char * data, long long part_size, long long offset, string name) {
     for (File file : Storage_info::get().files) {
@@ -233,7 +272,11 @@ bool Storage::add_file_part(const char * data, long long part_size, long long of
 }
 
 /**
-* Funkcja zamykająca plik, który był dodawany w częściach.
+* Funkcja zamykająca plik, który był dodawany w częściach. Taka funkcja jest potrzebna,
+* gdyż trzeba zaznaczyć, że wszystkie części pliku zostały już dodane.
+*
+* @param name nazwa pliku
+* @return true jeżeli taki plik istniał i nie był zamknięty, false w przeciwnym wypadku
 */
 bool Storage::finish_file(string name) {
     for (File& file : Storage_info::get().files) {
@@ -247,7 +290,11 @@ bool Storage::finish_file(string name) {
 }
 
 /**
-* Funkcja sprawdzająca czy plik dodawany w częściach jest już zakończony.
+* Funkcja sprawdzająca czy plik dodawany w częściach jest już zakończony. Taka funkcja
+* jest potrzebna, gdyż może nastąpić odwołanie do pliku, który nie jest jeszcze kompletny.
+*
+* @param name nazwa pliku
+* @return true jeżeli taki plik istniał i był zamknięty, false w przeciwnym wypadku
 */
 bool Storage::is_finished(string name) {
     for (File file : Storage_info::get().files) {
@@ -262,20 +309,28 @@ bool Storage::is_finished(string name) {
 
 /**
 * Funkcja usuwająca plik z dysku.
+*
+* @param name nazwa pliku do usunięcia
+* @param md5 skrót jednoznacznie identyfikujący plik
+* @return true jeżeli taki plik istaniał i udało się go usunąć,
+* false w przeciwnym wypadku
 */
 bool Storage::remove_file(const string& name, const string& md5) {
 	auto list = Storage_info::get().files;
     std::vector<File>::iterator iter = list.begin();
+
     while (iter != Storage_info::get().files.end()) {
         if (iter->name == name and iter->md5 == md5) {
             stringstream n;
             n << path << "/" << name << "." << list[list.size()-1].md5;
             remove(n.str().c_str());
+
 			if (iter->isOwner) {
 				iter = list.erase(iter);
 			} else {
             	iter->local = false;
 			}
+
 			store_data();
             return true;
         } else {
@@ -288,7 +343,11 @@ bool Storage::remove_file(const string& name, const string& md5) {
 }
 
 /**
-* Funkcja odczytywująca dane z pliku.
+* Funkcja odczytywująca dane z pliku. Po odczytaniu dane są dostępne w buforze
+* dostępnym poprzez zwracaną strukturę.
+*
+* @param name nazwa pliku do odczytania
+* @return wskaźnik na strukturę opisującą pobrany plik
 */
 auto Storage::get_file(string name, string md5) -> shared_ptr<LoadedFile> {
 	auto result = make_shared<LoadedFile>();
