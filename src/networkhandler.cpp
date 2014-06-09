@@ -252,6 +252,7 @@ void NetworkHandler::handlePacket(std::shared_ptr<GiveMePacket> packet)
 				Server::get().connection().upload(file.name, file.md5, file.expire_date, lfile->size, sender, packet->original);
 			}
 			if(file.isOwner && packet->original == true) {
+				std::cout << "Losing ownership of " << file.name << std::endl;
 				Storage_info::get().set_ownership(file.name, file.md5, false);
 			}
 		}

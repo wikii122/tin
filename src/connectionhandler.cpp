@@ -37,7 +37,6 @@ int ConnectionHandler::handle()
 
 	if (select(maxsock+1, &read, &write, NULL, &timeout) != 0) {
 		if(FD_ISSET(listener, &read)) {
-			std::cout << "MAMCOS" << std::endl;
 			sockaddr_in addr;
 			unsigned int addrLen = sizeof(addr);
 			int sock = accept(listener, (sockaddr*)&addr, &addrLen);

@@ -27,7 +27,7 @@ void Connection::handleIncoming()
 {
 	int complete = 0;
 	int oldTransferred;
-	int delta;
+	long long delta;
 	char buf[1024];
 	switch(state) {
 	case ConnectionState::Intro:
@@ -43,7 +43,7 @@ void Connection::handleIncoming()
 			if(buffer[i] == '\n')
 				complete++;
 
-		if(complete >= 4) {
+		if(complete >= 5) {
 			int i;
 			for(i=0; i < transferred; i++)
 			{
@@ -59,8 +59,9 @@ void Connection::handleIncoming()
 			i++;
 			size = *((long long*)(buffer+i));
 			expiry = *((long long*)(buffer+1+sizeof(long long)+i));
+			original = *((bool*)(buffer+i+2+2*sizeof(long long)));
 
-			std::cout << "Receiving: " << name << std::endl << "MD5: " << md5 << std::endl << "Size: " << size << std::endl << "Expiry:" << expiry << std::endl;
+			std::cout << "Receiving: " << name << std::endl << "MD5: " << md5 << std::endl << "Size: " << size << std::endl << "Expiry:" << expiry << std::endl << "isOriginal:" << original << std::endl;
 
 			Storage& storage = Server::get().get_storage();
 			std::shared_ptr<LoadedFile> file = storage.get_file(name, md5);
@@ -90,7 +91,7 @@ void Connection::handleIncoming()
 
 	case ConnectionState::Data:
 		//std::cout << "Buffer: " << std::hex << (void*)buffer << std::endl << "Transferred: " << transferred << std::dec << std::endl;
-		long long delta = recv(socket, buffer+transferred, 1024, 0);
+		delta = recv(socket, buffer+transferred, 1024, 0);
 		if (delta == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
 			throw std::string("ConnectionHandler::handleIncoming: Could not recv");
 		transferred += delta;
@@ -105,7 +106,9 @@ void Connection::handleIncoming()
 
 				FilePartManager::get().finalize(name, md5, size);
 
+				std::cout << "Setting ownership to " << original << std::endl;
 				Storage_info::get().set_ownership(name, md5, original);
+				std::cout << "Ownership set to " << original << std::endl;
 
 				state = ConnectionState::Finished;
 			} else {
@@ -114,6 +117,9 @@ void Connection::handleIncoming()
 			}
 		}
 
+		break;
+
+	case ConnectionState::Finished:
 		break;
 	}
 }
@@ -134,6 +140,8 @@ void Connection::handleOutgoing()
 		send(socket, (void*)&size, 8, 0);
 		send(socket, "\n", 1, 0);
 		send(socket, (void*)&expiry, 8, 0);
+		send(socket, "\n", 1, 0);
+		send(socket, (void*)&original, 1, 0);
 		send(socket, "\n", 1, 0);
 
 		transferred = 0;
@@ -160,7 +168,7 @@ void Connection::handleOutgoing()
 			offset = *((long long*)(buffer));
 			partSize = *((long long*)(buffer+1+sizeof(long long)));
 
-			std::cout << "Sending: " << name << std::endl << "Offset: " << offset << std::endl << "partSize: " << partSize << std::endl;
+			std::cout << "Sending: " << name << std::endl << "Offset: " << offset << std::endl << "partSize: " << partSize << std::endl << "isOriginal: " << original << std::endl;
 
 			Storage& storage = Server::get().get_storage();
 			std::shared_ptr<LoadedFile> file = storage.get_file(name, md5);
@@ -185,6 +193,9 @@ void Connection::handleOutgoing()
 			transferred = 0;
 			state = ConnectionState::PartInfo;
 		}
+		break;
+
+	case ConnectionState::Finished:
 		break;
 	}
 }
