@@ -30,14 +30,14 @@ try {
 	desc.add_options()
 		("help", "Print this message")
 		("name", "Server name")
-		("foreground", "Run in foreground");
+		("debug", "Run in foreground");
 
 	opt::positional_options_description pos;
 	pos.add("name", 1);
 	opt::variables_map map;
 	opt::store(opt::command_line_parser(argc, argv).options(desc).positional(pos).run(), map);
 	if (map.count("name")) {
-		if (!map.count("foreground")) {
+		if (!map.count("debug")) {
 			daemonize();
 		} else {
 			signal(SIGINT, signal_handler);
