@@ -43,6 +43,11 @@ Storage::Storage(const string& path): path(path)
 }
 
 Storage::~Storage() {
+
+}
+
+void Storage::store_data() {
+	ofstream storage_file;
 	auto dir_path = boost::filesystem::path(path);
 	auto storage_path = boost::filesystem::path("files.json");
 	storage_path = dir_path / storage_path;
@@ -56,7 +61,6 @@ Storage::~Storage() {
 	for (File file: Storage_info::get().files) {
 		if (file.local) {
 			Json::Value file_desc;
-			auto list = Storage_info::get().file_info(file.name);
 			file_desc["name"] = file.name;
 			file_desc["owner"] = file.isOwner;
 			file_desc["expire"] = file.expire_date;
@@ -64,13 +68,12 @@ Storage::~Storage() {
 			file_list["files"].append(file_desc);
 		}
 	}
-	Storage_info::get().mutex.unlock();
 	
-	ofstream storage_file;
-	storage_file.open(storage_path.c_str());
+	storage_file.open(storage_path.c_str(), ios::out | ios::trunc);
 	string list = writer.write(file_list);	
 	storage_file << list;
 	storage_file.close();
+	Storage_info::get().mutex.unlock();
 }
 
 string Storage::add_file(const char* data, long long size, string name, long long expire_date) {
@@ -96,8 +99,10 @@ string Storage::add_file(const char* data, long long size, string name, long lon
     file.close();
 	if (expire_date == 0) {
 		Storage_info::get().add_file(name, true, expire_date, md5);
+		store_data();
 	} else {
 		Storage_info::get().add_file(name, false, expire_date, md5);
+		store_data();
 	}
 
     return md5;
@@ -133,6 +138,7 @@ string Storage::add_file(string src_path, string name, bool local)
 	Storage_info::get().mutex.lock();
 	Storage_info::get().files.push_back(f);
 	Storage_info::get().mutex.unlock();
+	store_data();
 	
 	return md5;
 }
@@ -234,12 +240,14 @@ bool Storage::remove_file(const string& name, const string& md5) {
 			} else {
             	iter->local = false;
 			}
+			store_data();
             return true;
         } else {
             ++iter;
         }
     }
 
+	store_data();
     return false;
 }
 
