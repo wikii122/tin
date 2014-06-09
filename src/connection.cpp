@@ -105,6 +105,8 @@ void Connection::handleIncoming()
 
 				FilePartManager::get().finalize(name, md5, size);
 
+				Storage_info::get().set_ownership(name, md5, original);
+
 				state = ConnectionState::Finished;
 			} else {
 				transferred = 0;

@@ -47,6 +47,7 @@ int server::restart(string name)
 void startServer(const char name[]) {
 	// Using fork + exec to avoid program not returning control to console.
 	if(!fork()) {
+		std::cout << "Starting server..." << std::endl;
 		execl(server::server_path, server::server_path, name);
 	}
 }

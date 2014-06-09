@@ -247,8 +247,13 @@ void NetworkHandler::handlePacket(std::shared_ptr<GiveMePacket> packet)
 	std::vector<File> files = Storage_info::get().file_info(packet->filename);
 	for (auto file : files)
 		if (file.md5 == packet->md5) {
-			std::shared_ptr<LoadedFile> lfile = Server::get().get_storage().get_file(packet->filename, packet->md5);
-			Server::get().connection().upload(file.name, file.md5, file.expire_date, lfile->size, sender);
+			if(!(file.isOwner == false && packet->original == true)) {
+				std::shared_ptr<LoadedFile> lfile = Server::get().get_storage().get_file(packet->filename, packet->md5);
+				Server::get().connection().upload(file.name, file.md5, file.expire_date, lfile->size, sender, packet->original);
+			}
+			if(file.isOwner && packet->original == true) {
+				Storage_info::get().set_ownership(file.name, file.md5, false);
+			}
 		}
 }
 
@@ -264,7 +269,13 @@ void NetworkHandler::handlePacket(std::shared_ptr<IGotPacket> packet)
 			return;
 		}
 	}
+	auto resp = std::make_shared<GiveMePacket>();
 
+	resp->filename = packet->filename;
+	resp->md5 = packet->md5;
+	resp->original = true;
+
+	respond(resp->getData());
 }
 
 void NetworkHandler::handlePacket(std::shared_ptr<ObjectionPacket> packet)

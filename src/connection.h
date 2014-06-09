@@ -37,6 +37,8 @@ public:
 	long long offset;
 	long long partSize;
 
+	bool original;
+
 	ConnectionState state;
 	int socket;
 	bool incoming;
