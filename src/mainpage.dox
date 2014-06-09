@@ -1,4 +1,4 @@
-/*!
+﻿/*!
   \mainpage Projekt na Techniki internetowe.
 
   Prosty program peer-to-peer, pozwalający na przesyłanie plików.
@@ -82,11 +82,7 @@ kiedy używane jest TCP/IP w naszym projekcie to wymiana plików w trybie
 binarnym.
 
 
-- Podczasz uruchomienia programu na jednym z komputerów, rozgłasza on swoją obecność (pakiet: "Hello"), na co pozostałe peery odpowiadają analogicznym zgłoszeniem (tylko w sytuacji, gdy nie wiedziały o tym, który aktualnie się identyfikuje, w celu zapobiegnięcia zapętleniu). Jeżeli w odpowiedzi program dostanie “Hello’ od innego uzytkownika z taka nazwa, wyświetli on komunikat dla użytkownika o niedostępności nazwy.
-
--{“type”: “Hello”, “name”: “LosowyHost”}
-
-- Dowolny z peerów może zainicjować rozgłaszanie zasobów, poprzez pakiet "GiveFilelist", wtedy każdy odbiorca tego pakietu jest zobowiązany odpowiedzieć broadcastem pakietem "IHave", zawierający listę plików, oraz informację o tym, czy jest ich właścicielem. Każdy posiadający kopię powinien przy otrzymaniu isOwner przedłuzyć datę ważności.
+- Dowolny z peerów może zainicjować rozgłaszanie zasobów, poprzez pakiet "GiveFilelist", wtedy każdy odbiorca tego pakietu jest zobowiązany odpowiedzieć mu pakietem "IHave", zawierający listę plików, oraz informację o tym, czy jest ich właścicielem. Każdy posiadający kopię powinien przy otrzymaniu isOwner przedłuzyć datę ważności.
 
 - {“type”: “GiveFilelist”, “name”: “jakishost”}
 - {“type”: “IHave”, “name”: “jakishost”,“files”: [{“file”: “pliktestowy”,
@@ -96,24 +92,20 @@ binarnym.
 “expires”: 1398717645}]}
 end{itemize}
 
--Dowolny z peerów może pobrać plik z innego peera. W tym celu wysyła pakiet typu ''GiveMe'' z informacją o tym, jaki plik chce uzyskać oraz portem, na którym nasłuchuje. Hosty posiadające ten plik, zobowiązane są do nawiązania połączenia na ten port przy pomocy TCP/IP. Po połączeniu się, za posiadacz pliku binarnie podaje identyfikator pliku, jego hash i rozmiar, poszukiwacz odpowiada, czy nadal chce ten plik i w jakim stopniu albo zamyka połączenie, a następnie zawartość pliku jest wysyłana przez posiadacza. Ostatnia część procesu może być powtarzana W przypadku, gdy nie było odpowiedzi, poszukiwacz ponawia zapytanie, a w przypadku ponownego błędu informuje użytkownika o błędzie i aktualizuje listę plików/hostów. Data wazności w przypadku oryginałów jest ustawiana na ''0''
+- Dowolny z peerów może pobrać plik z innego peera. W tym celu wysyła pakiet typu ''GiveMe'' z informacją o tym, jaki plik chce uzyskać oraz portem, na którym nasłuchuje. Hosty posiadające ten plik, zobowiązane są do nawiązania połączenia na ten port przy pomocy TCP/IP. Po połączeniu się, za posiadacz pliku binarnie podaje identyfikator pliku, jego hash i rozmiar, poszukiwacz odpowiada, czy nadal chce ten plik i w jakim stopniu albo zamyka połączenie, a następnie zawartość pliku jest wysyłana przez posiadacza. Ostatnia część procesu może być powtarzana W przypadku, gdy nie było odpowiedzi, poszukiwacz ponawia zapytanie, a w przypadku ponownego błędu informuje użytkownika o błędzie i aktualizuje listę plików/hostów. Data wazności w przypadku oryginałów jest ustawiana na ''0''
 
 - {“type”: “GiveMe”, “name”: “jakishost”, “file”: “pliktestowy”,
 
 “md5”: “20dc258bb9b0b3ce53a32d1df7b1b50f”, “original”: false}
 
 - <TCP/IP>
-
-- Dowolny z peerów może zakomunikować dodanie nowego pliku
- Wysylajacy:pliktestowy\textbackslash n20dc258bb9b0b3ce53a32d1df7b1b50f\textbackslash nwielkosc pliku
-
+- Wysylajacy:pliktestowy\textbackslash n20dc258bb9b0b3ce53a32d1df7b1b50f\textbackslash nwielkosc pliku
 - Odbierajacy: offset\textbackslash nwielkosckawalka\textbackslash n
 - Wysylajacy:jakiesdanebinarne
 -  Odbierający offset2\textbackslash nwielkosckawalka2\textbackslash n
 -  Wysylajacy: jakiesdanebinarne2
-- u poprzez wysłanie pakietu typu ''IGot'' z informacją o nazwie zasobu. Po wysłaniu takiej wiadomości, odczekuje on 30sekund, po czym jeżeli nie nastąpi sprzeciw w postaci pakietu ''Objection'' ze specyfikatorem zasobu, uznaje on, że udało się poprawne dodanie. Hosty, które nie zgłosiły sprzeciwu zgłaszają wiadomość typu ''GiveMe'', aby uzyskać plik z prawami oryginału. Host wybiera pierwszy, który do niego dotrze.
 
-- Dowolny z peerów może zakomunikować dodanie nowego pliku poprzez wysłanie pakietu typu ''IGot'' z informacją o nazwie zasobu. Po wysłaniu takiej wiadomości, odczekuje on 30 sekund, po czym jeżeli nie nastąpi sprzeciw w postaci pakietu "Objection" ze specyfikatorem zasobu, uznaje on, że udało się poprawne dodanie. Hosty, które nie zgłosiły sprzeciwu zgłaszają wiadomość typu ''GiveMe'', aby uzyskać plik z prawami oryginału. Host wybiera pierwszy, który do niego dotrze.
+- Dowolny z peerów może zakomunikować o posiadaniu nowego pliku poprzez wysłanie pakietu typu ''IGot'' z informacją o nazwie zasobu. Po wysłaniu takiej wiadomości, dodaje on plik do listy posiadanych plików, po czym jeżeli nastąpi sprzeciw w postaci pakietu ''Objection'' ze specyfikatorem zasobu, usuwa go. Hosty, które nie zgłosiły sprzeciwu zgłaszają wiadomość typu ''GiveMe'', aby uzyskać plik z prawami oryginału. Host wybiera pierwszy, który do niego dotrze.
 
 - {“type”: “IGot”, “file”: “nowyplik”, “md5”:”20dc258bb9b0b3ce53a32d1df7b1b50f”}
 - {“type”: “Objection”, “file”: “nowyplik”, “md5”:”20dc258bb9b0b3ce53a32d1df7b1b50f”}
@@ -131,8 +123,6 @@ Zaimplementowana struktura pakietów została przedstawiona na poniższym diagra
 
 \section uuu Poprawność protokołu
 
-- Nie jest możliwa sytuacja, gdy dwa węzły będą posiadać tą samą nazwę hosta. Sytuacja, gdy dołącza się taki, który próbuje uzyskać zajętą już nazwę jest opisana w punkcie protokołu, ciekawsza jest sytuacja, gdy dwa naraz taką samą nazwę spróbują zarezerwować. Jednak nie będzie tu problemu przez “symetrię”. Jako, że dwa naraz wyślą pakiety “Hello”, efekt będzie taki sam, jakby któryś z nich był już w sieci, tylko oba będą musiały zmienić nazwę. Typowy, równouprawniony kompromis.
-
 - Analogiczna sytuacja z plikami o tych samych nazwach nie jest
 całkowicie niemożliwa, gdyż pliki definiowane są w naszym systemie poprzez
 ich hash MD5. Takich hashy jest jednak ok. 2^{128}, więc szansa,
@@ -145,9 +135,10 @@ posiadającego kopię jest rozwiązana w następujący sposób -
 przy następnym spotkaniu z kimkolwiek, kto kiedykolwiek posiadał ten plik
 i stracił go z przyczyny wiadomości “Forget”  usunie go poprzez
 powiadomienie.
-- Plik może być pobierany w kawałkach, a nawet posiada możliwość wznowienie pobierania! Wystarczy kiedy indziej pobrać plik, podając odpowiednie offsety i rozmiary kawałków brakujących!
+- Plik może być pobierany w kawałkach! Pozwala to na optymalizację czasu pobierania, gdy posiadane jest łącze z szybką prędkością pobierania, zaś inne peery posiadają niską prędkość wysyłania.
 
 - Pliki zostaną usunięte w przypadku unieważnienia, nawet jeżeli utracą kontakt z hostem oryginalnym. Jednak klient będzie pamiętał hashe usuniętych plików i jeżeli okaże się, że pomimo braku kontaktu przez datę ważności plik nie został usunięty, będzie on pobrany przy najbliższej sposobności. Jest to rozwiązanie lepsze w sytuacji, gdy sieć jest duża bądź pliki są popularne (większość jest na dużej ilości hostów) bądź wszystkie hosty są aktywne. Gwarantuje to nie przechowywanie martwych plików więcej niż jest to konieczne płacąc za to możliwością usunięcia aktywnego pliku w skrajnych sytuacjach.
 
+- W sytuacji, gdy peer jest jedyny w sieci oraz doda plik, nie dostanie pakietu typu Objection ani GiveMe, co spowoduje, że on będzie jego ownerem. To jest prawdopodobnie najbardziej intuicyjny rozwiązanie.
 
 */
