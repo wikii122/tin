@@ -10,6 +10,7 @@ enum ConnectionState
 	Intro,
 	PartInfo,
 	Data,
+	Finished,
 };
 
 class Connection

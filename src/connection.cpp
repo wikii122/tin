@@ -10,7 +10,7 @@
 
 Connection::Connection()
 {
-	buffer = new char[1024];
+	buffer = new char[10240];
 	state = ConnectionState::Intro;
 	transferred = 0;
 }
@@ -67,9 +67,6 @@ void Connection::handleIncoming()
 			fileData = file->data + offset;
 			transferred = 0;
 
-			delete[] buffer;
-			buffer = new char[size];
-
 			state = ConnectionState::PartInfo;
 		}
 		break;
@@ -89,7 +86,7 @@ void Connection::handleIncoming()
 		break;
 
 	case ConnectionState::Data:
-
+		std::cout << "Buffer: " << std::hex << buffer << std::endl << "Transferred: " << transferred << std::endl;
 		long long delta = recv(socket, buffer+transferred, 1024, 0);
 		if (delta == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
 			throw std::string("ConnectionHandler::handleIncoming: Could not recv");
@@ -97,7 +94,7 @@ void Connection::handleIncoming()
 
 		std::cout << "Downloaded " << 100*transferred/partSize << "% of a part, " << 100*transferred/size << "% of the file" << std::endl;
 
-		if(transferred >= size)
+		if(transferred >= partSize)
 		{
 			FilePartManager::get().add_part(name, md5, buffer, 10240, offset);
 			if (FilePartManager::get().find_gap(name, md5) >= size)
@@ -128,8 +125,6 @@ void Connection::handleOutgoing()
 		send(socket, "\n", 1, 0);
 		send(socket, (void*)&expiry, 8, 0);
 		send(socket, "\n", 1, 0);
-
-		std::cout << "POSZLO INTRO" << std::endl;
 
 		transferred = 0;
 		state = ConnectionState::PartInfo;
