@@ -20,6 +20,10 @@
 
 using namespace std;
 
+/*!
+ * Otwiera unix domain socket pod adresem wskazywanym przez client::SOCKET_PATH,
+ * przypisuje go jako własne połączenie oraz rozpoczyna nasłuchiwanie.
+ */
 ClientHandler::ClientHandler(): 
 	Handler() {
 	struct sockaddr_un address;
@@ -40,11 +44,21 @@ ClientHandler::ClientHandler():
 	listen(socket_fd, 5);
 }
 
+/*!
+ * Zamyka utworzony socket.
+ */
 ClientHandler::~ClientHandler()
 {
 	close(socket_fd);
 }
 
+/*!
+ * Oczekuje na najbliższe połączenie, po jego nawiązaniu tworzy nowy
+ * obiekt ClientHandler::Connection odpowiadający właśnie nawiązanemu
+ * połączeniu.
+ * \warning Blokuje podczas akceptowania połączenia.
+ * \return Deskryptor socketu z połączeniem.
+ */
 auto ClientHandler::accept() -> Connection* 
 {
 	int result;
@@ -56,11 +70,23 @@ auto ClientHandler::accept() -> Connection*
 	return connection;
 }
 
+/*!
+ * Przesyła do aktualnie nawiązanego połączenia podany string.
+ *
+ * \param msg Message to be written.
+ * \return Wartość zwrócona przez ClientHandler::Connection::write 
+ * */
 int ClientHandler::write(string msg)
 {
 	return connection->write(msg.c_str(), msg.length());
 }
 
+/*!
+ * Wczytuje z aktualnie nawiązanego połączenia string
+ * aż do momentu dostania pełnego zestawu odpowiadających
+ * sobie klamr { oraz }.
+ * \return Odczytana wiadomość.
+ */
 string ClientHandler::read()
 {
 	string msg = connection->read();
@@ -68,6 +94,16 @@ string ClientHandler::read()
 	return msg;
 }
 
+/*!
+ * Funkcja osługująca jednokrotne zaakceptowanie połączenia,
+ * wczytanie polecenia od programu klienckiego, następnie
+ * przetworzenie polecenia oraz zwrócenie odpowiedzi.
+ *
+ * \warning Powinna działać w pętli
+ * \warning Blokuje podczas akceptowania połączenia
+ * \warning Blokuje podczas odczytu
+ *
+ */
 int ClientHandler::handle()
 {
 	accept();
@@ -196,22 +232,40 @@ int ClientHandler::handle()
 	return 0;
 }
 
+/*! 
+ * Creates new connection with give socket descriptor.
+ * \param fd connected socket descritor
+ */
 ClientHandler::Connection::Connection(int fd): 
 	socket_fd(fd) 
 {
 
 }
 
+/*!
+ * Zamyka trzymane połączenie.
+ */
 ClientHandler::Connection::~Connection()
 {
 	close(socket_fd);
 }
 
+/*!
+ * Przekazuje podane dane do połączenia.
+ * \param msg Łańcuch znaków do przesłania
+ * \param len długość msg
+ * \return Ilość zapisanych znaków
+ */
 int ClientHandler::Connection::write(const char msg[], int len)
 {
 	return ::write(socket_fd, msg, len);
 }
 
+/*!
+ * Wczytuje łańcuch z bufora aż do wystąpienia ostatniej odpowiadającej
+ * sobie pary { i }.
+ * \return Odczytany łańcuch znaków.
+ */
 string ClientHandler::Connection::read()
 {
 	// This requires thing to parse JSON input.

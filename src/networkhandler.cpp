@@ -1,4 +1,4 @@
-#include "networkhandler.h"
+﻿#include "networkhandler.h"
 
 #include <sys/socket.h>
 #include <iostream>
@@ -15,15 +15,19 @@
 #include "packet/packet.h"
 #include "files/storage_info.h"
 
+//! Konstruktor
 NetworkHandler::NetworkHandler()
 {
 	createBroadcastSocket();
 }
 
+//! Destruktor
 NetworkHandler::~NetworkHandler()
 {
 }
-
+/*!
+ * Metoda, która powinna być wywoływana często. Obsługuje ona ruch UDP
+ */
 int NetworkHandler::handle()
 {
 	queueMutex.lock();
@@ -99,6 +103,11 @@ int NetworkHandler::handle()
 	return 0;
 }
 
+/*!
+ * Metoda, która dodaje pakiet do kolejki oczekujących na wysłanie. Pakiet zostanie wysłany w następnym handle().
+ * \param msg Wiadomość, jaka ma został wysłana
+ * \warning Jest to thread-safe metoda
+ */
 void NetworkHandler::addToQueue(std::shared_ptr<Packet> msg)
 {
 	queueMutex.lock();
@@ -106,6 +115,10 @@ void NetworkHandler::addToQueue(std::shared_ptr<Packet> msg)
 	queueMutex.unlock();
 }
 
+/*!
+ * Metoda, która odczytuje wiadomość wysłaną do tego komputera za pomocą UDP i ją zwraca. Jest nieblokująca.
+ * \return Odczytana wiadomość
+ */
 auto NetworkHandler::read() -> std::string
 {
 	char msg[1024];
@@ -137,6 +150,10 @@ auto NetworkHandler::read() -> std::string
 		return "";
 }
 
+/*!
+ * Metoda broadcastująca wiadomość.
+ * \param msg Wiadomość do zbroadcastowania.
+ */
 int NetworkHandler::write(std::string msg)
 {
 	if (sendto(sock, msg.c_str(), msg.length() + 1, 0, (sockaddr*) &addr, sizeof addr) == -1) {
@@ -147,6 +164,10 @@ int NetworkHandler::write(std::string msg)
 	return 0;
 }
 
+/*!
+ * Metoda odpowiadająca komputerowi, od którego otrzymana ostatnią wiadomość.
+ * \param msg Wiadomość do wysłania
+ */
 int NetworkHandler::respond(std::string msg)
 {
 	if (sendto(sock, msg.c_str(), msg.length() + 1, 0, (sockaddr*) &sender, sizeof sender) == -1) {
@@ -157,6 +178,10 @@ int NetworkHandler::respond(std::string msg)
 	return 0;
 }
 
+/*!
+ * Metoda tworząca gniazdo.
+ * \warning Jest należy przechwytywać wyjątek.
+ */
 void NetworkHandler::createBroadcastSocket()
 {
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -197,6 +222,12 @@ void NetworkHandler::createBroadcastSocket()
 	freeifaddrs(addrs);
 }
 
+/*!
+ * Metoda informująca, czy ktoś sprzeciwił się danemu plikowi.
+ * \param name Nazwa pliku
+ * \param md5 MD5 pliku
+ * \return True jeżeli ktoś się sprzeciwił, w innym wypadku false;
+ */
 bool NetworkHandler::isObjected(std::string name, std::string md5)
 {
 	for(auto i : objected)
@@ -206,6 +237,9 @@ bool NetworkHandler::isObjected(std::string name, std::string md5)
 	return false;
 }
 
+/*!
+ * Metoda czyszcząca sprzeciwy wobec danej nazwy i danego md5 naraz
+ */
 void NetworkHandler::clearObjected(std::string name, std::string md5)
 {
 	auto i = 0;
@@ -217,22 +251,37 @@ void NetworkHandler::clearObjected(std::string name, std::string md5)
 	objected.resize(i);
 }
 
+/*!
+ * Metoda, która zwraca pliki istniejące w sieci na podstawie uzyskanych pakietów IHave
+ * \return Wektor par (nazwa pliku, md5 pliku)
+ */
 std::vector<std::pair<std::string, std::string>> NetworkHandler::getFiles()
 {
 	return reportedFiles;
 }
 
+/*!
+ * Metoda, która czyści listę plików znanych w sieci
+ */
 void NetworkHandler::clearFiles()
 {
 	reportedFiles.clear();
 }
 
+/*!
+ * Metoda, która odpowiada na pakiet GiveFileList pakietem IHave z odpowiednią listą plików posiadanych lokalnie.
+ * \param packet Pakiet typu GiveFileList
+ */
 void NetworkHandler::handlePacket(std::shared_ptr<GiveFileListPacket> packet)
 {
 	 IHavePacket i_have_packet = Storage_info::get().list_files_json(false);
 	 respond(i_have_packet.getData());
 }
 
+/*!
+ * Metoda, która zapamiętuje pliki zgłoszone przez pakiet typu IHave
+ * \param packet Pakiet typu IHave
+ */
 void NetworkHandler::handlePacket(std::shared_ptr<IHavePacket> packet)
 {
 	for(auto x : packet->files)
@@ -242,6 +291,10 @@ void NetworkHandler::handlePacket(std::shared_ptr<IHavePacket> packet)
 	}
 }
 
+/*!
+ * Metoda, która inicjuje transfer po otrzymaniu żądania typu GiveMe, o ile żądanie jest poprawne
+ * \param packet Pakiet typu GiveMe
+ */
 void NetworkHandler::handlePacket(std::shared_ptr<GiveMePacket> packet)
 {
 	std::vector<File> files = Storage_info::get().file_info(packet->filename);
@@ -252,11 +305,16 @@ void NetworkHandler::handlePacket(std::shared_ptr<GiveMePacket> packet)
 				Server::get().connection().upload(file.name, file.md5, file.expire_date, lfile->size, sender, packet->original);
 			}
 			if(file.isOwner && packet->original == true) {
+				std::cout << "Losing ownership of " << file.name << std::endl;
 				Storage_info::get().set_ownership(file.name, file.md5, false);
 			}
 		}
 }
 
+/*!
+ * Metoda, która zastanawia się nad zezwoleniem na istnienie pliku oraz ewentualnym przejęciem własności nad nim i odpowiedziem w wypadku konieczności zgłoszenia sprzeciwu, a także wysłaniem pakietu typu GiveMe jeżeli istnieje powinność przejęcia pliku.
+ * \param packet Pakiet typu IGot
+ */
 void NetworkHandler::handlePacket(std::shared_ptr<IGotPacket> packet)
 {
 	std::vector<File> files = Storage_info::get().file_info(packet->filename);
@@ -278,6 +336,10 @@ void NetworkHandler::handlePacket(std::shared_ptr<IGotPacket> packet)
 	respond(resp->getData());
 }
 
+/*!
+ * Metoda, która akceptuje sprzeciw wobec wcześniejszego pakietu typu IGot, pamiętając, że nie jest się ownerem
+ * \param packet Pakiet typu Objection
+ */
 void NetworkHandler::handlePacket(std::shared_ptr<ObjectionPacket> packet)
 {
 	// Assuming file is not on drive yet
@@ -292,10 +354,18 @@ void NetworkHandler::handlePacket(std::shared_ptr<ObjectionPacket> packet)
 	//objected.push_back(std::make_pair(packet->filename, packet->md5));
 }
 
+/*!
+ * Metoda, która może obsłużć pakiet typu IForgot. Aktualnie ten typ pakietów jest ignorowany
+ * \param packet Pakiet typu IForgot
+ */
 void NetworkHandler::handlePacket(std::shared_ptr<IForgotPacket> packet)
 {
 }
 
+/*!
+ * Metoda, która akceptuje wymaganie usunięcia pliku.
+ * \param packet Pakiet typu Forget
+ */
 void NetworkHandler::handlePacket(std::shared_ptr<ForgetPacket> packet)
 {
 	
