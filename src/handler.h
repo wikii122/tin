@@ -6,7 +6,7 @@
 #ifndef HANDLER_H_
 #define HANDLER_H_
 
-//! Abstract class to handle sockets
+//! Abstrakcyjna klasa to zarzadzania socketami.
 class Handler
 {
 public:
@@ -14,14 +14,14 @@ public:
 	Handler(const Handler&) = delete;
 	virtual ~Handler();
 
-	//! Function invoked by server
+	//! Funkcja wykonywana przez serwer.
 	virtual int handle() = 0;
-	//! Function to read message
+	//! Funkcja czyta wiadomość
 	virtual auto read() -> std::string = 0;
-	//! Function to write message
+	//! Funkcja wysyła wiadomość
 	virtual int write(std::string) = 0;
 protected:
-	//! Socket descriptor for accepting
+	//! Deskryptor socketu do akceptowania połączeń.
 	int socket_fd;
 };
 

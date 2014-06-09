@@ -1,6 +1,6 @@
 #include "handler.h"
 /*!
- * Constructor for Handler
+ * Tworzy obiekt
  */
 Handler::Handler()
 {
@@ -8,7 +8,7 @@ Handler::Handler()
 }
 
 /*!
- * Destructor for handler
+ * Destruktor dla obiektu
  */
 Handler::~Handler()
 {
