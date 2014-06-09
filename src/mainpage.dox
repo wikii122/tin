@@ -3,10 +3,10 @@
 
   Prosty program peer-to-peer, pozwalający na przesyłanie plików.
 
-\section Treść zadania
+\section abouti Treść zadania
 Zadanie polega na napisaniu prostego programu P2P (Peer-to-Peer) umożliwiającego rozproszone przechowywanie zasobów.
 
-\section Interpretacja zadania
+\section interp Interpretacja zadania
 
 Głównym elementem naszego projektu jest działający w tle proces,
 nazywany serwerem (Dla rozróżnienia z klientem, który jest
@@ -23,10 +23,11 @@ jego właścicielem.
 
 
 Synchronizacja posiadanych zasobów jest przeprowadzana kompletnie, synchronizowana jest cała lista plików, nie tylko to, co się zmieniło, i zawsze, gdy:
-
--Zmieni się stan przechowywanych plików.
--Dołączy/zostanie uruchomiony nowy węzeł.
--Na wyraźne życzenie użytkownika.
+  <ul>
+  <li>Zmieni się stan przechowywanych plików.</li>
+  <li>Dołączy/zostanie uruchomiony nowy węzeł.</li>
+  <li>Na wyraźne życzenie użytkownika.</li>
+  </ul>
 
 
 Pliki przesyłane są binarnie, a pozostałe informacje przekazywane są za pomocą formatu JSON.
@@ -34,7 +35,7 @@ Uruchomiony proces serwera cyklicznie sprawdza polecenia od programu klienckiego
 
 Wszystkie pliki przechowywane są we wspólnym katalogu, pod swoją pełną nazwą.
 
-\section Opis funkcjonalny
+\section descr Opis funkcjonalny
 Program z punktu użytkownika będzie udostępniał następujące polecenia:
 
 
