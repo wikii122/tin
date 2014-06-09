@@ -72,8 +72,11 @@ void Connection::handleIncoming()
 		break;
 	case ConnectionState::PartInfo:
 		offset = FilePartManager::get().find_gap(name, md5);
-		partSize = 10240;
-		FilePartManager::get().reserve(name, md5, 10240, offset);
+		if (size - offset < 10240)
+			partSize = size - offset;
+		else
+			partSize = 10240;
+		FilePartManager::get().reserve(name, md5, partSize, offset);
 
 		send(socket, (void*)&offset, sizeof(offset), 0);
 		send(socket, "\n", 1, 0);
@@ -86,7 +89,7 @@ void Connection::handleIncoming()
 		break;
 
 	case ConnectionState::Data:
-		std::cout << "Buffer: " << std::hex << buffer << std::endl << "Transferred: " << transferred << std::endl;
+		//std::cout << "Buffer: " << std::hex << (void*)buffer << std::endl << "Transferred: " << transferred << std::dec << std::endl;
 		long long delta = recv(socket, buffer+transferred, 1024, 0);
 		if (delta == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
 			throw std::string("ConnectionHandler::handleIncoming: Could not recv");
@@ -96,12 +99,17 @@ void Connection::handleIncoming()
 
 		if(transferred >= partSize)
 		{
-			FilePartManager::get().add_part(name, md5, buffer, 10240, offset);
-			if (FilePartManager::get().find_gap(name, md5) >= size)
+			FilePartManager::get().add_part(name, md5, buffer, partSize, offset);
+			if (FilePartManager::get().find_gap(name, md5) >= size) {
+				std::cout << "Finished downloading " << name << std::endl;
+
 				FilePartManager::get().finalize(name, md5, size);
 
-			transferred = 0;
-			state = ConnectionState::PartInfo;
+				state = ConnectionState::Finished;
+			} else {
+				transferred = 0;
+				state = ConnectionState::PartInfo;
+			}
 		}
 
 		break;
@@ -133,8 +141,10 @@ void Connection::handleOutgoing()
 	case ConnectionState::PartInfo:
 		oldTransferred = transferred;
 		delta = recv(socket, buf, 1024, 0);
-		if (delta == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
+		if (delta == -1 && errno != EAGAIN && errno != EWOULDBLOCK) {
+			std::cout << "ERRNO: " << errno << std::endl;
 			throw std::string("ConnectionHandler::handleOutgoing: Could not recv");
+		}
 
 		transferred += delta;
 
@@ -153,6 +163,8 @@ void Connection::handleOutgoing()
 			Storage& storage = Server::get().get_storage();
 			std::shared_ptr<LoadedFile> file = storage.get_file(name, md5);
 			fileData = file->data + offset;
+
+			complete = 0;
 			transferred = 0;
 
 			state = ConnectionState::Data;
@@ -167,8 +179,10 @@ void Connection::handleOutgoing()
 
 		std::cout << "Uploaded " << 100*transferred/partSize << "% of a part, " << 100*transferred/size << "% of the file" << std::endl;
 
-		if(transferred >= partSize)
+		if(transferred >= partSize) {
+			transferred = 0;
 			state = ConnectionState::PartInfo;
+		}
 		break;
 	}
 }
