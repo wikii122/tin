@@ -273,6 +273,7 @@ auto Storage::get_file(string name, string md5) -> shared_ptr<LoadedFile> {
 			result->data = new char[size_e - size_b];
 
             f.read(result->data, size_e - size_b);
+			f.close();
 			break;
 		}
 	}

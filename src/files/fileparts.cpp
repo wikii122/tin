@@ -97,7 +97,7 @@ bool FilePartManager::FilePart::is(string iname, string imd5)
 
 bool FilePartManager::FilePart::isFinished(long long isize)
 {
-	return size == 	isize;
+	return size >= isize;
 }
 
 void FilePartManager::FilePart::add_part(char* buffer, long long part_size, long long offset)
