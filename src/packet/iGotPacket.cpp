@@ -1,17 +1,23 @@
-#include <jsoncpp/json/json.h>
+﻿#include <jsoncpp/json/json.h>
 #include "packet/iGotPacket.h"
 #include "server.h"
 
-IGotPacket::IGotPacket(void): name("NULL")
+//! Konstruktor
+IGotPacket::IGotPacket(void)
 {
 	type = PacketType::IGot;
 }
 
-
+//! Destruktor
 IGotPacket::~IGotPacket(void)
 {
 }
 
+/*!
+ * Metoda konwertująca pakiet na pakiet w formacie JSON
+ * \return Pakiet w formacie JSON, gotowy do wysłania
+ * \warning filename powinien zostać ustawiony albo zostanie rzucony wyjątek
+ */
 std::string IGotPacket::getData()
 {
 	if(name == "")
