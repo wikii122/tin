@@ -46,6 +46,8 @@ public:
 	auto get_file(std::string name, std::string md5) -> std::shared_ptr<LoadedFile>;
 private:
     std::string path;
+
+	void store_data();
 };
 
 #endif
