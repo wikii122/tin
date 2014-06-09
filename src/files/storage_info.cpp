@@ -18,7 +18,7 @@ Storage_info::Storage_info()
 }
 
 /**
-* Funkcja zwracająca jedyną instancję klasy.
+* @brief Funkcja zwracająca jedyną instancję klasy.
 */
 Storage_info& Storage_info::get()
 {
@@ -27,7 +27,7 @@ Storage_info& Storage_info::get()
 }
 
 /**
-* Funkcja określająca właściciela pliku.
+* @brief Funkcja określająca właściciela pliku.
 *
 * @param name nazwa pliku
 * @param md5 skrót md5 pliku
@@ -47,7 +47,7 @@ void Storage_info::set_ownership(const string& name, const string& md5, bool new
 }
 
 /**
-* Funkcja dodająca plik do listy plików.
+* @brief Funkcja dodająca plik do listy plików.
 *
 * @param name nazwa pliku
 * @param owner_name posiadacz pliku
@@ -79,7 +79,7 @@ bool Storage_info::add_file(const string& name, bool owner_name, long long date,
 }
 
 /**
-* Funkcja zwracająca pakiet z listą plików.
+* @brief Funkcja zwracająca pakiet z listą plików.
 * @param all true powoduje, że w pakiecie będzie lista wszystkich plików,
 * false oznacza, że będą tylko pliki lokalne
 * @return pakiet IHave zawierający listę plików
@@ -104,7 +104,7 @@ IHavePacket Storage_info::list_files_json(bool all) {
 }
 
 /**
-* Funkcja usuwająca plik z listy plików.
+* @brief Funkcja usuwająca plik z listy plików.
 *
 * @param name nazwa pliku do usunięcie
 * @param skrót md5 pliku do usunięcia
@@ -128,7 +128,7 @@ bool Storage_info::remove(const string& name, const string& md5) {
 }
 
 /**
-* Funkcja ustawiająca nazwę węzła.
+* @brief Funkcja ustawiająca nazwę węzła.
 */
 void Storage_info::set_name(string new_name)
 {
@@ -136,7 +136,7 @@ void Storage_info::set_name(string new_name)
 }
 
 /**
-* Funkcja pobierająca pliki o podanej nazwie.
+* @brief Funkcja pobierająca pliki o podanej nazwie.
 * @param name nazwa plików, o których informacje mają być pobrane
 * @return wektor struktur opisujących takie pliki
 */
@@ -154,7 +154,7 @@ vector<File> Storage_info::file_info(string name)
 }
 
 /**
-* Funkcja usuwająca z listy pliki nieprzechowywane lokalnie.
+* @brief Funkcja usuwająca z listy pliki nieprzechowywane lokalnie.
 */
 void Storage_info::clear()
 {

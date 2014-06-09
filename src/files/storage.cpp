@@ -13,8 +13,8 @@
 using namespace std;
 
 /**
-* Konstruktor. Jeżeli podana ścieżka istnieje to
-* wczytywane są informacje o plikach w niej istniejących.
+* @brief Konstruktor. 
+* Jeżeli podana ścieżka istnieje to wczytywane są informacje o plikach w niej istniejących.
 *
 * @param path ścieżka do folderu, gdzie pliki będą zapisywane
 */
@@ -53,7 +53,7 @@ Storage::~Storage() {
 }
 
 /**
-* Funkcja która zapisuje dane o plikach na dysku w pliku files.json.
+* @brief Funkcja która zapisuje dane o plikach na dysku w pliku files.json.
 * Ten plik powstanie w folderze, który został podany w kontruktorze.
 */
 void Storage::store_data() {
@@ -87,7 +87,8 @@ void Storage::store_data() {
 }
 
 /**
-* Funkcja dodający plik na dysk. W odróżnieniu od drugiej funkcji o tej samej nazwie,
+* @brief Funkcja dodający plik na dysk. 
+* W odróżnieniu od drugiej funkcji o tej samej nazwie,
 * ta funkcja przyjmuje wskaźnik na znak jako źródło danych.
 * 
 * @param data wskaźnik na dane do zapisu
@@ -128,7 +129,8 @@ string Storage::add_file(const char* data, long long size, string name, long lon
 }
 
 /**
-* Funkcja dodojąca plik z dysku do kolekcji. W odróżnieniu od drugiej funkcji o tej nazwie,
+* @brief Funkcja dodojąca plik z dysku do kolekcji. 
+* W odróżnieniu od drugiej funkcji o tej nazwie,
 * ta funkcja przyjmuje ścieżkę do pliku znajdującego się już na dysku, kopiuje go i dodaje
 * do kolekcji.
 * 
@@ -180,7 +182,7 @@ string Storage::add_file(string src_path, string name, bool local)
 }
 
 /**
-* Funkcja kopiująca plik z kolekcji na dysk.
+* @brief Funkcja kopiująca plik z kolekcji na dysk.
 *
 * @param name nazwa pliku do skopiowania
 * @param dst_path ścieżka docelowa dla tego pliku
@@ -210,7 +212,7 @@ bool Storage::copy_file(string name, string dst_path)
 }
 
 /**
-* Funkcja sprawdzająca czy taki plik istnieje.
+* @brief Funkcja sprawdzająca czy taki plik istnieje.
 *
 * @param name nazwa pliku do sprawdzenia
 * @param md5 skrót sprawdzanego pliku; jeżeli jest pustym stringiem, to jest ignorowany
@@ -230,7 +232,8 @@ bool Storage::on_drive(string name, string md5)
 }
 
 /**
-* Funkcja dodająca część pliku. Przy dodawaniu każdej części rozmiar pliku jest
+* @brief Funkcja dodająca część pliku. 
+* Przy dodawaniu każdej części rozmiar pliku jest
 * zwiększany (o ile to potrzebne), a obszar pomiędzy obecnym końcem pliku a początkiem
 * dodawanych danych jest wypełniany zerami.
 *
@@ -272,7 +275,8 @@ bool Storage::add_file_part(const char * data, long long part_size, long long of
 }
 
 /**
-* Funkcja zamykająca plik, który był dodawany w częściach. Taka funkcja jest potrzebna,
+* @brief Funkcja zamykająca plik, który był dodawany w częściach. 
+* Taka funkcja jest potrzebna,
 * gdyż trzeba zaznaczyć, że wszystkie części pliku zostały już dodane.
 *
 * @param name nazwa pliku
@@ -290,8 +294,8 @@ bool Storage::finish_file(string name) {
 }
 
 /**
-* Funkcja sprawdzająca czy plik dodawany w częściach jest już zakończony. Taka funkcja
-* jest potrzebna, gdyż może nastąpić odwołanie do pliku, który nie jest jeszcze kompletny.
+* @brief Funkcja sprawdzająca czy plik dodawany w częściach jest już zakończony. 
+* Taka funkcja jest potrzebna, gdyż może nastąpić odwołanie do pliku, który nie jest jeszcze kompletny.
 *
 * @param name nazwa pliku
 * @return true jeżeli taki plik istniał i był zamknięty, false w przeciwnym wypadku
@@ -308,7 +312,7 @@ bool Storage::is_finished(string name) {
 
 
 /**
-* Funkcja usuwająca plik z dysku.
+* @brief Funkcja usuwająca plik z dysku.
 *
 * @param name nazwa pliku do usunięcia
 * @param md5 skrót jednoznacznie identyfikujący plik
@@ -343,7 +347,9 @@ bool Storage::remove_file(const string& name, const string& md5) {
 }
 
 /**
-* Funkcja odczytywująca dane z pliku. Po odczytaniu dane są dostępne w buforze
+* @brief Funkcja odczytywująca dane z pliku. 
+* 
+* Po odczytaniu dane są dostępne w buforze
 * dostępnym poprzez zwracaną strukturę.
 *
 * @param name nazwa pliku do odczytania
@@ -388,6 +394,6 @@ LoadedFile::~LoadedFile()
 
     Storage storage("/home/patrycja/studia/semestr6/dotin");
     string data = "dane testowe";
-    cout << storage.add_file(data.c_str(), data.size(), "a", "");
+  cout << storage.add_file(data.c_str(), data.size(), "a", "");
     cout << storage.remove_file("a", "");
 } */

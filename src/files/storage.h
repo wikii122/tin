@@ -14,7 +14,7 @@ struct LoadedFile {
 };
 
 /**
-* Klasa odpowiedzialna za przechowywanie i obsługę rzeczywistych danych.
+* @brief Klasa odpowiedzialna za przechowywanie i obsługę rzeczywistych danych.
 */
 class Storage {
 

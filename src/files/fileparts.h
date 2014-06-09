@@ -33,7 +33,7 @@ public:
 	void reserve(std::string name, std::string md5, long long size, long long offset);
 private:
 	/*!
-	 * Reprezentacja częściowo ściągniętego pliku.
+	 * \brief Reprezentacja częściowo ściągniętego pliku.
 	 */
 	class FilePart {
 		friend class FilePartManager;
