@@ -44,10 +44,10 @@ public:
      * jezeli pliku nie udalo sie odczytac, to jest zwracany pusty wskaznik 
 	 */
 	auto get_file(std::string name, std::string md5) -> std::shared_ptr<LoadedFile>;
+	void store_data();
 private:
     std::string path;
 
-	void store_data();
 };
 
 #endif

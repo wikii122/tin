@@ -33,6 +33,7 @@ void Storage_info::set_ownership(const string& name, const string& md5, bool new
 		}
 	}
 	mutex.unlock();
+	Server::get().get_storage().store_data();
 }
 
 bool Storage_info::add_file(const string& name, bool owner_name, long long date, const string& md5, bool local) {
