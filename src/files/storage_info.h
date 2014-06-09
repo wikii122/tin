@@ -14,6 +14,9 @@ struct File {
 	bool local;
 };
 
+/**
+* Moduł odpowiedzialny za przechowywanie listy plików i informacji o nich.
+*/
 class Storage_info {
 	friend class Storage;
     Storage_info();

@@ -13,6 +13,9 @@ struct LoadedFile {
 	File meta;	
 };
 
+/**
+* Klasa odpowiedzialna za przechowywanie i obsługę rzeczywistych danych.
+*/
 class Storage {
 
 public:

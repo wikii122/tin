@@ -12,6 +12,10 @@
 
 using namespace std;
 
+/**
+* Konstruktor. Jeżeli podana ścieżka istnieje to
+* wczytywane są informacje o plikach w niej istniejących.
+*/
 Storage::Storage(const string& path): path(path) 
 {
 	auto dir_path = boost::filesystem::path(path);
@@ -46,6 +50,9 @@ Storage::~Storage() {
 
 }
 
+/**
+* Funkcja która zapisuje dane o plikach na dysku w pliku.
+*/
 void Storage::store_data() {
 	ofstream storage_file;
 	auto dir_path = boost::filesystem::path(path);
@@ -76,6 +83,9 @@ void Storage::store_data() {
 	Storage_info::get().mutex.unlock();
 }
 
+/**
+* Funkcja dodający plik na dysk.
+*/
 string Storage::add_file(const char* data, long long size, string name, long long expire_date) {
 
     ofstream file;
@@ -108,6 +118,9 @@ string Storage::add_file(const char* data, long long size, string name, long lon
     return md5;
 }
 
+/**
+* Funkcja dodojąca plik z dysku do kolekcji.
+*/
 string Storage::add_file(string src_path, string name, bool local)
 {
 	auto dir = boost::filesystem::path(path);
@@ -149,6 +162,9 @@ string Storage::add_file(string src_path, string name, bool local)
 	return md5;
 }
 
+/**
+* Funkcja kopiująca plik z kolekcji na dysk.
+*/
 bool Storage::copy_file(string name, string dst_path)
 {
 	auto file_list = Storage_info::get().file_info(name);
@@ -170,6 +186,9 @@ bool Storage::copy_file(string name, string dst_path)
 	return true;
 }
 
+/**
+* Funkcja sprawdzająca czy taki plik istnieje.
+*/
 bool Storage::on_drive(string name, string md5) 
 {
 	bool ignore = (md5 == "");
@@ -182,6 +201,9 @@ bool Storage::on_drive(string name, string md5)
 	return false;
 }
 
+/**
+* Funkcja dodająca część pliku.
+*/
 bool Storage::add_file_part(const char * data, long long part_size, long long offset, string name) {
     for (File file : Storage_info::get().files) {
         if (file.name == name and file.local == true) {
@@ -212,6 +234,9 @@ bool Storage::add_file_part(const char * data, long long part_size, long long of
     return f.good();
 }
 
+/**
+* Funkcja zamykająca plik, który był dodawany w częściach.
+*/
 bool Storage::finish_file(string name) {
     for (File & file : Storage_info::get().files) {
         if (file.name == name and file.local == false) {
@@ -223,6 +248,9 @@ bool Storage::finish_file(string name) {
     return false;
 }
 
+/**
+* Funkcja sprawdzająca czy plik dodawany w częściach jest już zakończony.
+*/
 bool Storage::is_finished(string name) {
     for (File file : Storage_info::get().files) {
         if (file.name == name) {
@@ -233,6 +261,10 @@ bool Storage::is_finished(string name) {
     return false;
 }
 
+
+/**
+* Funkcja usuwająca plik z dysku.
+*/
 bool Storage::remove_file(const string& name, const string& md5) {
 	auto list = Storage_info::get().files;
     std::vector<File>::iterator iter = list.begin();
@@ -257,6 +289,9 @@ bool Storage::remove_file(const string& name, const string& md5) {
     return false;
 }
 
+/**
+* Funkcja odczytywująca dane z pliku.
+*/
 auto Storage::get_file(string name, string md5) -> shared_ptr<LoadedFile> {
 	auto result = make_shared<LoadedFile>();
     for (File file : Storage_info::get().files) {

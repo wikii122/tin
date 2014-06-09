@@ -12,18 +12,23 @@
 
 using namespace std;
 
-
 Storage_info::Storage_info()
 {
 
 }
 
+/**
+* Funkcja zwracająca jedyną instancję klasy.
+*/
 Storage_info& Storage_info::get()
 {
 	static Storage_info instance;
 	return instance;
 }
 
+/**
+* Funkcja określająca właściciela pliku.
+*/
 void Storage_info::set_ownership(const string& name, const string& md5, bool newstate)
 {
 	mutex.lock();
@@ -36,6 +41,9 @@ void Storage_info::set_ownership(const string& name, const string& md5, bool new
 	Server::get().get_storage().store_data();
 }
 
+/**
+* Funkcja dodająca plik do listy plików.
+*/
 bool Storage_info::add_file(const string& name, bool owner_name, long long date, const string& md5, bool local) {
 	mutex.lock();
 	for (File file: files) {
@@ -58,6 +66,11 @@ bool Storage_info::add_file(const string& name, bool owner_name, long long date,
     return true;
 }
 
+/**
+* Funkcja zwracająca pakiet z listą plików.
+* Jeżeli all jest true to zwraca listę wszystkich plików,
+* a jeśli false to tylko tych które są w tym węźle.
+*/
 IHavePacket Storage_info::list_files_json(bool all) {
 	IHavePacket packet;
 	Storage& storage = Server::get().get_storage();
@@ -77,6 +90,9 @@ IHavePacket Storage_info::list_files_json(bool all) {
 	return packet;
 }
 
+/**
+* Funkcja usuwająca plik z listy plików.
+*/
 bool Storage_info::remove(const string& name, const string& md5) {
 
 	mutex.lock();
@@ -94,11 +110,17 @@ bool Storage_info::remove(const string& name, const string& md5) {
     return false;
 }
 
+/**
+* Funkcja ustawiająca nazwę węzła.
+*/
 void Storage_info::set_name(string new_name)
 {
 	host_name = new_name;
 }
 
+/**
+* Funkcja pobierająca pliki o podanej nazwie.
+*/
 vector<File> Storage_info::file_info(string name)
 {
 	vector<File> result;
@@ -112,6 +134,9 @@ vector<File> Storage_info::file_info(string name)
 	return result;
 }
 
+/**
+* Funkcja usuwająca z listy pliki nieprzechowywane lokalnie.
+*/
 void Storage_info::clear()
 {
 	mutex.lock();
