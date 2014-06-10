@@ -1,4 +1,4 @@
-#include <jsoncpp/json/json.h>
+﻿#include <jsoncpp/json/json.h>
 #include "packet/packet.h"
 
 #include "packet/helloPacket.h"
@@ -11,21 +11,29 @@
 #include "packet/iForgotPacket.h"
 #include "packet/localPacket.h"
 
+//! Konstruktor
 Packet::Packet(void) 
 {
 
 }
 
+//! Destruktor
 Packet::~Packet(void)
 {
 
 }
 
+//! Metoda zwracająca typ pakietu
 PacketType Packet::getType() const
 {
 	return this->type;
 }
 
+/*!
+ * Metoda konwertująca dane JSON na pakiet. Po konwersji należy zrzutować wynik na pakiet, zgodnie z wynikiem metody getType().
+ * \param data Dane w formacie JSON opisujące pakiet
+ * \return Pakiet po konwersji
+ */
 std::shared_ptr<Packet> Packet::getPacket(std::string data)
 {
 	Json::Value root; //the JSON tree will be stored here

@@ -1,4 +1,4 @@
-#include "connection.h"
+﻿#include "connection.h"
 #include "server.h"
 #include "files/fileparts.h"
 
@@ -7,7 +7,7 @@
 #include <cstring>
 #include <iostream>
 
-
+//! Konstruktor
 Connection::Connection()
 {
 	buffer = new char[10240];
@@ -15,6 +15,7 @@ Connection::Connection()
 	transferred = 0;
 }
 
+//! Metoda obsługująca połączenie. Powinna być często wywoływana. W praktyce wywołuje handleIncoming() albo handleOutgoing() w zależności od kierunku połączenia
 void Connection::handle()
 {
 	if (incoming)
@@ -23,6 +24,9 @@ void Connection::handle()
 		handleOutgoing();
 }
 
+/*!
+ * Metoda obsługująca przychodzące połączenie. W zależności od stanu, wysyła lub pobiera odpowiednie dane i przechodzi do stanu następnego
+ */
 void Connection::handleIncoming()
 {
 	int complete = 0;
@@ -123,7 +127,9 @@ void Connection::handleIncoming()
 		break;
 	}
 }
-
+/*!
+ * Metoda obsługująca wychodzące połączenie. W zależności od stanu, wysyła lub pobiera odpowiednie dane i przechodzi do stanu następnego
+ */
 void Connection::handleOutgoing()
 {
 	int complete = 0;

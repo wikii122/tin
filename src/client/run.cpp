@@ -9,10 +9,15 @@
 #include "server.h"
 
 using namespace std;
-
+//! Właściwa funkcja uruchomienia serwera
 void startServer(const char name[]);
+//! Właściwa funkcja zatrzymania serwera.
 void stopServer();
 
+/*!
+ * Uruchamia serwer z żądana nazwą.
+ * \param name Żądana nazwa serwera.
+ */
 int server::start(string name)
 {
 	cout << "Starting server with name " << name << endl;
@@ -22,6 +27,9 @@ int server::start(string name)
 	return 0;
 }
 
+/*!
+ * Zatrzymuje aktualnie działający serwer.
+ */
 int server::stop()
 {
 	if (!boost::filesystem::exists(lock_file_name)) {
@@ -33,7 +41,11 @@ int server::stop()
 
 	return 0;
 }
-
+/*!
+ * Zatrzymuje serwer, a następnie
+ * uruchamia go z żadaną nazwą.
+ * \param Żądana nazwa serwera.
+ */
 int server::restart(string name)
 {
 	cout << "Restarting server with name " << name << endl;

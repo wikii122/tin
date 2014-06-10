@@ -16,11 +16,20 @@ namespace opt = boost::program_options;
 
 using namespace std;
 
+//! Przygotowuje serwer do uruchomienia
 void initialize_server(string name);
+//! reaguje na otrzymane sygnały
 void signal_handler(int);
+//! Demonizuje proces
 void daemonize();
+//! Usuwa stworzone pliki tymczasowe
 void clean_up();
 
+/*! \brief Główna funkcja programu
+ *  
+ *  Parsuje opcje podane do programu, przygotowywuje serwer,
+ *  demonizuje proces po uruchomieniu.
+ */
 int main(int argc, char** argv)
 try {
 	if (argc > 3) {
@@ -52,12 +61,16 @@ try {
 	cerr << err << endl;
 } catch (string err) {
 	cerr << err << endl;
-} /*catch (exception err) {
+} catch (exception err) {
 	cerr << err.what() << endl;
 } catch (...) {
 	cerr << "Unknown error, terminating. We are sorry." << endl;
-}*/
+}
 
+/*!
+ * Reaguje na sygnały SIGTERM oraz SIGINT.
+ * Pozostałe sygnały są ignorowane, te zabijają proces
+ */
 void signal_handler(int sig)
 {
 	switch(sig) {
@@ -71,6 +84,10 @@ void signal_handler(int sig)
 	}
 }
 
+/*!
+ * Tworzy instancje klasy Server ,
+ * ustawia jej parametry oraz wywołuje funkcje Server::serve
+ */
 void initialize_server(string name)
 {
 	Server& server = Server::get();	
@@ -78,6 +95,10 @@ void initialize_server(string name)
 	server.serve();
 }
 
+/*!
+ * Odłącza proces od terminala, przekierowuje strumienie do /dev/null.
+ * Podpina handler sygnałów.
+ */
 void daemonize()
 {
 	// I believe we are in forked process, working in background...

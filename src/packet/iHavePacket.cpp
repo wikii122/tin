@@ -1,18 +1,22 @@
-#include <jsoncpp/json/json.h>
+﻿#include <jsoncpp/json/json.h>
 #include "packet/iHavePacket.h"
 #include "server.h"
 
-
+//! Konstruktor
 IHavePacket::IHavePacket(void)
 {
 	type = PacketType::IHave;
 }
 
-
+//! Destruktor
 IHavePacket::~IHavePacket(void)
 {
 }
 
+/*!
+ * Metoda konwertująca pakiet na pakiet w formacie JSON
+ * \return Pakiet w formacie JSON, gotowy do wysłania
+ */
 std::string IHavePacket::getData()
 {
 	if(name == "")
