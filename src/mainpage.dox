@@ -75,7 +75,7 @@ Wyświetlenie listy plików w sieci.
 
 Usunięcie pliku.
 
-\section Protokół
+\section abc Protokół
 Protokół bazowany jest na formacie JSON - JavaScript Object Notation.
 Wszystkie podane tutaj komunikaty wysyłane są poprzez UDP. Jedyny moment,
 kiedy używane jest TCP/IP w naszym projekcie to wymiana plików w trybie
@@ -129,7 +129,7 @@ ale było się świadkiem usunięcia oryginału.
 Zaimplementowana struktura pakietów została przedstawiona na poniższym diagramie:
 
 
-\section Poprawność protokołu
+\section uuu Poprawność protokołu
 
 - Nie jest możliwa sytuacja, gdy dwa węzły będą posiadać tą samą nazwę hosta. Sytuacja, gdy dołącza się taki, który próbuje uzyskać zajętą już nazwę jest opisana w punkcie protokołu, ciekawsza jest sytuacja, gdy dwa naraz taką samą nazwę spróbują zarezerwować. Jednak nie będzie tu problemu przez “symetrię”. Jako, że dwa naraz wyślą pakiety “Hello”, efekt będzie taki sam, jakby któryś z nich był już w sieci, tylko oba będą musiały zmienić nazwę. Typowy, równouprawniony kompromis.
 
