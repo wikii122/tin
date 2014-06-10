@@ -3,6 +3,76 @@
 
   Prosty program peer-to-peer, pozwalający na przesyłanie plików.
 
-TODO: fill this
+\section Treść zadania
+Zadanie polega na napisaniu prostego programu P2P (Peer-to-Peer) umożliwiającego rozproszone przechowywanie zasobów.
+
+\section Interpretacja zadania
+
+Głównym elementem naszego projektu jest działający w tle proces,
+nazywany serwerem (Dla rozróżnienia z klientem, który jest
+używany do bezpośredniej komunikacji z użytkownikiem).
+Zarządza on w naszym programie zasobami oraz zapewnia komunikację z innymi
+programami w sieci. Gdy plik zostanie umieszczony w węźle, broadcastuje on
+zdarzenie. Wtedy każdy odbiorca jest zobowiązany odpowiedzieć na nie,
+natomiast nadawca pierwszej otrzymanej odpowiedzi stanie się
+nowym właścicielem nowo dodanego pliku.
+Plik na węźle, na którym został umieszczony zostaje kopią,
+natomiast plik zostaje skopiowany do losowego węzła, który staje się
+jego właścicielem.
+
+
+
+Synchronizacja posiadanych zasobów jest przeprowadzana kompletnie, synchronizowana jest cała lista plików, nie tylko to, co się zmieniło, i zawsze, gdy:
+
+-Zmieni się stan przechowywanych plików.
+-Dołączy/zostanie uruchomiony nowy węzeł.
+-Na wyraźne życzenie użytkownika.
+
+
+Pliki przesyłane są binarnie, a pozostałe informacje przekazywane są za pomocą formatu JSON.
+Uruchomiony proces serwera cyklicznie sprawdza polecenia od programu klienckiego używanego do komunikacji z użytkownikiem. W przypadku gdy użytkownik rozkaże pobranie pliku, żądanie jest rozgłaszane pomiędzy węzły. Jeśli węzeł posiada poszukiwany plik, zgłasza się do odpowiedniego węzła. Następnie plik jest pobierany w równej częśći z każdego węzła, który go posiada. Problem, gdy plik o tej samej nazwie zostanie dodany na dwóch różnych komputerach nie występuje, gdyż do nazwy dodawana jest sól, generowana na podstawie adresu węzła posiadającego oryginał.
+
+Wszystkie pliki przechowywane są we wspólnym katalogu, pod swoją pełną nazwą.
+
+\section Opis funkcjonalny
+Program z punktu użytkownika będzie udostępniał następujące polecenia:
+
+
+- start[nazwa]
+
+Uruchomienie serwera z nazwa jako nazwa hosta. Jeśli nazwa nie jest podana, jest generowana automatycznie.
+- restart[nazwa]
+
+Ponowne uruchomienie serwera z nazwa jako nazwa hosta. Jeśli nazwa nie jest podana, jest generowana automatycznie.
+
+- stop
+
+Zatrzymanie działania serwera.
+
+- add sciezka/do/pliku[nazwa pliku]
+
+Dodanie pliku do zasobów serwera. Jeśli podana jest nazwa, plik zostanie dodany pod tą nazwą. W przeciwnym wypadku, plik zostanie dodany pod swoją nazwą.
+
+- get nazwa pliku [sciezka/do/pliku]
+
+Pobranie pliku z innych węzłów, jeśli plik nie został dodany do lokalnego,
+oraz skopiowanie go w podane miejsce. Jeśli podana zostanie ścieżka,
+plik zostanie zapisany na podanej ścieżce. W przeciwnym przypadku,
+plik zostanie zapisany w aktualnym katalogu, pod nazwą występującą w aplikacji.
+- download nazwa pliku[nazwa hosta]
+
+Pobranie pliku z innych węzłów w celu udostępniania. Nie kopiuje pliku poza wewnętrzne dane programu. Jeśli podana jest nazwa hosta, ściagany plik jest tylko od żadanego węzła.
+
+- rescan
+
+Pobranie aktualnej listy plików z sieci, oraz uaktualnienie listy węzłów.
+
+- show-list
+
+Wyświetlenie listy plików w sieci.
+- remove nazwa pliku
+
+Usunięcie pliku.
+
 
 */
