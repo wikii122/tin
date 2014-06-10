@@ -141,4 +141,21 @@ powiadomienie.
 
 - W sytuacji, gdy peer jest jedyny w sieci oraz doda plik, nie dostanie pakietu typu Objection ani GiveMe, co spowoduje, że on będzie jego ownerem. To jest prawdopodobnie najbardziej intuicyjny rozwiązanie.
 
+\section test Testy
+
+Przeprowadzono testy lokalnego zachowania węzła, to znaczy gdy jest jedynym węzłem sieci. Po wprowadzeniu komendy
+.\\tin-client start node
+uruchomiony został serwer o nazwie \"node\". Jednocześnie został utworzony folder o nazwie \"file_store\" przeznaczony na przechowywanie plików. Oprócz tego powstaje plik o nazwie \"server.lock\" uniemożliwiający wielokrotnego uruchomienia procesu serwera.
+Poprzez komendę
+.\\tin-client add plik.txt
+został dodany plik o podanej nazwie. Znalazł się on w folderze \"file_store\" zachowująć pierwotny rozmiar i zawartość.
+Jego obecność potwierdza wywołanie komendy
+.\\tin-client show-list
+ukazującej listę przechowywanych plików. Natomiast komenda
+.\\tin-client remove plik.txt
+usuwa wcześniej dodany plik. Działenie programu kończy się poprzez komendę
+.\\tin-client stop node
+zatrzymującą działanie serwera. Usunięty zostaje plik blokujący uruchomienie nowego procesu serwera.
+
+
 */
