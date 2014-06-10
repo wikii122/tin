@@ -9,6 +9,9 @@
 
 using namespace std;
 
+/*!
+ * Tworzy nowy obiekt typu FilePartManager
+ */
 FilePartManager::FilePartManager()
 {
 
